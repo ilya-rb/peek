@@ -1,5 +1,14 @@
 package com.illiarb.catchup.features.home
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.layout.Arrangement
@@ -22,14 +31,20 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import com.illiarb.catchup.core.appinfo.AppEnvironment
 import com.illiarb.catchup.core.data.Async
@@ -66,6 +81,7 @@ class Factory : Ui.Factory {
   }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun HomeScreen(state: HomeScreenContract.State) {
   ContentWithOverlays {
@@ -77,67 +93,72 @@ internal fun HomeScreen(state: HomeScreenContract.State) {
     }
 
     val eventSink = state.eventSink
-
-    val insetsPadding = WindowInsets.systemBars
-      .only(WindowInsetsSides.Top)
-      .asPaddingValues()
-      .calculateTopPadding()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
 
     Scaffold(
+      modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+      contentWindowInsets = WindowInsets(0, 0, 0, 0),
       topBar = {
-        Column(
-          verticalArrangement = Arrangement.Bottom,
-          modifier = Modifier
-            .background(MaterialTheme.colorScheme.surfaceBright)
-            .fillMaxWidth()
-            .height(80.dp + insetsPadding),
-        ) {
-          Row(modifier = Modifier.padding(top = insetsPadding)) {
-            when (state.tabs) {
-              is Async.Loading -> {
-                TabsLoading(Modifier.padding(start = 16.dp, bottom = 16.dp))
-              }
+        TopAppBar(
+          scrollBehavior = scrollBehavior,
+          colors = TopAppBarDefaults.topAppBarColors(),
+          title = {},
+          actions = {
+            AnimatedContent(
+              targetState = state.tabs,
+              transitionSpec = { fadeIn().togetherWith(fadeOut()) }
+            ) { targetState ->
+              when (targetState) {
+                is Async.Loading -> {
+                  TabsLoading(Modifier.padding(start = 16.dp, bottom = 16.dp))
+                }
 
-              is Async.Content -> {
-                TabsContent(
-                  modifier = Modifier.padding(start = 16.dp, bottom = 16.dp),
-                  tabs = state.tabs.content,
-                  selectedTabIndex = state.selectedTabIndex,
-                  eventSink = eventSink,
-                )
-              }
+                is Async.Content -> {
+                  TabsContent(
+                    modifier = Modifier.padding(start = 16.dp, bottom = 16.dp),
+                    tabs = targetState.content,
+                    selectedTabIndex = state.selectedTabIndex,
+                    eventSink = eventSink,
+                  )
+                }
 
-              else -> Unit
+                else -> Unit
+              }
             }
 
             if (AppEnvironment.isDev()) {
               Spacer(modifier = Modifier.weight(1f))
 
-              DebugMenuItem {
+              DebugMenuItem(modifier = Modifier.padding(top = 16.dp, bottom = 16.dp, end = 8.dp)) {
                 eventSink.invoke(HomeScreenContract.Event.DebugMenuClick)
               }
             }
-          }
-        }
+          },
+        )
       }
     ) { innerPadding ->
-      when {
-        state.articles is Async.Error || state.tabs is Async.Error -> {
-          ArticlesError(innerPadding) {
-            eventSink.invoke(HomeScreenContract.Event.ErrorRetryClick)
+      AnimatedContent(
+        targetState = state.articles,
+        transitionSpec = { fadeIn().togetherWith(fadeOut()) }
+      ) { targetState ->
+        when {
+          targetState is Async.Error || state.tabs is Async.Error -> {
+            ArticlesError(innerPadding) {
+              eventSink.invoke(HomeScreenContract.Event.ErrorRetryClick)
+            }
           }
-        }
 
-        state.articles is Async.Loading -> {
-          ArticlesLoading(innerPadding)
-        }
+          targetState is Async.Loading -> {
+            ArticlesLoading(innerPadding)
+          }
 
-        state.articles is Async.Content -> {
-          ArticlesContent(
-            modifier = Modifier.padding(innerPadding),
-            articles = state.articles.content,
-            eventSink = eventSink,
-          )
+          targetState is Async.Content -> {
+            ArticlesContent(
+              modifier = Modifier.padding(innerPadding),
+              articles = targetState.content,
+              eventSink = eventSink,
+            )
+          }
         }
       }
     }
@@ -244,9 +265,9 @@ fun ItemDivider() {
 }
 
 @Composable
-fun DebugMenuItem(onClick: () -> Unit) {
+fun DebugMenuItem(modifier: Modifier = Modifier, onClick: () -> Unit) {
   IconButton(
-    modifier = Modifier.padding(top = 8.dp, end = 16.dp, bottom = 16.dp),
+    modifier = modifier,
     onClick = { onClick() }
   ) {
     Icon(

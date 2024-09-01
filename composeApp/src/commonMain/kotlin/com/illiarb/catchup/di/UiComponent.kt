@@ -8,7 +8,7 @@ import com.slack.circuit.runtime.ui.Ui
 import me.tatarka.inject.annotations.Provides
 
 interface UiComponent : HomeScreenComponent {
-  
+
   val circuit: Circuit
 
   @[Provides ViewControllerScope]

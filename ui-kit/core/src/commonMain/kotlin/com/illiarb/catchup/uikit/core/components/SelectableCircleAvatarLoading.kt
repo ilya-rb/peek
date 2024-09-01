@@ -16,7 +16,7 @@ fun SelectableCircleAvatarLoading(modifier: Modifier = Modifier) {
   Box(
     modifier = modifier
       .shimmer()
-      .size(60.dp)
+      .size(48.dp)
       .clip(CircleShape)
       .background(Color.LightGray)
   )
