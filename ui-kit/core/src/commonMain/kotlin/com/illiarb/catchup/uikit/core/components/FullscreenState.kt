@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 fun FullscreenState(
   modifier: Modifier = Modifier,
   title: String,
-  buttonText: String,
+  buttonText: String?,
   onButtonClick: () -> Unit,
   image: @Composable (Modifier) -> Unit,
 ) {
@@ -33,11 +33,13 @@ fun FullscreenState(
       color = MaterialTheme.colorScheme.onSurface,
     )
 
-    Button(
-      modifier = Modifier.padding(top = 20.dp),
-      onClick = onButtonClick,
-    ) {
-      Text(text = buttonText)
+    if (buttonText != null) {
+      Button(
+        modifier = Modifier.padding(top = 20.dp),
+        onClick = onButtonClick,
+      ) {
+        Text(text = buttonText)
+      }
     }
   }
 }

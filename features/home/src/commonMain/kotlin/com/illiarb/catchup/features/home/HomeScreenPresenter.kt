@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.illiarb.catchup.core.arch.ExternalNavigator
+import com.illiarb.catchup.core.arch.OpenUrlScreen
 import com.illiarb.catchup.core.data.Async
 import com.illiarb.catchup.core.data.mapContent
 import com.illiarb.catchup.service.domain.Article
@@ -21,7 +21,7 @@ import me.tatarka.inject.annotations.Inject
 
 class HomeScreenPresenter(
   private val catchupService: CatchupService,
-  private val externalNavigator: ExternalNavigator,
+  private val navigator: Navigator,
 ) : Presenter<HomeScreenContract.State> {
 
   @Composable
@@ -51,17 +51,20 @@ class HomeScreenPresenter(
     val articles by produceRetainedState<Async<ImmutableList<Article>>>(
       initialValue = Async.Loading,
       key1 = selectedTabIndex,
+      key2 = sources,
     ) {
       val source = when (val currentSources = sources) {
         is Async.Content -> currentSources.content.getOrNull(selectedTabIndex)
         else -> null
-      } ?: return@produceRetainedState
+      }
 
-      catchupService.collectLatestNewsFrom(source.source)
-        .mapContent { it.toImmutableList() }
-        .collect {
-          value = it
-        }
+      if (source == null) {
+        value = Async.Loading
+      } else {
+        catchupService.collectLatestNewsFrom(source.source)
+          .mapContent { it.toImmutableList() }
+          .collect { value = it }
+      }
     }
 
     fun eventSink(event: HomeScreenContract.Event) {
@@ -70,7 +73,7 @@ class HomeScreenPresenter(
         is HomeScreenContract.Event.ErrorRetryClick -> Unit
         is HomeScreenContract.Event.DebugMenuClick -> debugMenuShowing = true
         is HomeScreenContract.Event.DebugMenuClosed -> debugMenuShowing = false
-        is HomeScreenContract.Event.ArticleClicked -> openArticleInBrowser(event.item.link)
+        is HomeScreenContract.Event.ArticleClicked -> navigator.goTo(OpenUrlScreen(event.item.link))
         is HomeScreenContract.Event.TabClicked -> {
           val value = sources
           require(value is Async.Content<ImmutableList<HomeScreenContract.Tab>>)
@@ -91,14 +94,9 @@ class HomeScreenPresenter(
     )
   }
 
-  private fun openArticleInBrowser(url: String) {
-    externalNavigator.openUrl(url)
-  }
-
   @Inject
   class Factory(
     private val catchupService: CatchupService,
-    private val externalNavigator: ExternalNavigator,
   ) : Presenter.Factory {
     override fun create(
       screen: Screen,
@@ -106,11 +104,7 @@ class HomeScreenPresenter(
       context: CircuitContext
     ): Presenter<*>? {
       return when (screen) {
-        is HomeScreenContract.HomeScreen -> HomeScreenPresenter(
-          catchupService,
-          externalNavigator,
-        )
-
+        is HomeScreenContract.HomeScreen -> HomeScreenPresenter(catchupService, navigator)
         else -> null
       }
     }

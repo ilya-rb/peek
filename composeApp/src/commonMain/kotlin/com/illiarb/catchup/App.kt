@@ -10,23 +10,8 @@ import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.rememberCircuitNavigator
+import com.slack.circuit.runtime.Navigator
 
 @Composable
-fun App(
-  uiComponent: UiComponent,
-  imageLoader: ImageLoader,
-) {
-  val backStack = rememberSaveableBackStack(root = HomeScreenContract.HomeScreen)
-  val navigator = rememberCircuitNavigator(backStack) {}
-
-  setSingletonImageLoaderFactory { imageLoader }
-
-  CircuitCompositionLocals(uiComponent.circuit) {
-    UiKitTheme(useDynamicColors = false) {
-      NavigableCircuitContent(
-        navigator = navigator,
-        backStack = backStack,
-      )
-    }
-  }
+fun App() {
 }

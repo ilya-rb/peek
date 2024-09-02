@@ -20,6 +20,9 @@ kotlin {
     androidMain.dependencies {
       implementation(compose.preview)
       implementation(libs.androidx.activity.compose)
+      implementation(libs.androidx.browser)
+      implementation(libs.circuit.core)
+      implementation(libs.circuit.x.android)
     }
 
     commonMain.dependencies {
@@ -34,6 +37,7 @@ kotlin {
       implementation(libs.ktor.core)
       implementation(libs.napier)
       implementation(libs.coil.core)
+      implementation(libs.coil.compose)
       implementation(libs.coil.compose)
 
       implementation(projects.catchupService)

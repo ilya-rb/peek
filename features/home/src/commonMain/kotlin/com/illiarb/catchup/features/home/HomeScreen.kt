@@ -1,31 +1,16 @@
 package com.illiarb.catchup.features.home
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.SizeTransform
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -38,7 +23,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
@@ -153,11 +137,15 @@ internal fun HomeScreen(state: HomeScreenContract.State) {
           }
 
           targetState is Async.Content -> {
-            ArticlesContent(
-              modifier = Modifier.padding(innerPadding),
-              articles = targetState.content,
-              eventSink = eventSink,
-            )
+            if (targetState.content.isEmpty()) {
+              ArticlesEmpty()
+            } else {
+              ArticlesContent(
+                modifier = Modifier.padding(innerPadding),
+                articles = targetState.content,
+                eventSink = eventSink,
+              )
+            }
           }
         }
       }
@@ -209,6 +197,21 @@ fun ArticlesLoading(innerPadding: PaddingValues) {
       itemContent = {
         ArticleLoadingCell()
       }
+    )
+  }
+}
+
+@Composable
+fun ArticlesEmpty(modifier: Modifier = Modifier) {
+  FullscreenState(
+    modifier = modifier.fillMaxSize(),
+    title = "Articles will appear here",
+    buttonText = null,
+    onButtonClick = {},
+  ) {
+    LocalLottieAnimation(
+      modifier = Modifier.size(200.dp),
+      fileName = "anim_empty",
     )
   }
 }
