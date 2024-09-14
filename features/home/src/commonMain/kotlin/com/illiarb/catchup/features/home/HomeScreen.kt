@@ -4,16 +4,21 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CornerBasedShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,6 +33,8 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import com.illiarb.catchup.core.appinfo.AppEnvironment
@@ -122,26 +129,28 @@ internal fun HomeScreen(state: HomeScreenContract.State) {
       }
     ) { innerPadding ->
       AnimatedContent(
+        modifier = Modifier.padding(innerPadding),
         targetState = state.articles,
         transitionSpec = { fadeIn().togetherWith(fadeOut()) }
       ) { targetState ->
         when {
           targetState is Async.Error || state.tabs is Async.Error -> {
-            ArticlesError(innerPadding) {
+            ArticlesError {
               eventSink.invoke(HomeScreenContract.Event.ErrorRetryClick)
             }
           }
 
           targetState is Async.Loading -> {
-            ArticlesLoading(innerPadding)
+            ArticlesLoading()
           }
 
           targetState is Async.Content -> {
             if (targetState.content.isEmpty()) {
-              ArticlesEmpty()
+              ArticlesEmpty {
+                eventSink.invoke(HomeScreenContract.Event.ErrorRetryClick)
+              }
             } else {
               ArticlesContent(
-                modifier = Modifier.padding(innerPadding),
                 articles = targetState.content,
                 eventSink = eventSink,
               )
@@ -157,13 +166,13 @@ internal fun HomeScreen(state: HomeScreenContract.State) {
 fun TabsLoading(modifier: Modifier = Modifier) {
   LazyRow(
     modifier = modifier,
-    horizontalArrangement = Arrangement.spacedBy(16.dp),
+    horizontalArrangement = Arrangement.spacedBy(8.dp),
     verticalAlignment = Alignment.CenterVertically,
   ) {
     items(
       count = 3,
-      itemContent = {
-        SelectableCircleAvatarLoading()
+      itemContent = { index ->
+        SelectableCircleAvatarLoading(selected = index == 0)
       },
     )
   }
@@ -190,8 +199,8 @@ fun TabsContent(
 }
 
 @Composable
-fun ArticlesLoading(innerPadding: PaddingValues) {
-  LazyColumn(modifier = Modifier.padding(innerPadding)) {
+fun ArticlesLoading(modifier: Modifier = Modifier) {
+  LazyColumn(modifier = modifier) {
     items(
       count = 5,
       itemContent = {
@@ -202,17 +211,29 @@ fun ArticlesLoading(innerPadding: PaddingValues) {
 }
 
 @Composable
-fun ArticlesEmpty(modifier: Modifier = Modifier) {
-  FullscreenState(
+fun ArticlesEmpty(
+  modifier: Modifier = Modifier,
+  onRefreshClick: () -> Unit,
+) {
+  Column(
     modifier = modifier.fillMaxSize(),
-    title = "Articles will appear here",
-    buttonText = null,
-    onButtonClick = {},
+    horizontalAlignment = Alignment.CenterHorizontally,
   ) {
-    LocalLottieAnimation(
-      modifier = Modifier.size(200.dp),
-      fileName = "anim_empty",
-    )
+    FullscreenState(
+      title = "Articles will appear here",
+      buttonText = "Refresh",
+      onButtonClick = onRefreshClick,
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(16.dp)
+        .clip(shape = RoundedCornerShape(size = 24.dp))
+        .background(MaterialTheme.colorScheme.surfaceContainer),
+    ) {
+      LocalLottieAnimation(
+        modifier = Modifier.size(200.dp),
+        fileName = "anim_empty",
+      )
+    }
   }
 }
 
@@ -244,17 +265,26 @@ fun ArticlesContent(
 }
 
 @Composable
-fun ArticlesError(innerPadding: PaddingValues, onRetryClick: () -> Unit) {
-  FullscreenState(
-    modifier = Modifier.fillMaxSize().padding(innerPadding),
-    title = "Something went wrong",
-    buttonText = "Try again",
-    onButtonClick = onRetryClick,
+fun ArticlesError(modifier: Modifier = Modifier, onRetryClick: () -> Unit) {
+  Column(
+    modifier = modifier.fillMaxSize(),
+    horizontalAlignment = Alignment.CenterHorizontally,
   ) {
-    LocalLottieAnimation(
-      fileName = "anim_error",
-      modifier = Modifier.size(200.dp),
-    )
+    FullscreenState(
+      title = "Something went wrong",
+      buttonText = "Try again",
+      onButtonClick = onRetryClick,
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(16.dp)
+        .clip(shape = RoundedCornerShape(size = 24.dp))
+        .background(MaterialTheme.colorScheme.surfaceContainer),
+    ) {
+      LocalLottieAnimation(
+        fileName = "anim_error",
+        modifier = Modifier.size(200.dp),
+      )
+    }
   }
 }
 

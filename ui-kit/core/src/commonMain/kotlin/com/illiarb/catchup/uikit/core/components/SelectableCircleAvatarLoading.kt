@@ -8,15 +8,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import com.valentinilk.shimmer.shimmer
 
 @Composable
-fun SelectableCircleAvatarLoading(modifier: Modifier = Modifier) {
+fun SelectableCircleAvatarLoading(
+  modifier: Modifier = Modifier,
+  selected: Boolean,
+) {
+  val scale = if (selected) 1f else 0.8f
+
   Box(
     modifier = modifier
       .shimmer()
       .size(48.dp)
+      .graphicsLayer(scaleX = scale, scaleY = scale)
       .clip(CircleShape)
       .background(Color.LightGray)
   )

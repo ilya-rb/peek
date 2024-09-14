@@ -28,10 +28,12 @@ class HomeScreenPresenter(
   override fun present(): HomeScreenContract.State {
     var selectedTabIndex by rememberRetained { mutableStateOf(value = 0) }
     var debugMenuShowing by rememberRetained { mutableStateOf(false) }
+    var reloadData by rememberRetained { mutableStateOf(false) }
 
     val sources by produceRetainedState<Async<ImmutableList<HomeScreenContract.Tab>>>(
       initialValue = Async.Loading,
       key1 = catchupService,
+      key2 = reloadData,
     ) {
       catchupService.collectAvailableSources()
         .mapContent { sources ->
@@ -52,6 +54,7 @@ class HomeScreenPresenter(
       initialValue = Async.Loading,
       key1 = selectedTabIndex,
       key2 = sources,
+      key3 = reloadData,
     ) {
       val source = when (val currentSources = sources) {
         is Async.Content -> currentSources.content.getOrNull(selectedTabIndex)
@@ -70,7 +73,7 @@ class HomeScreenPresenter(
     fun eventSink(event: HomeScreenContract.Event) {
       when (event) {
         is HomeScreenContract.Event.ButtonClick -> Unit
-        is HomeScreenContract.Event.ErrorRetryClick -> Unit
+        is HomeScreenContract.Event.ErrorRetryClick -> reloadData = !reloadData
         is HomeScreenContract.Event.DebugMenuClick -> debugMenuShowing = true
         is HomeScreenContract.Event.DebugMenuClosed -> debugMenuShowing = false
         is HomeScreenContract.Event.ArticleClicked -> navigator.goTo(OpenUrlScreen(event.item.link))

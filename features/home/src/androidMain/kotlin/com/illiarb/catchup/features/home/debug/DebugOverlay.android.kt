@@ -11,8 +11,8 @@ actual suspend fun OverlayHost.showDebugOverlay() {
       model = Unit,
       skipPartiallyExpandedState = true,
       onDismiss = {}
-    ) { _, navigator ->
-      DebugOverlay(navigator)
+    ) { _, _ ->
+      DebugOverlay()
     }
   )
 }

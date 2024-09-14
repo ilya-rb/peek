@@ -35,7 +35,7 @@ fun FullscreenState(
 
     if (buttonText != null) {
       Button(
-        modifier = Modifier.padding(top = 20.dp),
+        modifier = Modifier.padding(top = 20.dp, bottom = 16.dp),
         onClick = onButtonClick,
       ) {
         Text(text = buttonText)

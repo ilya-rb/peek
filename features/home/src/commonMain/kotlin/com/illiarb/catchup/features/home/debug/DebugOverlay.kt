@@ -27,7 +27,7 @@ import com.slack.circuit.overlay.OverlayNavigator
 expect suspend fun OverlayHost.showDebugOverlay()
 
 @Composable
-fun DebugOverlay(navigator: OverlayNavigator<Unit>) {
+fun DebugOverlay() {
   Box(
     modifier = Modifier
       .fillMaxWidth()

@@ -7,5 +7,5 @@ import com.illiarb.catchup.uikit.core.components.SelectableCircleAvatarLoading
 @Composable
 @Preview(showBackground = true)
 fun SelectableCircleAvatarPreview() {
-  SelectableCircleAvatarLoading()
+  SelectableCircleAvatarLoading(selected = true)
 }
