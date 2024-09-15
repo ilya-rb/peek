@@ -33,7 +33,6 @@ class HomeScreenPresenter(
     val sources by produceRetainedState<Async<ImmutableList<HomeScreenContract.Tab>>>(
       initialValue = Async.Loading,
       key1 = catchupService,
-      key2 = reloadData,
     ) {
       catchupService.collectAvailableSources()
         .mapContent { sources ->

@@ -3,6 +3,7 @@ package com.illiarb.catchup.service.network
 import com.illiarb.catchup.core.data.Async
 import com.illiarb.catchup.core.data.asAsync
 import com.illiarb.catchup.core.network.HttpClient
+import com.illiarb.catchup.core.network.NetworkConfig
 import com.illiarb.catchup.service.domain.Article
 import com.illiarb.catchup.service.domain.NewsSource
 import com.illiarb.catchup.service.network.dto.ArticleDto
@@ -25,6 +26,7 @@ interface CatchupService {
 @Inject
 internal class CatchupServiceRepository(
   private val httpClient: HttpClient,
+  private val networkConfig: NetworkConfig,
 ) : CatchupService {
 
   override fun collectLatestNewsFrom(source: NewsSource): Flow<Async<List<Article>>> =
@@ -47,7 +49,7 @@ internal class CatchupServiceRepository(
     flow {
       val sources = httpClient.get(path = "supported_sources").map {
         val response = it.body<NewsSourcesResponse>()
-        response.asNewsSourcesSet()
+        response.asNewsSourcesSet(networkConfig.apiUrl)
       }
       emit(sources.asAsync())
     }.onStart {
