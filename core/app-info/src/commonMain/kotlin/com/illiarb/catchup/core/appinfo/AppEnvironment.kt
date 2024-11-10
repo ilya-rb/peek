@@ -1,13 +1,13 @@
 package com.illiarb.catchup.core.appinfo
 
-private var environment: AppEnvironment = AppEnvironment.UNSPECIFIED
-
 enum class AppEnvironment {
   DEV,
   PROD,
   UNSPECIFIED;
 
   companion object {
+
+    private var environment: AppEnvironment = UNSPECIFIED
 
     private fun checkInitialized() {
       require(environment != UNSPECIFIED) {

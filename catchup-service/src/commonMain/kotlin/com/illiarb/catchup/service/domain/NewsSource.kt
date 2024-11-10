@@ -1,11 +1,11 @@
 package com.illiarb.catchup.service.domain
 
 data class NewsSource(
-  val id: NewsSourceId,
-  val imageUrl: String,
+  val kind: NewsSourceKind,
+  val imageUrl: Url,
 )
 
-enum class NewsSourceId(val key: String) {
+enum class NewsSourceKind(val key: String) {
   IrishTimes(key = "irishtimes"),
   HackerNews(key = "hackernews"),
   Dou(key = "dou"),
@@ -13,7 +13,7 @@ enum class NewsSourceId(val key: String) {
 
   companion object {
 
-    fun fromKey(key: String): NewsSourceId {
+    fun fromKey(key: String): NewsSourceKind {
       return when (key) {
         IrishTimes.key -> IrishTimes
         HackerNews.key -> HackerNews

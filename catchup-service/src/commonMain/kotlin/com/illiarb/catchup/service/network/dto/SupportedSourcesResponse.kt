@@ -1,7 +1,7 @@
 package com.illiarb.catchup.service.network.dto
 
 import com.illiarb.catchup.service.domain.NewsSource
-import com.illiarb.catchup.service.domain.NewsSourceId
+import com.illiarb.catchup.service.domain.NewsSourceKind
 import io.ktor.http.URLBuilder
 import io.ktor.http.Url
 import kotlinx.serialization.SerialName
@@ -15,8 +15,8 @@ internal data class NewsSourcesResponse(
   fun asNewsSourcesSet(baseUrl: String): Set<NewsSource> {
     return sources.map { source ->
       NewsSource(
-        id = NewsSourceId.fromKey(source.id),
-        imageUrl = source.imageUrl.fixUrl(baseUrl),
+        kind = NewsSourceKind.fromKey(source.id),
+        imageUrl = com.illiarb.catchup.service.domain.Url(source.imageUrl.fixUrl(baseUrl)),
       )
     }.toSet()
   }

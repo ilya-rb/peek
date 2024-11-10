@@ -38,9 +38,9 @@ class HomeScreenPresenter(
         .mapContent { sources ->
           sources.map { source ->
             HomeScreenContract.Tab(
-              id = source.imageUrl,
+              id = source.imageUrl.url,
               source = source,
-              imageUrl = source.imageUrl,
+              imageUrl = source.imageUrl.url,
             )
           }.toImmutableList()
         }
@@ -75,7 +75,7 @@ class HomeScreenPresenter(
         is HomeScreenContract.Event.ErrorRetryClick -> reloadData = !reloadData
         is HomeScreenContract.Event.DebugMenuClick -> debugMenuShowing = true
         is HomeScreenContract.Event.DebugMenuClosed -> debugMenuShowing = false
-        is HomeScreenContract.Event.ArticleClicked -> navigator.goTo(OpenUrlScreen(event.item.link))
+        is HomeScreenContract.Event.ArticleClicked -> navigator.goTo(OpenUrlScreen(event.item.link.url))
         is HomeScreenContract.Event.TabClicked -> {
           val value = sources
           require(value is Async.Content<ImmutableList<HomeScreenContract.Tab>>)

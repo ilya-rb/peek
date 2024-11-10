@@ -15,7 +15,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -32,7 +31,7 @@ fun ArticleCell(
       text = caption.uppercase(),
       style = MaterialTheme.typography.labelLarge,
       color = MaterialTheme.colorScheme.primaryContainer,
-      modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp),
+      modifier = Modifier.fillMaxWidth().padding(top = 8.dp, start = 16.dp, end = 16.dp),
     )
 
     Text(
@@ -45,7 +44,10 @@ fun ArticleCell(
       maxLines = 4,
     )
 
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier.padding(bottom = 8.dp),
+    ) {
       Spacer(Modifier.weight(1f))
 
       Icon(

@@ -4,7 +4,7 @@ data class Article(
   val id: String,
   val title: String,
   val description: String?,
-  val link: String,
-  val tags: List<String>,
-  val sourceId: NewsSourceId,
+  val link: Url,
+  val tags: List<Tag>,
+  val source: NewsSourceKind,
 )

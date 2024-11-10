@@ -1,4 +1,4 @@
-package com.illiarb.catchup.uikit.core.theme
+package com.illiarb.catchup.uikit.core.components.preview
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

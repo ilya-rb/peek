@@ -1,4 +1,4 @@
-package com.illiarb.catchup.uikit.core.theme
+package com.illiarb.catchup.uikit.core.components.preview
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -10,6 +10,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.illiarb.catchup.uikit.core.components.ArticleCell
 import com.illiarb.catchup.uikit.core.components.ArticleLoadingCell
+import com.illiarb.catchup.uikit.core.theme.UiKitTheme
 
 @Composable
 fun ArticleCellPreview(darkTheme: Boolean) {
