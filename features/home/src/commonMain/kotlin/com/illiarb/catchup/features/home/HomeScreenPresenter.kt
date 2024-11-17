@@ -8,6 +8,7 @@ import com.illiarb.catchup.core.arch.OpenUrlScreen
 import com.illiarb.catchup.core.data.Async
 import com.illiarb.catchup.core.data.mapContent
 import com.illiarb.catchup.service.domain.Article
+import com.illiarb.catchup.service.domain.Tag
 import com.illiarb.catchup.service.network.CatchupService
 import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.retained.rememberRetained
@@ -28,7 +29,9 @@ class HomeScreenPresenter(
   override fun present(): HomeScreenContract.State {
     var selectedTabIndex by rememberRetained { mutableStateOf(value = 0) }
     var debugMenuShowing by rememberRetained { mutableStateOf(false) }
+    var filtersShowing by rememberRetained { mutableStateOf(false) }
     var reloadData by rememberRetained { mutableStateOf(false) }
+    var selectedTags by rememberRetained { mutableStateOf(emptySet<Tag>()) }
 
     val sources by produceRetainedState<Async<ImmutableList<HomeScreenContract.Tab>>>(
       initialValue = Async.Loading,
@@ -74,8 +77,14 @@ class HomeScreenPresenter(
         is HomeScreenContract.Event.ButtonClick -> Unit
         is HomeScreenContract.Event.ErrorRetryClick -> reloadData = !reloadData
         is HomeScreenContract.Event.DebugMenuClick -> debugMenuShowing = true
+        is HomeScreenContract.Event.FiltersClick -> filtersShowing = true
         is HomeScreenContract.Event.DebugMenuClosed -> debugMenuShowing = false
         is HomeScreenContract.Event.ArticleClicked -> navigator.goTo(OpenUrlScreen(event.item.link.url))
+        is HomeScreenContract.Event.TagsSelected -> {
+          filtersShowing = false
+          selectedTags = event.tags
+        }
+
         is HomeScreenContract.Event.TabClicked -> {
           val value = sources
           require(value is Async.Content<ImmutableList<HomeScreenContract.Tab>>)
@@ -91,8 +100,10 @@ class HomeScreenPresenter(
       articles = articles,
       tabs = sources,
       selectedTabIndex = selectedTabIndex,
+      selectedTags = selectedTags,
       eventSink = ::eventSink,
       debugMenuShowing = debugMenuShowing,
+      filtersShowing = filtersShowing,
     )
   }
 

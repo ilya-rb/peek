@@ -6,11 +6,13 @@ import com.illiarb.catchup.core.arch.CommonParcelize
 import com.illiarb.catchup.core.data.Async
 import com.illiarb.catchup.service.domain.Article
 import com.illiarb.catchup.service.domain.NewsSource
+import com.illiarb.catchup.service.domain.Tag
 import com.illiarb.catchup.uikit.core.model.Identifiable
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 interface HomeScreenContract {
 
@@ -19,20 +21,56 @@ interface HomeScreenContract {
 
   @Stable
   data class State(
-    val articles: Async<ImmutableList<Article>>,
+    private val articles: Async<ImmutableList<Article>>,
     val tabs: Async<ImmutableList<Tab>>,
+    val selectedTags: Set<Tag>,
     val selectedTabIndex: Int,
     val debugMenuShowing: Boolean,
+    val filtersShowing: Boolean,
     val eventSink: (Event) -> Unit,
-  ) : CircuitUiState
+  ) : CircuitUiState {
+
+    val content: Async<ImmutableList<Article>>
+      get() = when (articles) {
+        is Async.Content -> {
+          if (selectedTags.isEmpty()) {
+            articles
+          } else {
+            articles.copy(
+              articles.content.filter { article ->
+                article.tags.any { tag ->
+                  selectedTags.contains(tag)
+                }
+              }.toImmutableList()
+            )
+          }
+        }
+
+        else -> articles
+      }
+
+    val articleTags: Set<Tag>
+      get() = when (articles) {
+        is Async.Content -> {
+          articles.content
+            .map { it.tags }
+            .flatten()
+            .toSet()
+        }
+
+        else -> emptySet()
+      }
+  }
 
   sealed interface Event : CircuitUiEvent {
     data object ButtonClick : Event
     data object DebugMenuClick : Event
+    data object FiltersClick : Event
     data object DebugMenuClosed : Event
     data object ErrorRetryClick : Event
     data class TabClicked(val source: NewsSource) : Event
     data class ArticleClicked(val item: Article) : Event
+    data class TagsSelected(val tags: Set<Tag>) : Event
   }
 
   data class Tab(

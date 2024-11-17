@@ -18,7 +18,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,11 +31,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import com.illiarb.catchup.core.appinfo.AppEnvironment
 import com.illiarb.catchup.core.data.Async
 import com.illiarb.catchup.features.home.debug.showDebugOverlay
+import com.illiarb.catchup.features.home.filters.Model
+import com.illiarb.catchup.features.home.filters.showFiltersOverlay
 import com.illiarb.catchup.service.domain.Article
 import com.illiarb.catchup.uikit.core.components.ArticleCell
 import com.illiarb.catchup.uikit.core.components.ArticleLoadingCell
@@ -78,6 +81,12 @@ internal fun HomeScreen(state: HomeScreenContract.State) {
         state.eventSink.invoke(HomeScreenContract.Event.DebugMenuClosed)
       }
     }
+    if (state.filtersShowing) {
+      OverlayEffect(Unit) {
+        val selectedTags = showFiltersOverlay(Model(state.articleTags, state.selectedTags))
+        state.eventSink.invoke(HomeScreenContract.Event.TagsSelected(selectedTags))
+      }
+    }
 
     val eventSink = state.eventSink
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
@@ -116,8 +125,14 @@ internal fun HomeScreen(state: HomeScreenContract.State) {
             if (AppEnvironment.isDev()) {
               Spacer(modifier = Modifier.weight(1f))
 
-              DebugMenuItem(modifier = Modifier.padding(top = 16.dp, bottom = 16.dp, end = 8.dp)) {
-                eventSink.invoke(HomeScreenContract.Event.DebugMenuClick)
+              val hasFilters = state.articleTags.isNotEmpty()
+              if (hasFilters) {
+                MenuItem(
+                  modifier = Modifier.padding(top = 16.dp, bottom = 16.dp, end = 8.dp),
+                  icon = Icons.Filled.Settings,
+                ) {
+                  eventSink.invoke(HomeScreenContract.Event.FiltersClick)
+                }
               }
             }
           },
@@ -126,7 +141,7 @@ internal fun HomeScreen(state: HomeScreenContract.State) {
     ) { innerPadding ->
       AnimatedContent(
         modifier = Modifier.padding(innerPadding),
-        targetState = state.articles,
+        targetState = state.content,
         transitionSpec = { fadeIn().togetherWith(fadeOut()) }
       ) { targetState ->
         when {
@@ -281,13 +296,17 @@ fun ArticlesError(modifier: Modifier = Modifier, onRetryClick: () -> Unit) {
 }
 
 @Composable
-fun DebugMenuItem(modifier: Modifier = Modifier, onClick: () -> Unit) {
+fun MenuItem(
+  modifier: Modifier = Modifier,
+  icon: ImageVector,
+  onClick: () -> Unit,
+) {
   IconButton(
     modifier = modifier,
     onClick = { onClick() }
   ) {
     Icon(
-      imageVector = Icons.Filled.Build,
+      imageVector = icon,
       tint = MaterialTheme.colorScheme.onSurface,
       contentDescription = null,
     )

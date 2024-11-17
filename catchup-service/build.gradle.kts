@@ -16,6 +16,7 @@ kotlin {
       implementation(projects.core.network)
       implementation(projects.core.logging)
       implementation(projects.core.data)
+      implementation(projects.core.arch)
     }
   }
 }

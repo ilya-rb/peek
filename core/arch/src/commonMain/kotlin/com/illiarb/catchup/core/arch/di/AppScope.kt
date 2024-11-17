@@ -1,4 +1,4 @@
-package com.illiarb.catchup.di.scope
+package com.illiarb.catchup.core.arch.di
 
 import me.tatarka.inject.annotations.Scope
 import kotlin.annotation.AnnotationTarget.CLASS

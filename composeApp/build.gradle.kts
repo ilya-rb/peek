@@ -47,6 +47,7 @@ kotlin {
       implementation(projects.core.logging)
       implementation(projects.core.network)
       implementation(projects.features.home)
+      implementation(projects.features.reader)
       implementation(projects.uiKit.core)
       implementation(projects.uiKit.imageLoader)
     }

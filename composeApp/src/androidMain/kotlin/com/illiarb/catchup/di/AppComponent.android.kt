@@ -1,7 +1,7 @@
 package com.illiarb.catchup.di
 
 import android.app.Application
-import com.illiarb.catchup.di.scope.AppScope
+import com.illiarb.catchup.core.arch.di.AppScope
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
 
