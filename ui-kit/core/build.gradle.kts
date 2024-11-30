@@ -1,7 +1,6 @@
 plugins {
   id("com.illiarb.catchup.android.library")
   id("com.illiarb.catchup.kotlin.multiplatform")
-  id("com.illiarb.catchup.kotlin.inject")
   id("com.illiarb.catchup.compose")
 }
 
@@ -28,6 +27,7 @@ kotlin {
       implementation(projects.core.logging)
       implementation(projects.core.appInfo)
       implementation(projects.uiKit.imageLoader)
+      implementation(projects.uiKit.resources)
     }
   }
 }
@@ -35,11 +35,7 @@ kotlin {
 android {
   namespace = "com.illiarb.catchup.uikit.core"
 
-  sourceSets["main"].resources.srcDirs("src/commonMain/composeResources")
-
-  buildFeatures {
-    compose = true
-  }
+  buildFeatures.compose = true
 
   dependencies {
     debugImplementation(compose.uiTooling)

@@ -27,12 +27,14 @@ fun ArticleCell(
   onClick: () -> Unit = {},
 ) {
   Column(modifier = modifier.clickable { onClick.invoke() }) {
-    Text(
-      text = caption.uppercase(),
-      style = MaterialTheme.typography.labelLarge,
-      color = MaterialTheme.colorScheme.primaryContainer,
-      modifier = Modifier.fillMaxWidth().padding(top = 8.dp, start = 16.dp, end = 16.dp),
-    )
+    if (caption.isNotEmpty()) {
+      Text(
+        text = caption.uppercase(),
+        style = MaterialTheme.typography.labelLarge,
+        color = MaterialTheme.colorScheme.primaryContainer,
+        modifier = Modifier.fillMaxWidth().padding(top = 8.dp, start = 16.dp, end = 16.dp),
+      )
+    }
 
     Text(
       text = title,

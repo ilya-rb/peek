@@ -1,11 +1,17 @@
 package com.illiarb.catchup.service.network.dto
 
 import com.illiarb.catchup.service.domain.Article
-import com.illiarb.catchup.service.domain.NewsSourceKind
+import com.illiarb.catchup.service.domain.NewsSource
 import com.illiarb.catchup.service.domain.Tag
 import com.illiarb.catchup.service.domain.Url
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+
+@Serializable
+internal class ArticlesDto(
+  @SerialName("articles")
+  val articles: List<ArticleDto>,
+)
 
 @Serializable
 internal data class ArticleDto(
@@ -23,7 +29,7 @@ internal data class ArticleDto(
       title = title,
       description = description?.trimIndent(),
       link = Url(link),
-      source = NewsSourceKind.fromKey(source.key),
+      source = NewsSource.Kind.fromKey(source.key),
       tags = tags.orEmpty().map(::Tag),
     )
   }

@@ -4,12 +4,12 @@ import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import catchup_mobile.ui_kit.core.generated.resources.Res
-import catchup_mobile.ui_kit.core.generated.resources.montserrat_bold
-import catchup_mobile.ui_kit.core.generated.resources.montserrat_light
-import catchup_mobile.ui_kit.core.generated.resources.montserrat_medium
-import catchup_mobile.ui_kit.core.generated.resources.montserrat_normal
-import catchup_mobile.ui_kit.core.generated.resources.montserrat_semibold
+import com.illiarb.catchup.uikit.resources.Res
+import com.illiarb.catchup.uikit.resources.montserrat_bold
+import com.illiarb.catchup.uikit.resources.montserrat_light
+import com.illiarb.catchup.uikit.resources.montserrat_medium
+import com.illiarb.catchup.uikit.resources.montserrat_normal
+import com.illiarb.catchup.uikit.resources.montserrat_semibold
 import org.jetbrains.compose.resources.Font
 
 internal val UiKitTypography: Typography

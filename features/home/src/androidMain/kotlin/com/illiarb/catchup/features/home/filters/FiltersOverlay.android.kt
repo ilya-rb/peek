@@ -6,7 +6,7 @@ import com.illiarb.catchup.uikit.core.overlay.BottomSheetOverlay
 import com.slack.circuit.overlay.OverlayHost
 
 @OptIn(ExperimentalMaterial3Api::class)
-actual suspend fun OverlayHost.showFiltersOverlay(model: FiltersModel): Set<Tag> {
+actual suspend fun OverlayHost.showFiltersOverlay(model: FiltersOverlayModel): Set<Tag> {
   return show(
     BottomSheetOverlay(
       model = model,

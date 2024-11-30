@@ -7,9 +7,10 @@ import androidx.compose.runtime.setValue
 import com.illiarb.catchup.core.arch.OpenUrlScreen
 import com.illiarb.catchup.core.data.Async
 import com.illiarb.catchup.core.data.mapContent
+import com.illiarb.catchup.features.reader.ReaderScreenContract
+import com.illiarb.catchup.service.CatchupService
 import com.illiarb.catchup.service.domain.Article
 import com.illiarb.catchup.service.domain.Tag
-import com.illiarb.catchup.service.network.CatchupService
 import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitContext
@@ -37,19 +38,17 @@ class HomeScreenPresenter(
       initialValue = Async.Loading,
       key1 = catchupService,
     ) {
-      catchupService.collectAvailableSources()
-        .mapContent { sources ->
-          sources.map { source ->
-            HomeScreenContract.Tab(
-              id = source.imageUrl.url,
-              source = source,
-              imageUrl = source.imageUrl.url,
-            )
-          }.toImmutableList()
-        }
-        .collect {
-          value = it
-        }
+      catchupService.collectAvailableSources().mapContent { sources ->
+        sources.map { source ->
+          HomeScreenContract.Tab(
+            id = source.imageUrl.url,
+            source = source,
+            imageUrl = source.imageUrl.url,
+          )
+        }.toImmutableList()
+      }.collect {
+        value = it
+      }
     }
 
     val articles by produceRetainedState<Async<ImmutableList<Article>>>(
@@ -66,7 +65,7 @@ class HomeScreenPresenter(
       if (source == null) {
         value = Async.Loading
       } else {
-        catchupService.collectLatestNewsFrom(source.source)
+        catchupService.collectLatestNewsFrom(source.source.kind)
           .mapContent { it.toImmutableList() }
           .collect { value = it }
       }
@@ -79,7 +78,14 @@ class HomeScreenPresenter(
         is HomeScreenContract.Event.DebugMenuClick -> debugMenuShowing = true
         is HomeScreenContract.Event.FiltersClick -> filtersShowing = true
         is HomeScreenContract.Event.DebugMenuClosed -> debugMenuShowing = false
-        is HomeScreenContract.Event.ArticleClicked -> navigator.goTo(OpenUrlScreen(event.item.link.url))
+        is HomeScreenContract.Event.ArticleClicked -> {
+          if (event.item.description != null) {
+            navigator.goTo(ReaderScreenContract.ReaderScreen(event.item.id))
+          } else {
+            navigator.goTo(OpenUrlScreen(event.item.link.url))
+          }
+        }
+
         is HomeScreenContract.Event.TagsSelected -> {
           filtersShowing = false
           selectedTags = event.tags

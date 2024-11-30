@@ -22,16 +22,16 @@ import com.illiarb.catchup.service.domain.Tag
 import com.slack.circuit.overlay.OverlayHost
 import com.slack.circuit.overlay.OverlayNavigator
 
-expect suspend fun OverlayHost.showFiltersOverlay(model: FiltersModel): Set<Tag>
+expect suspend fun OverlayHost.showFiltersOverlay(model: FiltersOverlayModel): Set<Tag>
 
-data class FiltersModel(
+data class FiltersOverlayModel(
   val tags: Set<Tag>,
   val selectedTags: Set<Tag>,
 )
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun FiltersOverlay(model: FiltersModel, navigator: OverlayNavigator<Set<Tag>>) {
+fun FiltersOverlay(model: FiltersOverlayModel, navigator: OverlayNavigator<Set<Tag>>) {
   val selectedTags by remember { mutableStateOf(model.selectedTags.toMutableSet()) }
 
   Column {

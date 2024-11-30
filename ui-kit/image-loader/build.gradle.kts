@@ -1,7 +1,6 @@
 plugins {
   id("com.illiarb.catchup.android.library")
   id("com.illiarb.catchup.kotlin.multiplatform")
-  id("com.illiarb.catchup.kotlin.inject")
   id("com.illiarb.catchup.compose")
 }
 
@@ -21,6 +20,7 @@ kotlin {
       implementation(libs.coil.core)
       implementation(libs.coil.network)
       implementation(libs.coil.compose)
+      implementation(libs.kotlin.inject.runtime)
     }
   }
 }

@@ -18,7 +18,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,10 +34,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
-import com.illiarb.catchup.core.appinfo.AppEnvironment
 import com.illiarb.catchup.core.data.Async
 import com.illiarb.catchup.features.home.debug.showDebugOverlay
-import com.illiarb.catchup.features.home.filters.Model
+import com.illiarb.catchup.features.home.filters.FiltersOverlayModel
 import com.illiarb.catchup.features.home.filters.showFiltersOverlay
 import com.illiarb.catchup.service.domain.Article
 import com.illiarb.catchup.uikit.core.components.ArticleCell
@@ -75,16 +74,21 @@ class Factory : Ui.Factory {
 @Composable
 internal fun HomeScreen(state: HomeScreenContract.State) {
   ContentWithOverlays {
-    if (state.debugMenuShowing) {
-      OverlayEffect(Unit) {
-        showDebugOverlay()
-        state.eventSink.invoke(HomeScreenContract.Event.DebugMenuClosed)
+    when {
+      state.debugMenuShowing -> {
+        OverlayEffect(Unit) {
+          showDebugOverlay()
+          state.eventSink.invoke(HomeScreenContract.Event.DebugMenuClosed)
+        }
       }
-    }
-    if (state.filtersShowing) {
-      OverlayEffect(Unit) {
-        val selectedTags = showFiltersOverlay(Model(state.articleTags, state.selectedTags))
-        state.eventSink.invoke(HomeScreenContract.Event.TagsSelected(selectedTags))
+
+      state.filtersShowing -> {
+        OverlayEffect(Unit) {
+          val selectedTags = showFiltersOverlay(
+            FiltersOverlayModel(state.articleTags, state.selectedTags)
+          )
+          state.eventSink.invoke(HomeScreenContract.Event.TagsSelected(selectedTags))
+        }
       }
     }
 
@@ -122,17 +126,15 @@ internal fun HomeScreen(state: HomeScreenContract.State) {
               }
             }
 
-            if (AppEnvironment.isDev()) {
-              Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.weight(1f))
 
-              val hasFilters = state.articleTags.isNotEmpty()
-              if (hasFilters) {
-                MenuItem(
-                  modifier = Modifier.padding(top = 16.dp, bottom = 16.dp, end = 8.dp),
-                  icon = Icons.Filled.Settings,
-                ) {
-                  eventSink.invoke(HomeScreenContract.Event.FiltersClick)
-                }
+            val hasFilters = state.articleTags.isNotEmpty()
+            if (hasFilters) {
+              MenuItem(
+                modifier = Modifier.padding(top = 16.dp, bottom = 16.dp, end = 8.dp),
+                icon = Icons.Filled.FilterList,
+              ) {
+                eventSink.invoke(HomeScreenContract.Event.FiltersClick)
               }
             }
           },
@@ -203,6 +205,7 @@ fun TabsContent(
       SelectableCircleAvatar(
         imageUrl = tab.imageUrl,
         selected = index == selectedTabIndex,
+        fallbackText = tab.source.kind.key.uppercase(),
         onClick = { eventSink.invoke(HomeScreenContract.Event.TabClicked(tab.source)) }
       )
     },

@@ -7,9 +7,11 @@ import me.tatarka.inject.annotations.Provides
 
 interface HomeScreenComponent {
 
-  @[Provides IntoSet]
+  @Provides
+  @IntoSet
   fun bindHomeScreenPresenterFactory(factory: HomeScreenPresenter.Factory): Presenter.Factory = factory
 
-  @[Provides IntoSet]
+  @Provides
+  @IntoSet
   fun bindHomeScreenUiFactory(factory: Factory): Ui.Factory = factory
 }

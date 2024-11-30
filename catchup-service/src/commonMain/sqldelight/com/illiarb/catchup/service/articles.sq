@@ -1,0 +1,48 @@
+import kotlin.collections.List;
+import kotlinx.datetime.Instant;
+import com.illiarb.catchup.service.domain.Tag;
+import com.illiarb.catchup.service.domain.NewsSource;
+import com.illiarb.catchup.service.domain.Url;
+
+CREATE TABLE IF NOT EXISTS `articleEntity`(
+    `id` TEXT PRIMARY KEY NOT NULL,
+    `title` TEXT NOT NULL,
+    `description` TEXT,
+    `link` TEXT AS Url NOT NULL,
+    `tags` TEXT AS List<Tag>,
+    `source` TEXT AS NewsSource.Kind NOT NULL,
+    `created_at` INTEGER AS Instant NOT NULL
+);
+
+articlesBySource:
+SELECT * FROM articleEntity WHERE source = :source;
+
+articleById:
+SELECT * FROM articleEntity WHERE id = :id LIMIT 1;
+
+deleteAll:
+DELETE FROM articleEntity;
+
+insert:
+INSERT INTO articleEntity (
+    `id`,
+    `title`,
+    `description`,
+    `link`,
+    `tags`,
+    `source`,
+    `created_at`
+) VALUES (
+    :id,
+    :title,
+    :description,
+    :link,
+    :tags,
+    :source,
+    :created_at
+);
+
+
+
+
+

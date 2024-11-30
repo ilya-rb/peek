@@ -1,8 +1,11 @@
+import com.illiarb.catchup.gradle.addKspDependencyForAllTargets
+
 plugins {
   id("com.illiarb.catchup.android.application")
   id("com.illiarb.catchup.kotlin.multiplatform")
-  id("com.illiarb.catchup.kotlin.inject")
   id("com.illiarb.catchup.compose")
+
+  alias(libs.plugins.kotlinKsp)
 }
 
 kotlin {
@@ -39,6 +42,7 @@ kotlin {
       implementation(libs.coil.core)
       implementation(libs.coil.compose)
       implementation(libs.coil.compose)
+      implementation(libs.kotlin.inject.runtime)
 
       implementation(projects.catchupService)
       implementation(projects.core.appInfo)
@@ -87,4 +91,13 @@ android {
     debugImplementation(compose.uiTooling)
   }
 }
+
+ksp {
+  arg("me.tatarka.inject.dumpGraph", "true")
+  arg("me.tatarka.inject.generateCompanionExtensions", "true")
+}
+
+addKspDependencyForAllTargets(libs.kotlin.inject.compiler)
+
+
 

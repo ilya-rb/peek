@@ -3,14 +3,25 @@ package com.illiarb.catchup.features.reader
 import androidx.compose.runtime.Stable
 import com.illiarb.catchup.core.arch.CommonParcelable
 import com.illiarb.catchup.core.arch.CommonParcelize
+import com.illiarb.catchup.core.data.Async
+import com.illiarb.catchup.service.domain.Article
+import com.illiarb.catchup.service.domain.Url
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.screen.Screen
 
 interface ReaderScreenContract {
 
   @CommonParcelize
-  object ReaderScreen : Screen, CommonParcelable
+  data class ReaderScreen(val articleId: String) : Screen, CommonParcelable
 
   @Stable
-  data object State : CircuitUiState
+  data class State(
+    val article: Async<Article>,
+    val eventSink: (Event) -> Unit,
+  ) : CircuitUiState
+
+  sealed interface Event {
+    data object NavigationIconClicked : Event
+    data class LinkClicked(val url: Url): Event
+  }
 }

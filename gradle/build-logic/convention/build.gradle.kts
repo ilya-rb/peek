@@ -21,11 +21,6 @@ gradlePlugin {
       id = "com.illiarb.catchup.kotlin.multiplatform"
       implementationClass = "com.illiarb.catchup.gradle.KotlinMultiplatform"
     }
-    
-    register("kotlinInject") {
-      id = "com.illiarb.catchup.kotlin.inject"
-      implementationClass = "com.illiarb.catchup.gradle.KotlinInject"
-    }
 
     register("androidApplication") {
       id = "com.illiarb.catchup.android.application"

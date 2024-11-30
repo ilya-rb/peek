@@ -32,7 +32,7 @@ class MainActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
 
     val appComponent = applicationContext.appComponent()
-    val activityComponent = AndroidUiComponent::class.create(appComponent, activity = this)
+    val activityComponent = AndroidUiComponent.create(appComponent, activity = this)
 
     setContent {
       val backStack = rememberSaveableBackStack(root = HomeScreenContract.HomeScreen)
