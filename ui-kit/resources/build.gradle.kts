@@ -26,5 +26,6 @@ android {
 compose.resources {
   publicResClass = true
   packageOfResClass = "com.illiarb.catchup.uikit.resources"
+  generateResClass = always
 }
 

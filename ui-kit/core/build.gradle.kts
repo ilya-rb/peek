@@ -18,7 +18,6 @@ kotlin {
       implementation(libs.circuit.core)
       implementation(libs.circuit.overlay)
 
-      implementation(libs.coil.core)
       implementation(libs.coil.network)
       implementation(libs.coil.compose)
       implementation(libs.shimmer)

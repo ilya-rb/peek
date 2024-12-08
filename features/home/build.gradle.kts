@@ -27,6 +27,8 @@ kotlin {
 
       implementation(projects.uiKit.core)
       implementation(projects.uiKit.imageLoader)
+      implementation(projects.uiKit.resources)
+
       implementation(projects.core.arch)
       implementation(projects.core.coroutines)
       implementation(projects.core.logging)

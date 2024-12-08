@@ -79,7 +79,7 @@ class HomeScreenPresenter(
         is HomeScreenContract.Event.FiltersClick -> filtersShowing = true
         is HomeScreenContract.Event.DebugMenuClosed -> debugMenuShowing = false
         is HomeScreenContract.Event.ArticleClicked -> {
-          if (event.item.description != null) {
+          if (event.item.content != null) {
             navigator.goTo(ReaderScreenContract.ReaderScreen(event.item.id))
           } else {
             navigator.goTo(OpenUrlScreen(event.item.link.url))

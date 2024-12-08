@@ -41,11 +41,17 @@ import com.illiarb.catchup.features.home.filters.showFiltersOverlay
 import com.illiarb.catchup.service.domain.Article
 import com.illiarb.catchup.uikit.core.components.ArticleCell
 import com.illiarb.catchup.uikit.core.components.ArticleLoadingCell
+import com.illiarb.catchup.uikit.core.components.ErrorStateKind
+import com.illiarb.catchup.uikit.core.components.FullscreenErrorState
 import com.illiarb.catchup.uikit.core.components.FullscreenState
 import com.illiarb.catchup.uikit.core.components.HorizontalList
 import com.illiarb.catchup.uikit.core.components.LocalLottieAnimation
+import com.illiarb.catchup.uikit.core.components.LottieAnimationType
 import com.illiarb.catchup.uikit.core.components.SelectableCircleAvatar
 import com.illiarb.catchup.uikit.core.components.SelectableCircleAvatarLoading
+import com.illiarb.catchup.uikit.resources.Res
+import com.illiarb.catchup.uikit.resources.home_articles_empty_action
+import com.illiarb.catchup.uikit.resources.home_articles_empty_title
 import com.slack.circuit.overlay.ContentWithOverlays
 import com.slack.circuit.overlay.OverlayEffect
 import com.slack.circuit.runtime.CircuitContext
@@ -54,6 +60,7 @@ import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import kotlinx.collections.immutable.ImmutableList
 import me.tatarka.inject.annotations.Inject
+import org.jetbrains.compose.resources.stringResource
 
 @Inject
 class Factory : Ui.Factory {
@@ -148,7 +155,7 @@ internal fun HomeScreen(state: HomeScreenContract.State) {
       ) { targetState ->
         when {
           targetState is Async.Error || state.tabs is Async.Error -> {
-            ArticlesError {
+            FullscreenErrorState(ErrorStateKind.UNKNOWN) {
               eventSink.invoke(HomeScreenContract.Event.ErrorRetryClick)
             }
           }
@@ -234,8 +241,8 @@ fun ArticlesEmpty(
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     FullscreenState(
-      title = "Articles will appear here",
-      buttonText = "Refresh",
+      title = stringResource(Res.string.home_articles_empty_title),
+      buttonText = stringResource(Res.string.home_articles_empty_action),
       onButtonClick = onRefreshClick,
       modifier = Modifier
         .fillMaxWidth()
@@ -245,7 +252,7 @@ fun ArticlesEmpty(
     ) {
       LocalLottieAnimation(
         modifier = Modifier.size(200.dp),
-        fileName = "anim_empty",
+        animationType = LottieAnimationType.ARTICLES_EMPTY,
       )
     }
   }
@@ -271,30 +278,6 @@ fun ArticlesContent(
         )
       }
     )
-  }
-}
-
-@Composable
-fun ArticlesError(modifier: Modifier = Modifier, onRetryClick: () -> Unit) {
-  Column(
-    modifier = modifier.fillMaxSize(),
-    horizontalAlignment = Alignment.CenterHorizontally,
-  ) {
-    FullscreenState(
-      title = "Something went wrong",
-      buttonText = "Try again",
-      onButtonClick = onRetryClick,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(16.dp)
-        .clip(shape = RoundedCornerShape(size = 24.dp))
-        .background(MaterialTheme.colorScheme.surfaceContainer),
-    ) {
-      LocalLottieAnimation(
-        fileName = "anim_error",
-        modifier = Modifier.size(200.dp),
-      )
-    }
   }
 }
 

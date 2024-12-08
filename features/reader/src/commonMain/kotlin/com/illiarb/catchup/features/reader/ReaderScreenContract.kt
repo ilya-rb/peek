@@ -22,6 +22,7 @@ interface ReaderScreenContract {
 
   sealed interface Event {
     data object NavigationIconClicked : Event
-    data class LinkClicked(val url: Url): Event
+    data class LinkClicked(val url: Url) : Event
+    data object ErrorRetryClicked : Event
   }
 }

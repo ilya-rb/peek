@@ -17,7 +17,6 @@ kotlin {
       implementation(projects.core.appInfo)
       implementation(projects.core.logging)
 
-      implementation(libs.coil.core)
       implementation(libs.coil.network)
       implementation(libs.coil.compose)
       implementation(libs.kotlin.inject.runtime)

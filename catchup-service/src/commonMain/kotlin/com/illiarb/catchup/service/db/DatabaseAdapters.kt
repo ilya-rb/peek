@@ -5,6 +5,9 @@ import com.illiarb.catchup.service.domain.NewsSource
 import com.illiarb.catchup.service.domain.Tag
 import com.illiarb.catchup.service.domain.Url
 import kotlinx.datetime.Instant
+import kotlin.time.Duration
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 internal object DatabaseAdapters {
 
@@ -51,6 +54,17 @@ internal object DatabaseAdapters {
 
       override fun encode(value: Url): String {
         return value.url
+      }
+    }
+
+  val durationAdapter: ColumnAdapter<Duration, Long>
+    get() = object : ColumnAdapter<Duration, Long> {
+      override fun decode(databaseValue: Long): Duration {
+        return databaseValue.toDuration(DurationUnit.SECONDS)
+      }
+
+      override fun encode(value: Duration): Long {
+        return value.inWholeSeconds
       }
     }
 }
