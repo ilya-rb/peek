@@ -1,0 +1,4 @@
+<resources>
+    <string name="filters_action_save">Save</string>
+    <string name="filters_action_cancel">Cancel</string>
+</resources>

@@ -159,7 +159,7 @@ private fun ArticleContent(
   ) {
     Text(
       text = article.title,
-      style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+      style = MaterialTheme.typography.headlineMedium,
     )
 
     Text(
@@ -167,6 +167,7 @@ private fun ArticleContent(
       maxLines = 1,
       overflow = TextOverflow.Ellipsis,
       style = MaterialTheme.typography.bodyMedium,
+      color = MaterialTheme.colorScheme.onSurface,
       textDecoration = TextDecoration.Underline,
       modifier = Modifier
         .padding(top = 8.dp)
@@ -180,6 +181,7 @@ private fun ArticleContent(
       Text(
         text = "Wed, Jan 18",
         style = MaterialTheme.typography.labelMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
       )
 
       Spacer(Modifier.weight(1f))
@@ -193,13 +195,18 @@ private fun ArticleContent(
         modifier = Modifier.padding(start = 8.dp),
         duration = content.estimatedReadingTime,
         style = MaterialTheme.typography.labelMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
       )
     }
 
     HtmlView(
       content = content.text,
       style = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
-      modifier = Modifier.padding(top = 32.dp),
+      modifier = Modifier
+        .padding(vertical = 16.dp)
+        .clip(RoundedCornerShape(16.dp))
+        .background(MaterialTheme.colorScheme.surfaceContainer)
+        .padding(16.dp),
     )
   }
 }

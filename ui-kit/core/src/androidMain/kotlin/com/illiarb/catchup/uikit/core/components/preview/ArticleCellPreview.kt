@@ -1,16 +1,12 @@
 package com.illiarb.catchup.uikit.core.components.preview
 
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.illiarb.catchup.uikit.core.components.ArticleCell
 import com.illiarb.catchup.uikit.core.components.ArticleLoadingCell
 import com.illiarb.catchup.uikit.core.theme.UiKitTheme
+import kotlin.random.Random
 
 @Composable
 fun ArticleCellPreview(darkTheme: Boolean) {
@@ -20,14 +16,13 @@ fun ArticleCellPreview(darkTheme: Boolean) {
         count = 3,
         key = { index -> index },
         itemContent = {
+          val length = Random.nextInt(1, 3)
+          val title = "Title Title Title Title Title Title ".repeat(length)
+
           ArticleCell(
-            title = "Title text Title text Title text Title text Title text Title text Title text",
-            caption = "Technology",
-          )
-          HorizontalDivider(
-            thickness = 1.dp,
-            color = MaterialTheme.colorScheme.surfaceContainerHighest,
-            modifier = Modifier.padding(vertical = 16.dp, horizontal = 16.dp),
+            title = title,
+            caption = "Caption",
+            author = "Author",
           )
         }
       )

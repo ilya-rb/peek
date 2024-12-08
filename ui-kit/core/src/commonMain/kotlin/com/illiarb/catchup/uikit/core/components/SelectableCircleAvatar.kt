@@ -16,7 +16,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -24,20 +23,11 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.TextPainter
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.illiarb.catchup.uikit.core.painter.TextWithBackgroundPainter
 import com.illiarb.catchup.uikit.imageloader.UrlImage
-
-private val selectedAvatarColors = listOf(
-  Color(0xFFFEDA75),
-  Color(0xFFFA7E1E),
-  Color(0xFFD62976),
-  Color(0xFF962FBF),
-  Color(0xFF4F5BD5),
-)
 
 @Composable
 fun SelectableCircleAvatar(
@@ -47,6 +37,11 @@ fun SelectableCircleAvatar(
   selected: Boolean,
   onClick: () -> Unit,
 ) {
+  val colors = listOf(
+    MaterialTheme.colorScheme.primary,
+    MaterialTheme.colorScheme.primaryContainer,
+  )
+
   val alpha: Float by animateFloatAsState(if (selected) 1f else 0.5f)
   val scale: Float by animateFloatAsState(if (selected) 1f else 0.8f)
   val borderWidth = 2.dp
@@ -76,7 +71,7 @@ fun SelectableCircleAvatar(
       .graphicsLayer(alpha = alpha, scaleX = scale, scaleY = scale)
       .let {
         if (selected) {
-          it.selectedBorder(strokeWidth = borderWidth, angle = angle)
+          it.selectedBorder(colors, borderWidth, angle)
         } else {
           it
         }
@@ -86,8 +81,12 @@ fun SelectableCircleAvatar(
   )
 }
 
-private fun Modifier.selectedBorder(strokeWidth: Dp, angle: Float) = drawWithCache {
-  val brush = Brush.sweepGradient(selectedAvatarColors)
+private fun Modifier.selectedBorder(
+  colors: List<Color>,
+  strokeWidth: Dp,
+  angle: Float,
+) = drawWithCache {
+  val brush = Brush.sweepGradient(colors)
   val radius = size.width / 2f
   val strokeWidthPx = strokeWidth.toPx()
 

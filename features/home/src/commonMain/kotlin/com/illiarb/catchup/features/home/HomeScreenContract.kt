@@ -4,6 +4,7 @@ import androidx.compose.runtime.Stable
 import com.illiarb.catchup.core.arch.CommonParcelable
 import com.illiarb.catchup.core.arch.CommonParcelize
 import com.illiarb.catchup.core.data.Async
+import com.illiarb.catchup.features.home.filters.FiltersOverlayResult
 import com.illiarb.catchup.service.domain.Article
 import com.illiarb.catchup.service.domain.NewsSource
 import com.illiarb.catchup.service.domain.Tag
@@ -70,7 +71,7 @@ interface HomeScreenContract {
     data object ErrorRetryClick : Event
     data class TabClicked(val source: NewsSource) : Event
     data class ArticleClicked(val item: Article) : Event
-    data class TagsSelected(val tags: Set<Tag>) : Event
+    data class FiltersResult(val result: FiltersOverlayResult) : Event
   }
 
   data class Tab(

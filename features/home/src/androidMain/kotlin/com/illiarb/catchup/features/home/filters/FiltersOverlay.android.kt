@@ -1,17 +1,16 @@
 package com.illiarb.catchup.features.home.filters
 
 import androidx.compose.material3.ExperimentalMaterial3Api
-import com.illiarb.catchup.service.domain.Tag
 import com.illiarb.catchup.uikit.core.overlay.BottomSheetOverlay
 import com.slack.circuit.overlay.OverlayHost
 
 @OptIn(ExperimentalMaterial3Api::class)
-actual suspend fun OverlayHost.showFiltersOverlay(model: FiltersOverlayModel): Set<Tag> {
+actual suspend fun OverlayHost.showFiltersOverlay(model: FiltersOverlayModel): FiltersOverlayResult {
   return show(
-    BottomSheetOverlay(
+    BottomSheetOverlay<FiltersOverlayModel, FiltersOverlayResult>(
       model = model,
       skipPartiallyExpandedState = true,
-      onDismiss = { model.selectedTags },
+      onDismiss = { FiltersOverlayResult.Cancel },
     ) { _, navigator -> FiltersOverlay(model, navigator) }
   )
 }

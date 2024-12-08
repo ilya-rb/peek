@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -91,10 +92,10 @@ internal fun HomeScreen(state: HomeScreenContract.State) {
 
       state.filtersShowing -> {
         OverlayEffect(Unit) {
-          val selectedTags = showFiltersOverlay(
+          val result = showFiltersOverlay(
             FiltersOverlayModel(state.articleTags, state.selectedTags)
           )
-          state.eventSink.invoke(HomeScreenContract.Event.TagsSelected(selectedTags))
+          state.eventSink.invoke(HomeScreenContract.Event.FiltersResult(result))
         }
       }
     }
@@ -264,17 +265,22 @@ fun ArticlesContent(
   articles: List<Article>,
   eventSink: (HomeScreenContract.Event) -> Unit,
 ) {
-  LazyColumn(modifier = modifier) {
+  LazyColumn(modifier) {
     items(
       items = articles,
       key = { article -> article.id },
       itemContent = { article ->
         ArticleCell(
           title = article.title,
+          author = article.authorName,
           caption = article.tags.firstOrNull()?.value.orEmpty(),
           onClick = {
             eventSink.invoke(HomeScreenContract.Event.ArticleClicked(article))
           },
+          modifier = Modifier
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.surfaceContainer),
         )
       }
     )

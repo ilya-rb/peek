@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import com.illiarb.catchup.core.arch.OpenUrlScreen
 import com.illiarb.catchup.core.data.Async
 import com.illiarb.catchup.core.data.mapContent
+import com.illiarb.catchup.features.home.filters.FiltersOverlayResult
 import com.illiarb.catchup.features.reader.ReaderScreenContract
 import com.illiarb.catchup.service.CatchupService
 import com.illiarb.catchup.service.domain.Article
@@ -86,9 +87,12 @@ class HomeScreenPresenter(
           }
         }
 
-        is HomeScreenContract.Event.TagsSelected -> {
+        is HomeScreenContract.Event.FiltersResult -> {
           filtersShowing = false
-          selectedTags = event.tags
+
+          if (event.result is FiltersOverlayResult.Saved) {
+            selectedTags = event.result.tags
+          }
         }
 
         is HomeScreenContract.Event.TabClicked -> {

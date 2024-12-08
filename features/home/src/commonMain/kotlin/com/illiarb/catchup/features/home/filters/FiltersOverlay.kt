@@ -4,11 +4,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,7 +25,12 @@ import com.illiarb.catchup.service.domain.Tag
 import com.slack.circuit.overlay.OverlayHost
 import com.slack.circuit.overlay.OverlayNavigator
 
-expect suspend fun OverlayHost.showFiltersOverlay(model: FiltersOverlayModel): Set<Tag>
+expect suspend fun OverlayHost.showFiltersOverlay(model: FiltersOverlayModel): FiltersOverlayResult
+
+sealed interface FiltersOverlayResult {
+  data class Saved(val tags: Set<Tag>) : FiltersOverlayResult
+  data object Cancel : FiltersOverlayResult
+}
 
 data class FiltersOverlayModel(
   val tags: Set<Tag>,
@@ -31,15 +39,20 @@ data class FiltersOverlayModel(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun FiltersOverlay(model: FiltersOverlayModel, navigator: OverlayNavigator<Set<Tag>>) {
+fun FiltersOverlay(
+  model: FiltersOverlayModel,
+  navigator: OverlayNavigator<FiltersOverlayResult>,
+) {
   val selectedTags by remember { mutableStateOf(model.selectedTags.toMutableSet()) }
 
   Column {
     Text(
-      modifier = Modifier.padding(horizontal = 16.dp),
+      modifier = Modifier.padding(start = 16.dp, bottom = 16.dp),
       text = "Tags",
-      style = MaterialTheme.typography.headlineMedium,
+      style = MaterialTheme.typography.headlineSmall,
     )
+
+    HorizontalDivider()
 
     FlowRow(
       modifier = Modifier.fillMaxWidth().padding(16.dp),
@@ -63,13 +76,23 @@ fun FiltersOverlay(model: FiltersOverlayModel, navigator: OverlayNavigator<Set<T
       }
     }
 
-    Button(
-      onClick = { navigator.finish(selectedTags) },
-      modifier = Modifier.fillMaxWidth()
-        .navigationBarsPadding()
-        .padding(horizontal = 16.dp),
-    ) {
-      Text(text = "Confirm")
+    HorizontalDivider()
+
+    Row(Modifier.navigationBarsPadding().padding(top = 16.dp)) {
+      Button(
+        onClick = { navigator.finish(FiltersOverlayResult.Saved(selectedTags)) },
+        modifier = Modifier.padding(start = 16.dp),
+      ) {
+        Text(text = "Save")
+      }
+
+      Button(
+        onClick = { navigator.finish(FiltersOverlayResult.Cancel) },
+        modifier = Modifier.padding(start = 8.dp),
+        colors = ButtonDefaults.outlinedButtonColors(),
+      ) {
+        Text(text = "Cancel")
+      }
     }
   }
 }

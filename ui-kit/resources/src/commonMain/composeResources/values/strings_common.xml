@@ -1,4 +1,5 @@
 <resources>
     <string name="common_error_default_title">Something went wrong</string>
     <string name="common_error_default_action">Try again</string>
+    <string name="author_text">By %1$s</string>
 </resources>

@@ -5,24 +5,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextOverflow
 import com.illiarb.catchup.uikit.resources.Res
-import com.illiarb.catchup.uikit.resources.duration_reading_time
-import org.jetbrains.compose.resources.pluralStringResource
-import kotlin.time.Duration
+import com.illiarb.catchup.uikit.resources.author_text
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun ReadingTimeText(
+fun AuthorText(
   modifier: Modifier = Modifier,
+  author: String,
   style: TextStyle,
   color: Color,
-  duration: Duration,
 ) {
-  val minutesToRead = duration.inWholeMinutes.coerceAtLeast(minimumValue = 0L).toInt()
-
   Text(
     modifier = modifier,
-    text = pluralStringResource(Res.plurals.duration_reading_time, minutesToRead, minutesToRead),
+    text = stringResource(Res.string.author_text, author),
     style = style,
     color = color,
+    maxLines = 1,
+    overflow = TextOverflow.Ellipsis
   )
 }
