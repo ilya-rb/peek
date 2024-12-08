@@ -41,6 +41,7 @@ import com.illiarb.catchup.core.data.Async
 import com.illiarb.catchup.features.home.filters.FiltersOverlayModel
 import com.illiarb.catchup.features.home.filters.showFiltersOverlay
 import com.illiarb.catchup.service.domain.Article
+import com.illiarb.catchup.service.domain.NewsSource
 import com.illiarb.catchup.uikit.core.components.ArticleCell
 import com.illiarb.catchup.uikit.core.components.ArticleLoadingCell
 import com.illiarb.catchup.uikit.core.components.ErrorStateKind
@@ -52,8 +53,14 @@ import com.illiarb.catchup.uikit.core.components.LottieAnimationType
 import com.illiarb.catchup.uikit.core.components.SelectableCircleAvatar
 import com.illiarb.catchup.uikit.core.components.SelectableCircleAvatarLoading
 import com.illiarb.catchup.uikit.resources.Res
+import com.illiarb.catchup.uikit.resources.acsb_action_filter
+import com.illiarb.catchup.uikit.resources.acsb_action_saved
+import com.illiarb.catchup.uikit.resources.acsb_action_settings
 import com.illiarb.catchup.uikit.resources.home_articles_empty_action
 import com.illiarb.catchup.uikit.resources.home_articles_empty_title
+import com.illiarb.catchup.uikit.resources.service_dou_name
+import com.illiarb.catchup.uikit.resources.service_hacker_news_name
+import com.illiarb.catchup.uikit.resources.service_irish_times_name
 import com.slack.circuit.overlay.ContentWithOverlays
 import com.slack.circuit.overlay.OverlayEffect
 import com.slack.circuit.runtime.CircuitContext
@@ -112,7 +119,7 @@ internal fun HomeScreen(state: HomeScreenContract.State) {
               is Async.Content -> {
                 val selected = content.content[state.selectedTabIndex]
                 Text(
-                  text = selected.id,
+                  text = selected.serviceName(),
                   style = MaterialTheme.typography.titleLarge,
                 )
               }
@@ -121,14 +128,14 @@ internal fun HomeScreen(state: HomeScreenContract.State) {
           actions = {
             Icon(
               imageVector = Icons.Filled.Settings,
-              contentDescription = "Settings",
+              contentDescription = stringResource(Res.string.acsb_action_settings),
               modifier = Modifier.padding(end = 16.dp).clickable {
                 eventSink.invoke(HomeScreenContract.Event.SettingsClicked)
               },
             )
             Icon(
               imageVector = Icons.Filled.Bookmark,
-              contentDescription = "Saved",
+              contentDescription = stringResource(Res.string.acsb_action_saved),
               modifier = Modifier.padding(end = 16.dp).clickable {
                 eventSink.invoke(HomeScreenContract.Event.SavedClicked)
               }
@@ -170,7 +177,10 @@ internal fun HomeScreen(state: HomeScreenContract.State) {
                   eventSink.invoke(HomeScreenContract.Event.FiltersClicked)
                 }
               ) {
-                Icon(Icons.Filled.FilterList, contentDescription = "Filter")
+                Icon(
+                  imageVector = Icons.Filled.FilterList,
+                  contentDescription = stringResource(Res.string.acsb_action_filter),
+                )
               }
             }
           }
@@ -314,5 +324,15 @@ fun ArticlesContent(
         )
       }
     )
+  }
+}
+
+@Composable
+private fun HomeScreenContract.Tab.serviceName(): String {
+  return when (source.kind) {
+    NewsSource.Kind.IrishTimes -> stringResource(Res.string.service_irish_times_name)
+    NewsSource.Kind.HackerNews -> stringResource(Res.string.service_hacker_news_name)
+    NewsSource.Kind.Dou -> stringResource(Res.string.service_dou_name)
+    NewsSource.Kind.Unknown -> ""
   }
 }

@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -18,8 +17,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.SyncLock
-import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -36,12 +33,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -52,16 +46,17 @@ import com.illiarb.catchup.service.domain.Url
 import com.illiarb.catchup.uikit.core.components.ArticleReaderLoading
 import com.illiarb.catchup.uikit.core.components.ErrorStateKind
 import com.illiarb.catchup.uikit.core.components.FullscreenErrorState
-import com.illiarb.catchup.uikit.core.components.FullscreenState
 import com.illiarb.catchup.uikit.core.components.HtmlView
-import com.illiarb.catchup.uikit.core.components.LocalLottieAnimation
 import com.illiarb.catchup.uikit.core.configuration.getScreenWidth
 import com.illiarb.catchup.uikit.core.text.ReadingTimeText
+import com.illiarb.catchup.uikit.resources.Res
+import com.illiarb.catchup.uikit.resources.acsb_icon_reader_reading_time
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import me.tatarka.inject.annotations.Inject
+import org.jetbrains.compose.resources.stringResource
 
 @Inject
 class Factory : Ui.Factory {
@@ -189,7 +184,7 @@ private fun ArticleContent(
       Icon(
         modifier = Modifier.size(16.dp),
         imageVector = Icons.Outlined.Timer,
-        contentDescription = "Estimated reading time"
+        contentDescription = stringResource(Res.string.acsb_icon_reader_reading_time)
       )
       ReadingTimeText(
         modifier = Modifier.padding(start = 8.dp),
