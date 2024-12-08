@@ -9,7 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import catchup_mobile.ui_kit.core.generated.resources.Res
+import com.illiarb.catchup.uikit.resources.Res
 import io.github.alexzhirkevich.compottie.LottieCompositionSpec
 import io.github.alexzhirkevich.compottie.animateLottieCompositionAsState
 import io.github.alexzhirkevich.compottie.rememberLottieComposition
@@ -19,13 +19,16 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-fun LocalLottieAnimation(modifier: Modifier = Modifier, fileName: String) {
+fun LocalLottieAnimation(
+  modifier: Modifier = Modifier,
+  animationType: LottieAnimationType,
+) {
   val scope = rememberCoroutineScope()
   var imageJson by remember { mutableStateOf<String?>(null) }
 
   LaunchedEffect(Unit) {
     scope.launch {
-      imageJson = Res.readBytes("files/${fileName}.json").decodeToString()
+      imageJson = Res.readBytes(path = "files/${animationType.fileName}.json").decodeToString()
     }
   }
 
@@ -47,4 +50,9 @@ fun LocalLottieAnimation(modifier: Modifier = Modifier, fileName: String) {
       ),
     )
   }
+}
+
+enum class LottieAnimationType(val fileName: String) {
+  ERROR("anim_error"),
+  ARTICLES_EMPTY("anim_empty")
 }

@@ -12,6 +12,7 @@ kotlin {
       implementation(compose.runtime)
       implementation(compose.foundation)
       implementation(compose.material3)
+      implementation(compose.materialIconsExtended)
       implementation(compose.ui)
       implementation(compose.components.resources)
 
@@ -19,6 +20,8 @@ kotlin {
       implementation(libs.kotlin.inject.runtime)
 
       implementation(projects.uiKit.core)
+      implementation(projects.uiKit.resources)
+
       implementation(projects.core.arch)
       implementation(projects.core.coroutines)
       implementation(projects.core.logging)

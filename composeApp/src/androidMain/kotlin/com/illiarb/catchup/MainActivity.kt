@@ -23,6 +23,7 @@ import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuitx.android.AndroidScreen
 import com.slack.circuitx.android.rememberAndroidScreenAwareNavigator
+import com.slack.circuitx.gesturenavigation.GestureNavigationDecoration
 
 class MainActivity : ComponentActivity() {
 
@@ -44,10 +45,13 @@ class MainActivity : ComponentActivity() {
       setSingletonImageLoaderFactory { appComponent.imageLoader }
 
       CircuitCompositionLocals(activityComponent.circuit) {
-        UiKitTheme(useDynamicColors = false) {
+        UiKitTheme(useDynamicColors = true) {
           NavigableCircuitContent(
             navigator = navigator,
             backStack = backStack,
+            decoration = GestureNavigationDecoration {
+              navigator.pop()
+            },
           )
         }
       }

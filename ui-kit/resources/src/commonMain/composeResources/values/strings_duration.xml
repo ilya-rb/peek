@@ -1,0 +1,6 @@
+<resources>
+    <plurals name="duration_reading_time">
+        <item quantity="zero">Less than a minute read</item>
+        <item quantity="other">%1$d minute read</item>
+    </plurals>
+</resources>
