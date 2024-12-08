@@ -5,10 +5,10 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -18,25 +18,26 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import com.illiarb.catchup.core.data.Async
-import com.illiarb.catchup.features.home.debug.showDebugOverlay
 import com.illiarb.catchup.features.home.filters.FiltersOverlayModel
 import com.illiarb.catchup.features.home.filters.showFiltersOverlay
 import com.illiarb.catchup.service.domain.Article
@@ -83,13 +84,6 @@ class Factory : Ui.Factory {
 internal fun HomeScreen(state: HomeScreenContract.State) {
   ContentWithOverlays {
     when {
-      state.debugMenuShowing -> {
-        OverlayEffect(Unit) {
-          showDebugOverlay()
-          state.eventSink.invoke(HomeScreenContract.Event.DebugMenuClosed)
-        }
-      }
-
       state.filtersShowing -> {
         OverlayEffect(Unit) {
           val result = showFiltersOverlay(
@@ -101,16 +95,50 @@ internal fun HomeScreen(state: HomeScreenContract.State) {
     }
 
     val eventSink = state.eventSink
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
+    val bottomBarBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior()
+    val topBarBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
-      modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-      contentWindowInsets = WindowInsets(0, 0, 0, 0),
+      modifier = Modifier
+        .nestedScroll(bottomBarBehavior.nestedScrollConnection)
+        .nestedScroll(topBarBehavior.nestedScrollConnection),
       topBar = {
         TopAppBar(
-          scrollBehavior = scrollBehavior,
-          colors = TopAppBarDefaults.topAppBarColors(),
-          title = {},
+          scrollBehavior = topBarBehavior,
+          title = {
+            when (val content = state.tabs) {
+              is Async.Loading -> Unit
+              is Async.Error -> Unit
+              is Async.Content -> {
+                val selected = content.content[state.selectedTabIndex]
+                Text(
+                  text = selected.id,
+                  style = MaterialTheme.typography.titleLarge,
+                )
+              }
+            }
+          },
+          actions = {
+            Icon(
+              imageVector = Icons.Filled.Settings,
+              contentDescription = "Settings",
+              modifier = Modifier.padding(end = 16.dp).clickable {
+                eventSink.invoke(HomeScreenContract.Event.SettingsClicked)
+              },
+            )
+            Icon(
+              imageVector = Icons.Filled.Bookmark,
+              contentDescription = "Saved",
+              modifier = Modifier.padding(end = 16.dp).clickable {
+                eventSink.invoke(HomeScreenContract.Event.SavedClicked)
+              }
+            )
+          },
+        )
+      },
+      bottomBar = {
+        BottomAppBar(
+          scrollBehavior = bottomBarBehavior,
           actions = {
             AnimatedContent(
               targetState = state.tabs,
@@ -118,12 +146,12 @@ internal fun HomeScreen(state: HomeScreenContract.State) {
             ) { targetState ->
               when (targetState) {
                 is Async.Loading -> {
-                  TabsLoading(Modifier.padding(start = 16.dp, bottom = 16.dp))
+                  TabsLoading(Modifier.padding(start = 16.dp))
                 }
 
                 is Async.Content -> {
                   TabsContent(
-                    modifier = Modifier.padding(start = 16.dp, bottom = 16.dp),
+                    modifier = Modifier.padding(start = 16.dp),
                     tabs = targetState.content,
                     selectedTabIndex = state.selectedTabIndex,
                     eventSink = eventSink,
@@ -133,45 +161,45 @@ internal fun HomeScreen(state: HomeScreenContract.State) {
                 else -> Unit
               }
             }
-
-            Spacer(modifier = Modifier.weight(1f))
-
+          },
+          floatingActionButton = {
             val hasFilters = state.articleTags.isNotEmpty()
             if (hasFilters) {
-              MenuItem(
-                modifier = Modifier.padding(top = 16.dp, bottom = 16.dp, end = 8.dp),
-                icon = Icons.Filled.FilterList,
+              FloatingActionButton(
+                onClick = {
+                  eventSink.invoke(HomeScreenContract.Event.FiltersClicked)
+                }
               ) {
-                eventSink.invoke(HomeScreenContract.Event.FiltersClick)
+                Icon(Icons.Filled.FilterList, contentDescription = "Filter")
               }
             }
-          },
+          }
         )
-      }
+      },
     ) { innerPadding ->
       AnimatedContent(
-        modifier = Modifier.padding(innerPadding),
         targetState = state.content,
-        transitionSpec = { fadeIn().togetherWith(fadeOut()) }
+        transitionSpec = { fadeIn().togetherWith(fadeOut()) },
       ) { targetState ->
         when {
           targetState is Async.Error || state.tabs is Async.Error -> {
-            FullscreenErrorState(ErrorStateKind.UNKNOWN) {
-              eventSink.invoke(HomeScreenContract.Event.ErrorRetryClick)
+            FullscreenErrorState(Modifier.padding(innerPadding), ErrorStateKind.UNKNOWN) {
+              eventSink.invoke(HomeScreenContract.Event.ErrorRetryClicked)
             }
           }
 
           targetState is Async.Loading -> {
-            ArticlesLoading()
+            ArticlesLoading(contentPadding = innerPadding)
           }
 
           targetState is Async.Content -> {
             if (targetState.content.isEmpty()) {
-              ArticlesEmpty {
-                eventSink.invoke(HomeScreenContract.Event.ErrorRetryClick)
+              ArticlesEmpty(contentPadding = innerPadding) {
+                eventSink.invoke(HomeScreenContract.Event.ErrorRetryClicked)
               }
             } else {
               ArticlesContent(
+                contentPadding = innerPadding,
                 articles = targetState.content,
                 eventSink = eventSink,
               )
@@ -221,8 +249,8 @@ fun TabsContent(
 }
 
 @Composable
-fun ArticlesLoading(modifier: Modifier = Modifier) {
-  LazyColumn(modifier = modifier) {
+fun ArticlesLoading(modifier: Modifier = Modifier, contentPadding: PaddingValues) {
+  LazyColumn(modifier = modifier, contentPadding = contentPadding) {
     items(
       count = 5,
       itemContent = {
@@ -235,10 +263,11 @@ fun ArticlesLoading(modifier: Modifier = Modifier) {
 @Composable
 fun ArticlesEmpty(
   modifier: Modifier = Modifier,
+  contentPadding: PaddingValues,
   onRefreshClick: () -> Unit,
 ) {
   Column(
-    modifier = modifier.fillMaxSize(),
+    modifier = modifier.fillMaxSize().padding(contentPadding),
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     FullscreenState(
@@ -262,10 +291,11 @@ fun ArticlesEmpty(
 @Composable
 fun ArticlesContent(
   modifier: Modifier = Modifier,
+  contentPadding: PaddingValues,
   articles: List<Article>,
   eventSink: (HomeScreenContract.Event) -> Unit,
 ) {
-  LazyColumn(modifier) {
+  LazyColumn(modifier, contentPadding = contentPadding) {
     items(
       items = articles,
       key = { article -> article.id },
@@ -286,23 +316,3 @@ fun ArticlesContent(
     )
   }
 }
-
-@Composable
-fun MenuItem(
-  modifier: Modifier = Modifier,
-  icon: ImageVector,
-  onClick: () -> Unit,
-) {
-  IconButton(
-    modifier = modifier,
-    onClick = { onClick() }
-  ) {
-    Icon(
-      imageVector = icon,
-      tint = MaterialTheme.colorScheme.onSurface,
-      contentDescription = null,
-    )
-  }
-}
-
-

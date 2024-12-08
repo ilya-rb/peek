@@ -125,7 +125,7 @@ fun ReaderScreen(modifier: Modifier, state: ReaderScreenContract.State) {
     Box(Modifier.fillMaxSize().padding(innerPadding)) {
       when (state.article) {
         is Async.Loading -> ArticleReaderLoading()
-        is Async.Error -> FullscreenErrorState(ErrorStateKind.UNKNOWN) {
+        is Async.Error -> FullscreenErrorState(errorType = ErrorStateKind.UNKNOWN) {
           eventSink.invoke(Event.ErrorRetryClicked)
         }
 

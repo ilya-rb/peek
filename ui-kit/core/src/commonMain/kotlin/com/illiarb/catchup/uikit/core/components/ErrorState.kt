@@ -19,9 +19,13 @@ import com.illiarb.catchup.uikit.resources.home_articles_empty_title
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun FullscreenErrorState(errorType: ErrorStateKind, onRefreshClick: () -> Unit) {
+fun FullscreenErrorState(
+  modifier: Modifier = Modifier,
+  errorType: ErrorStateKind,
+  onRefreshClick: () -> Unit,
+) {
   Column(
-    modifier = Modifier.fillMaxSize(),
+    modifier = modifier.fillMaxSize(),
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     FullscreenState(

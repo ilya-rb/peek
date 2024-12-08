@@ -26,7 +26,6 @@ interface HomeScreenContract {
     val tabs: Async<ImmutableList<Tab>>,
     val selectedTags: Set<Tag>,
     val selectedTabIndex: Int,
-    val debugMenuShowing: Boolean,
     val filtersShowing: Boolean,
     val eventSink: (Event) -> Unit,
   ) : CircuitUiState {
@@ -64,11 +63,10 @@ interface HomeScreenContract {
   }
 
   sealed interface Event : CircuitUiEvent {
-    data object ButtonClick : Event
-    data object DebugMenuClick : Event
-    data object FiltersClick : Event
-    data object DebugMenuClosed : Event
-    data object ErrorRetryClick : Event
+    data object FiltersClicked : Event
+    data object ErrorRetryClicked : Event
+    data object SavedClicked : Event
+    data object SettingsClicked : Event
     data class TabClicked(val source: NewsSource) : Event
     data class ArticleClicked(val item: Article) : Event
     data class FiltersResult(val result: FiltersOverlayResult) : Event
