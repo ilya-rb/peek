@@ -1,17 +1,21 @@
-import kotlin.collections.List;
-import kotlinx.datetime.Instant;
-import com.illiarb.catchup.service.domain.Tag;
 import com.illiarb.catchup.service.domain.NewsSource;
+import com.illiarb.catchup.service.domain.Tag;
 import com.illiarb.catchup.service.domain.Url;
+import kotlin.collections.List;
+import kotlin.time.Duration;
+import kotlinx.datetime.Instant;
 
 CREATE TABLE IF NOT EXISTS `articleEntity`(
     `id` TEXT PRIMARY KEY NOT NULL,
     `title` TEXT NOT NULL,
-    `description` TEXT,
+    `shortSummary` TEXT,
     `link` TEXT AS Url NOT NULL,
     `tags` TEXT AS List<Tag>,
     `source` TEXT AS NewsSource.Kind NOT NULL,
-    `created_at` INTEGER AS Instant NOT NULL
+    `createdAt` INTEGER AS Instant NOT NULL,
+    `authorName` TEXT,
+    `content` TEXT,
+    `estimatedReadingTimeSeconds` INTEGER AS Duration
 );
 
 articlesBySource:
@@ -20,26 +24,32 @@ SELECT * FROM articleEntity WHERE source = :source;
 articleById:
 SELECT * FROM articleEntity WHERE id = :id LIMIT 1;
 
-deleteAll:
-DELETE FROM articleEntity;
+deleteBySource:
+DELETE FROM articleEntity WHERE source = :source;
 
 insert:
 INSERT INTO articleEntity (
     `id`,
     `title`,
-    `description`,
+    `shortSummary`,
     `link`,
     `tags`,
     `source`,
-    `created_at`
+    `createdAt`,
+    `authorName`,
+    `content`,
+    `estimatedReadingTimeSeconds`
 ) VALUES (
     :id,
     :title,
-    :description,
+    :shortSummary,
     :link,
     :tags,
     :source,
-    :created_at
+    :createdAt,
+    :authorName,
+    :content,
+    :estimatedReadingTimeSeconds
 );
 
 

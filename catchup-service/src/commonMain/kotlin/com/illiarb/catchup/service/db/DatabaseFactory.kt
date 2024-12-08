@@ -15,8 +15,9 @@ class DatabaseFactory(private val driver: SqlDriver) {
       articleEntityAdapter = ArticleEntity.Adapter(
         tagsAdapter = DatabaseAdapters.tagsAdapter,
         sourceAdapter = DatabaseAdapters.sourceAdapter,
-        created_atAdapter = DatabaseAdapters.instantAdapter,
+        createdAtAdapter = DatabaseAdapters.instantAdapter,
         linkAdapter = DatabaseAdapters.urlAdapter,
+        estimatedReadingTimeSecondsAdapter = DatabaseAdapters.durationAdapter,
       ),
       newsSourceEntityAdapter = NewsSourceEntity.Adapter(
         kindAdapter = DatabaseAdapters.sourceAdapter,

@@ -19,13 +19,16 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-fun LocalLottieAnimation(modifier: Modifier = Modifier, fileName: String) {
+fun LocalLottieAnimation(
+  modifier: Modifier = Modifier,
+  animationType: LottieAnimationType,
+) {
   val scope = rememberCoroutineScope()
   var imageJson by remember { mutableStateOf<String?>(null) }
 
   LaunchedEffect(Unit) {
     scope.launch {
-      imageJson = Res.readBytes("files/${fileName}.json").decodeToString()
+      imageJson = Res.readBytes(path = "files/${animationType.fileName}.json").decodeToString()
     }
   }
 
@@ -47,4 +50,9 @@ fun LocalLottieAnimation(modifier: Modifier = Modifier, fileName: String) {
       ),
     )
   }
+}
+
+enum class LottieAnimationType(val fileName: String) {
+  ERROR("anim_error"),
+  ARTICLES_EMPTY("anim_empty")
 }

@@ -7,11 +7,11 @@ import org.gradle.kotlin.dsl.dependencies
 
 fun Project.configureAndroid() {
   android {
-    compileSdkVersion(Versions.COMPILE_SDK)
+    compileSdkVersion(getCompileSdk)
 
     defaultConfig {
-      minSdk = Versions.MIN_SDK
-      targetSdk = Versions.TARGET_SDK
+      minSdk = getMinSdk
+      targetSdk = getTargetSdk
     }
 
     compileOptions {

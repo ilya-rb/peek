@@ -5,6 +5,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +18,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.SyncLock
+import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,6 +36,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
@@ -43,10 +50,13 @@ import com.illiarb.catchup.features.reader.ReaderScreenContract.Event
 import com.illiarb.catchup.service.domain.Article
 import com.illiarb.catchup.service.domain.Url
 import com.illiarb.catchup.uikit.core.components.ArticleReaderLoading
+import com.illiarb.catchup.uikit.core.components.ErrorStateKind
+import com.illiarb.catchup.uikit.core.components.FullscreenErrorState
 import com.illiarb.catchup.uikit.core.components.FullscreenState
 import com.illiarb.catchup.uikit.core.components.HtmlView
 import com.illiarb.catchup.uikit.core.components.LocalLottieAnimation
 import com.illiarb.catchup.uikit.core.configuration.getScreenWidth
+import com.illiarb.catchup.uikit.core.text.ReadingTimeText
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
@@ -115,7 +125,10 @@ fun ReaderScreen(modifier: Modifier, state: ReaderScreenContract.State) {
     Box(Modifier.fillMaxSize().padding(innerPadding)) {
       when (state.article) {
         is Async.Loading -> ArticleReaderLoading()
-        is Async.Error -> ArticleError {}
+        is Async.Error -> FullscreenErrorState(ErrorStateKind.UNKNOWN) {
+          eventSink.invoke(Event.ErrorRetryClicked)
+        }
+
         is Async.Content -> ArticleContent(
           article = state.article.content,
           scrollState = contentScrollState,
@@ -129,37 +142,13 @@ fun ReaderScreen(modifier: Modifier, state: ReaderScreenContract.State) {
 }
 
 @Composable
-private fun ArticleError(onRetryClick: () -> Unit) {
-  Column(
-    Modifier.fillMaxSize(),
-    horizontalAlignment = Alignment.CenterHorizontally
-  ) {
-    FullscreenState(
-      title = "Something went wrong",
-      buttonText = "Try again",
-      onButtonClick = onRetryClick,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(16.dp)
-        .clip(shape = RoundedCornerShape(size = 24.dp))
-        .background(MaterialTheme.colorScheme.surfaceContainer),
-    ) {
-      LocalLottieAnimation(
-        fileName = "anim_error",
-        modifier = Modifier.size(200.dp),
-      )
-    }
-  }
-}
-
-@Composable
 private fun ArticleContent(
   modifier: Modifier = Modifier,
   article: Article,
   scrollState: ScrollState,
   onLinkClicked: (Url) -> Unit,
 ) {
-  val content = article.description
+  val content = article.content
   requireNotNull(content)
 
   Column(
@@ -184,8 +173,31 @@ private fun ArticleContent(
         .clickable { onLinkClicked(article.link) },
     )
 
+    Row(
+      modifier = Modifier.padding(top = 8.dp),
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      Text(
+        text = "Wed, Jan 18",
+        style = MaterialTheme.typography.labelMedium,
+      )
+
+      Spacer(Modifier.weight(1f))
+
+      Icon(
+        modifier = Modifier.size(16.dp),
+        imageVector = Icons.Outlined.Timer,
+        contentDescription = "Estimated reading time"
+      )
+      ReadingTimeText(
+        modifier = Modifier.padding(start = 8.dp),
+        duration = content.estimatedReadingTime,
+        style = MaterialTheme.typography.labelMedium,
+      )
+    }
+
     HtmlView(
-      content = content,
+      content = content.text,
       style = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
       modifier = Modifier.padding(top = 32.dp),
     )

@@ -2,9 +2,11 @@ package com.illiarb.catchup.service.db.dao
 
 import com.illiarb.catchup.core.coroutines.AppDispatchers
 import com.illiarb.catchup.core.coroutines.suspendRunCatching
+import com.illiarb.catchup.service.ArticleEntity
 import com.illiarb.catchup.service.Database
 import com.illiarb.catchup.service.db.DatabaseTransactionRunner
 import com.illiarb.catchup.service.domain.Article
+import com.illiarb.catchup.service.domain.ArticleContent
 import com.illiarb.catchup.service.domain.NewsSource
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
@@ -20,21 +22,9 @@ class ArticlesDao(
   suspend fun articlesBySource(sourceKind: NewsSource.Kind): Result<List<Article>?> {
     return withContext(appDispatchers.io) {
       suspendRunCatching {
-        db.articlesQueries.articlesBySource(
-          source = sourceKind,
-          mapper = { id, title, description, link, tags, source, _ ->
-            Article(
-              id = id,
-              title = title,
-              description = description,
-              link = link,
-              tags = tags.orEmpty(),
-              source = source,
-            )
-          }
-        ).executeAsList().takeIf {
-          it.isNotEmpty()
-        }
+        db.articlesQueries.articlesBySource(source = sourceKind).executeAsList()
+          .map { entity -> entity.asArticle() }
+          .takeIf { it.isNotEmpty() }
       }
     }
   }
@@ -42,42 +32,52 @@ class ArticlesDao(
   suspend fun articleById(id: String): Result<Article?> {
     return withContext(appDispatchers.io) {
       suspendRunCatching {
-        db.articlesQueries.articleById(
-          id = id,
-          mapper = { id, title, description, link, tags, source, _ ->
-            Article(
-              id = id,
-              title = title,
-              description = description,
-              link = link,
-              tags = tags.orEmpty(),
-              source = source,
-            )
-          },
-        ).executeAsOneOrNull()
+        db.articlesQueries.articleById(id = id).executeAsOneOrNull()?.asArticle()
       }
     }
   }
 
-  suspend fun deleteAndInsert(articles: List<Article>): Result<Unit> {
+  suspend fun deleteAndInsert(kind: NewsSource.Kind, articles: List<Article>): Result<Unit> {
     return withContext(appDispatchers.io) {
       suspendRunCatching {
         dbTransactionRunner {
-          db.articlesQueries.deleteAll()
+          db.articlesQueries.deleteBySource(kind)
 
           articles.forEach { article ->
             db.articlesQueries.insert(
               id = article.id,
               title = article.title,
-              description = article.description,
+              shortSummary = article.shortSummary,
               link = article.link,
               tags = article.tags,
               source = article.source,
-              created_at = Clock.System.now(),
+              createdAt = Clock.System.now(),
+              authorName = article.authorName,
+              content = article.content?.text,
+              estimatedReadingTimeSeconds = article.content?.estimatedReadingTime,
             )
           }
         }
       }
     }
   }
+
+  private fun ArticleEntity.asArticle(): Article {
+    return Article(
+      id,
+      title,
+      shortSummary,
+      link,
+      tags.orEmpty(),
+      source,
+      authorName,
+      content?.let {
+        ArticleContent(
+          text = it,
+          estimatedReadingTime = requireNotNull(estimatedReadingTimeSeconds)
+        )
+      }
+    )
+  }
+
 }

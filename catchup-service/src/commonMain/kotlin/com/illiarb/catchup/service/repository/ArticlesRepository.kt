@@ -41,8 +41,8 @@ class ArticlesRepository(
     fromStorage = { kind ->
       articlesDao.articlesBySource(kind).getOrNull()
     },
-    intoStorage = { _, articles ->
-      articlesDao.deleteAndInsert(articles)
+    intoStorage = { kind, articles ->
+      articlesDao.deleteAndInsert(kind, articles)
     },
   )
 

@@ -29,9 +29,16 @@ class ReaderScreenPresenter(
 
     return ReaderScreenContract.State(article) { event ->
       when (event) {
-        is ReaderScreenContract.Event.NavigationIconClicked -> navigator.pop()
+        is ReaderScreenContract.Event.NavigationIconClicked -> {
+          navigator.pop()
+        }
+
         is ReaderScreenContract.Event.LinkClicked -> {
           navigator.goTo(OpenUrlScreen(event.url.url))
+        }
+
+        is ReaderScreenContract.Event.ErrorRetryClicked -> {
+
         }
       }
     }

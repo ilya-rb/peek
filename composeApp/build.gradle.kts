@@ -26,6 +26,7 @@ kotlin {
       implementation(libs.androidx.browser)
       implementation(libs.circuit.core)
       implementation(libs.circuit.x.android)
+      implementation(libs.circuit.x.gestureNavigation)
     }
 
     commonMain.dependencies {
@@ -39,8 +40,6 @@ kotlin {
       implementation(libs.circuit.core)
       implementation(libs.ktor.core)
       implementation(libs.napier)
-      implementation(libs.coil.core)
-      implementation(libs.coil.compose)
       implementation(libs.coil.compose)
       implementation(libs.kotlin.inject.runtime)
 
