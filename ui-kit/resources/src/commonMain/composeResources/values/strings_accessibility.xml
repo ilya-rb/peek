@@ -3,4 +3,6 @@
     <string name="acsb_action_saved">Saved</string>
     <string name="acsb_action_filter">Filters</string>
     <string name="acsb_icon_reader_reading_time">Estimated reading time</string>
+    <string name="acsb_navigation_back">Back</string>
+    <string name="acsb_switch_checked">On</string>
 </resources>

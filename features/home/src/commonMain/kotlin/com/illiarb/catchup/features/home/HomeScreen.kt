@@ -26,6 +26,7 @@ import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -126,20 +127,18 @@ private fun HomeScreen(state: HomeScreenContract.State) {
             }
           },
           actions = {
-            Icon(
-              imageVector = Icons.Filled.Settings,
-              contentDescription = stringResource(Res.string.acsb_action_settings),
-              modifier = Modifier.padding(end = 16.dp).clickable {
-                eventSink.invoke(HomeScreenContract.Event.SettingsClicked)
-              },
-            )
-            Icon(
-              imageVector = Icons.Filled.Bookmark,
-              contentDescription = stringResource(Res.string.acsb_action_saved),
-              modifier = Modifier.padding(end = 16.dp).clickable {
-                eventSink.invoke(HomeScreenContract.Event.SavedClicked)
-              }
-            )
+            IconButton(onClick = { eventSink.invoke(HomeScreenContract.Event.SettingsClicked) }) {
+              Icon(
+                imageVector = Icons.Filled.Settings,
+                contentDescription = stringResource(Res.string.acsb_action_settings),
+              )
+            }
+            IconButton(onClick = { eventSink.invoke(HomeScreenContract.Event.SavedClicked) }) {
+              Icon(
+                imageVector = Icons.Filled.Bookmark,
+                contentDescription = stringResource(Res.string.acsb_action_saved),
+              )
+            }
           },
         )
       },

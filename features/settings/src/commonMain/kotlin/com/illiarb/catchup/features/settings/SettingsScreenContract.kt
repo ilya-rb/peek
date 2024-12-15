@@ -14,7 +14,11 @@ internal interface SettingsScreenContract {
   @Stable
   data class State(
     val events: (Event) -> Unit,
+    val dynamicColorsEnabled: Boolean,
   ) : CircuitUiState
 
-  sealed interface Event
+  sealed interface Event {
+    data object NavigationIconClick : Event
+    data class MaterialColorsToggleChecked(val checked: Boolean) : Event
+  }
 }

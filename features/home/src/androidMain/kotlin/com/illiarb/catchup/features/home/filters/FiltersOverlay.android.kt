@@ -1,8 +1,8 @@
 package com.illiarb.catchup.features.home.filters
 
 import androidx.compose.material3.ExperimentalMaterial3Api
-import com.illiarb.catchup.uikit.core.overlay.BottomSheetOverlay
 import com.slack.circuit.overlay.OverlayHost
+import com.slack.circuitx.overlays.BottomSheetOverlay
 
 @OptIn(ExperimentalMaterial3Api::class)
 internal actual suspend fun OverlayHost.showFiltersOverlay(model: FiltersOverlayModel): FiltersOverlayResult {

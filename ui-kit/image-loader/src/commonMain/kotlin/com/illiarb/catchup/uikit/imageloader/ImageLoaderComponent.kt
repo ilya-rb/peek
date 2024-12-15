@@ -5,6 +5,7 @@ import coil3.PlatformContext
 import coil3.memory.MemoryCache
 import coil3.util.Logger
 import com.illiarb.catchup.core.appinfo.AppEnvironment
+import com.illiarb.catchup.core.arch.di.AppScope
 import me.tatarka.inject.annotations.Provides
 import com.illiarb.catchup.core.logging.Logger as CoreLogger
 
@@ -12,9 +13,8 @@ public expect interface ImageLoaderPlatformComponent
 
 public interface ImageLoaderComponent : ImageLoaderPlatformComponent {
 
-  public val imageLoader: ImageLoader
-
   @Provides
+  @AppScope
   public fun provideImageLoader(
     context: PlatformContext,
     debugLogger: Logger,
