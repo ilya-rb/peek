@@ -13,13 +13,13 @@ import kotlinx.datetime.Clock
 import me.tatarka.inject.annotations.Inject
 
 @Inject
-class ArticlesDao(
+public class ArticlesDao(
   private val db: Database,
   private val dbTransactionRunner: DatabaseTransactionRunner,
   private val appDispatchers: AppDispatchers,
 ) {
 
-  suspend fun articlesBySource(sourceKind: NewsSource.Kind): Result<List<Article>?> {
+  public suspend fun articlesBySource(sourceKind: NewsSource.Kind): Result<List<Article>?> {
     return withContext(appDispatchers.io) {
       suspendRunCatching {
         db.articlesQueries.articlesBySource(source = sourceKind).executeAsList()
@@ -29,7 +29,7 @@ class ArticlesDao(
     }
   }
 
-  suspend fun articleById(id: String): Result<Article?> {
+  public suspend fun articleById(id: String): Result<Article?> {
     return withContext(appDispatchers.io) {
       suspendRunCatching {
         db.articlesQueries.articleById(id = id).executeAsOneOrNull()?.asArticle()
@@ -37,7 +37,7 @@ class ArticlesDao(
     }
   }
 
-  suspend fun deleteAndInsert(kind: NewsSource.Kind, articles: List<Article>): Result<Unit> {
+  public suspend fun deleteAndInsert(kind: NewsSource.Kind, articles: List<Article>): Result<Unit> {
     return withContext(appDispatchers.io) {
       suspendRunCatching {
         dbTransactionRunner {

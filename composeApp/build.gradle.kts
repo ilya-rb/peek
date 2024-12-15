@@ -51,6 +51,7 @@ kotlin {
       implementation(projects.core.network)
       implementation(projects.features.home)
       implementation(projects.features.reader)
+      implementation(projects.features.settings)
       implementation(projects.uiKit.core)
       implementation(projects.uiKit.imageLoader)
     }

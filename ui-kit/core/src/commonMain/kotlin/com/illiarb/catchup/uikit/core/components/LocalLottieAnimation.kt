@@ -19,7 +19,7 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-fun LocalLottieAnimation(
+public fun LocalLottieAnimation(
   modifier: Modifier = Modifier,
   animationType: LottieAnimationType,
 ) {
@@ -52,7 +52,7 @@ fun LocalLottieAnimation(
   }
 }
 
-enum class LottieAnimationType(val fileName: String) {
+public enum class LottieAnimationType(public val fileName: String) {
   ERROR("anim_error"),
   ARTICLES_EMPTY("anim_empty")
 }

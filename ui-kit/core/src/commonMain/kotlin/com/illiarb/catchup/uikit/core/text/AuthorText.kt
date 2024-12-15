@@ -11,7 +11,7 @@ import com.illiarb.catchup.uikit.resources.author_text
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun AuthorText(
+public fun AuthorText(
   modifier: Modifier = Modifier,
   author: String,
   style: TextStyle,

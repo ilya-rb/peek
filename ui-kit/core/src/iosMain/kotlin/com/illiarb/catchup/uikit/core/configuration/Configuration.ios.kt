@@ -9,7 +9,7 @@ import platform.UIKit.UIScreen
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-actual fun getScreenWidth(): Dp {
+public actual fun getScreenWidth(): Dp {
   return LocalWindowInfo.current.containerSize.width.pxToPoint().dp
 }
 

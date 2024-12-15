@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.onStart
 import me.tatarka.inject.annotations.Inject
 
 @Inject
-class ArticlesRepository(
+public class ArticlesRepository(
   private val httpClient: HttpClient,
   private val memoryCache: Cache,
   private val articlesDao: ArticlesDao,
@@ -46,11 +46,11 @@ class ArticlesRepository(
     },
   )
 
-  fun articlesFrom(kind: NewsSource.Kind): Flow<Async<List<Article>>> {
+  public fun articlesFrom(kind: NewsSource.Kind): Flow<Async<List<Article>>> {
     return articlesStore.collect(kind, AsyncDataStore.LoadStrategy.CacheFirst)
   }
 
-  fun articleById(id: String): Flow<Async<Article>> {
+  public fun articleById(id: String): Flow<Async<Article>> {
     return flow {
       articlesDao.articleById(id).fold(
         onSuccess = {
@@ -71,5 +71,5 @@ class ArticlesRepository(
     }
   }
 
-  class ArticleNotFoundException : Throwable()
+  public class ArticleNotFoundException : Throwable()
 }

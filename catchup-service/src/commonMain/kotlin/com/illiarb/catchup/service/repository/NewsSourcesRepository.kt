@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.Flow
 import me.tatarka.inject.annotations.Inject
 
 @Inject
-class NewsSourcesRepository(
+public class NewsSourcesRepository(
   private val httpClient: HttpClient,
   private val networkConfig: NetworkConfig,
   private val newsSourcesDao: NewsSourcesDao,
@@ -46,11 +46,11 @@ class NewsSourcesRepository(
     },
   )
 
-  fun allSources(): Flow<Async<Set<NewsSource>>> {
+  public fun allSources(): Flow<Async<Set<NewsSource>>> {
     return supportedSourcesStore.collect(Unit, AsyncDataStore.LoadStrategy.CacheFirst)
   }
 
-  companion object {
-    const val KEY_AVAILABLE_SOURCES = "KEY_AVAILABLE_SOURCES"
+  public companion object {
+    public const val KEY_AVAILABLE_SOURCES: String = "KEY_AVAILABLE_SOURCES"
   }
 }

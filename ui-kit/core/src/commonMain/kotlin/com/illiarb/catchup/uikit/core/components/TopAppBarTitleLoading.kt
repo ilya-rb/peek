@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.dp
 import com.valentinilk.shimmer.shimmer
 
 @Composable
-fun TopAppBarTitleLoading() {
+public fun TopAppBarTitleLoading() {
   Box(
     Modifier
       .shimmer()

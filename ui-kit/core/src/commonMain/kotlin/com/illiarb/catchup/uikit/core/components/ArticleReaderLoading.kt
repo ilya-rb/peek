@@ -6,7 +6,7 @@ import androidx.compose.ui.Modifier
 import com.valentinilk.shimmer.shimmer
 
 @Composable
-fun ArticleReaderLoading() {
+public fun ArticleReaderLoading() {
   Column(Modifier.shimmer()) {
 
   }

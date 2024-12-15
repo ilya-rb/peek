@@ -10,9 +10,9 @@ import io.ktor.http.*
 import kotlinx.coroutines.withContext
 import io.ktor.client.HttpClient as KtorClient
 
-interface HttpClient {
+public interface HttpClient {
 
-  suspend fun get(
+  public suspend fun get(
     path: String,
     parameters: Map<String, String> = emptyMap(),
   ): Result<HttpResponse>

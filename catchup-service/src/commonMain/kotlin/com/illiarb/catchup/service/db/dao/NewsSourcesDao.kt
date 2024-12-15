@@ -9,13 +9,13 @@ import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Inject
 
 @Inject
-class NewsSourcesDao(
+public class NewsSourcesDao(
   private val db: Database,
   private val dbTransactionRunner: DatabaseTransactionRunner,
   private val appDispatchers: AppDispatchers,
 ) {
 
-  suspend fun getAll(): Result<Set<NewsSource>?> {
+  public suspend fun getAll(): Result<Set<NewsSource>?> {
     return withContext(appDispatchers.io) {
       suspendRunCatching {
         db.news_sourcesQueries
@@ -27,7 +27,7 @@ class NewsSourcesDao(
     }
   }
 
-  suspend fun insert(sources: Set<NewsSource>): Result<Unit> {
+  public suspend fun insert(sources: Set<NewsSource>): Result<Unit> {
     return withContext(appDispatchers.io) {
       suspendRunCatching {
         dbTransactionRunner.invoke {
@@ -39,7 +39,7 @@ class NewsSourcesDao(
     }
   }
 
-  suspend fun delete(): Result<Unit> {
+  public suspend fun delete(): Result<Unit> {
     return withContext(appDispatchers.io) {
       suspendRunCatching { db.news_sourcesQueries.delete() }
     }

@@ -5,7 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 
 @Composable
-expect fun HtmlView(
+public expect fun HtmlView(
   modifier: Modifier = Modifier,
   content: String,
   style: TextStyle,

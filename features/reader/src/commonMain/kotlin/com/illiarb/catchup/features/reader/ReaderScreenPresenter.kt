@@ -13,7 +13,29 @@ import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
 import me.tatarka.inject.annotations.Inject
 
-class ReaderScreenPresenter(
+@Inject
+public class ReaderScreenPresenterFactory(
+  private val catchupService: CatchupService,
+) : Presenter.Factory {
+
+  override fun create(
+    screen: Screen,
+    navigator: Navigator,
+    context: CircuitContext
+  ): Presenter<*>? {
+    return when (screen) {
+      is ReaderScreen -> ReaderScreenPresenter(
+        articleId = screen.articleId,
+        catchupService = catchupService,
+        navigator = navigator,
+      )
+
+      else -> null
+    }
+  }
+}
+
+internal class ReaderScreenPresenter(
   private val articleId: String,
   private val catchupService: CatchupService,
   private val navigator: Navigator,
@@ -40,28 +62,6 @@ class ReaderScreenPresenter(
         is ReaderScreenContract.Event.ErrorRetryClicked -> {
 
         }
-      }
-    }
-  }
-
-  @Inject
-  class Factory(
-    private val catchupService: CatchupService,
-  ) : Presenter.Factory {
-
-    override fun create(
-      screen: Screen,
-      navigator: Navigator,
-      context: CircuitContext
-    ): Presenter<*>? {
-      return when (screen) {
-        is ReaderScreenContract.ReaderScreen -> ReaderScreenPresenter(
-          articleId = screen.articleId,
-          catchupService = catchupService,
-          navigator = navigator,
-        )
-
-        else -> null
       }
     }
   }

@@ -3,7 +3,7 @@ package com.illiarb.catchup.core.data
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-fun <T, R> Flow<Async<T>>.mapContent(mapper: (T) -> R): Flow<Async<R>> {
+public fun <T, R> Flow<Async<T>>.mapContent(mapper: (T) -> R): Flow<Async<R>> {
   return map { data ->
     when (data) {
       is Async.Loading -> Async.Loading

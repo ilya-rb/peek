@@ -3,17 +3,17 @@ package com.illiarb.catchup.uikit.core.text
 import androidx.compose.runtime.Composable
 import kotlin.time.Duration
 
-sealed interface Clause {
+public sealed interface Clause {
 
-  data class TextClause(val clause: String) : Clause
+  public data class TextClause(val clause: String) : Clause
 
-  data class DurationClause(val duration: Duration) : Clause
+  public data class DurationClause(val duration: Duration) : Clause
 
-  data class AuthorClause(val author: String) : Clause
+  public data class AuthorClause(val author: String) : Clause
 }
 
-interface ClauseDisplayer {
+public interface ClauseDisplayer {
 
   @Composable
-  fun render(clause: Clause)
+  public fun render(clause: Clause)
 }

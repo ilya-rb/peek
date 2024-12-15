@@ -8,7 +8,7 @@ import com.illiarb.catchup.di.create
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
 
-class CatchupApp : Application() {
+internal class CatchupApp : Application() {
 
   private val appComponent: AndroidAppComponent by lazy {
     AndroidAppComponent.create(application = this)
@@ -25,6 +25,6 @@ class CatchupApp : Application() {
   fun appComponent(): AndroidAppComponent = appComponent
 }
 
-fun Context.appComponent(): AndroidAppComponent {
+internal fun Context.appComponent(): AndroidAppComponent {
   return (this as CatchupApp).appComponent()
 }

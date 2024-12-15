@@ -14,7 +14,7 @@ import com.illiarb.catchup.uikit.core.components.FullscreenState
 
 @Composable
 @Preview(showBackground = true)
-fun FullscreenStatePreview() {
+internal fun FullscreenStatePreview() {
   FullscreenState(
     title = "Title",
     buttonText = "Subtitle",

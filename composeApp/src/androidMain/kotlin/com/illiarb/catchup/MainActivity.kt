@@ -9,13 +9,11 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.graphics.toArgb
 import coil3.compose.setSingletonImageLoaderFactory
 import com.illiarb.catchup.core.arch.OpenUrlScreen
 import com.illiarb.catchup.di.AndroidUiComponent
 import com.illiarb.catchup.di.create
-import com.illiarb.catchup.features.home.HomeScreenContract
+import com.illiarb.catchup.features.home.HomeScreen
 import com.illiarb.catchup.uikit.core.theme.UiKitTheme
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.CircuitCompositionLocals
@@ -25,7 +23,7 @@ import com.slack.circuitx.android.AndroidScreen
 import com.slack.circuitx.android.rememberAndroidScreenAwareNavigator
 import com.slack.circuitx.gesturenavigation.GestureNavigationDecoration
 
-class MainActivity : ComponentActivity() {
+internal class MainActivity : ComponentActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     enableEdgeToEdge(SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT))
@@ -36,7 +34,7 @@ class MainActivity : ComponentActivity() {
     val activityComponent = AndroidUiComponent.create(appComponent, activity = this)
 
     setContent {
-      val backStack = rememberSaveableBackStack(root = HomeScreenContract.HomeScreen)
+      val backStack = rememberSaveableBackStack(root = HomeScreen)
       val navigator = rememberAndroidScreenAwareNavigator(
         delegate = rememberCircuitNavigator(backStack) {},
         starter = ::navigateTo,

@@ -2,7 +2,7 @@ package com.illiarb.catchup.service.domain
 
 import kotlin.time.Duration
 
-data class Article(
+public data class Article(
   val id: String,
   val title: String,
   val shortSummary: String?,
@@ -13,7 +13,7 @@ data class Article(
   val content: ArticleContent?,
 )
 
-data class ArticleContent(
+public data class ArticleContent(
   val text: String,
   val estimatedReadingTime: Duration,
 )

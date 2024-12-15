@@ -7,9 +7,9 @@ import com.illiarb.catchup.service.NewsSourceEntity
 import me.tatarka.inject.annotations.Inject
 
 @Inject
-class DatabaseFactory(private val driver: SqlDriver) {
+public class DatabaseFactory(private val driver: SqlDriver) {
 
-  fun create(): Database {
+  public fun create(): Database {
     return Database(
       driver = driver,
       articleEntityAdapter = ArticleEntity.Adapter(

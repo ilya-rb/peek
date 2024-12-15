@@ -4,7 +4,7 @@ import com.illiarb.catchup.core.appinfo.AppDebugToggles
 import io.ktor.client.plugins.api.createClientPlugin
 import kotlinx.coroutines.delay
 
-fun debugDelayPlugin() = createClientPlugin(
+internal fun debugDelayPlugin() = createClientPlugin(
   name = "DebugDelayPlugin",
   createConfiguration = {},
 ) {

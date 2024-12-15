@@ -2,18 +2,18 @@ package com.illiarb.catchup.core.data
 
 import co.touchlab.stately.collections.ConcurrentMutableMap
 
-interface MemoryCache<K> {
+public interface MemoryCache<K> {
 
-  fun put(key: K, value: Any)
+  public fun put(key: K, value: Any)
 
-  fun <V> get(key: K): V?
+  public fun <V> get(key: K): V?
 
-  fun delete(key: K)
+  public fun delete(key: K)
 
-  fun contains(key: K): Boolean
+  public fun contains(key: K): Boolean
 }
 
-class HashMapCache<K> : MemoryCache<K> {
+public class HashMapCache<K> : MemoryCache<K> {
 
   private val cache = ConcurrentMutableMap<K, Any>()
 

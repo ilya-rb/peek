@@ -9,7 +9,7 @@ import com.illiarb.catchup.uikit.core.theme.UiKitTheme
 import kotlin.random.Random
 
 @Composable
-fun ArticleCellPreview(darkTheme: Boolean) {
+internal fun ArticleCellPreview(darkTheme: Boolean) {
   UiKitTheme(useDynamicColors = false, useDarkTheme = darkTheme) {
     LazyColumn {
       items(
@@ -31,7 +31,7 @@ fun ArticleCellPreview(darkTheme: Boolean) {
 }
 
 @Composable
-fun ArticleCellLoadingPreview(darkTheme: Boolean) {
+internal fun ArticleCellLoadingPreview(darkTheme: Boolean) {
   UiKitTheme(useDynamicColors = false, useDarkTheme = darkTheme) {
     ArticleLoadingCell()
   }
@@ -42,7 +42,7 @@ fun ArticleCellLoadingPreview(darkTheme: Boolean) {
   showBackground = true,
   backgroundColor = 0xFFF9F9FF,
 )
-fun ArticlePreviewLight() {
+internal fun ArticlePreviewLight() {
   ArticleCellPreview(darkTheme = false)
 }
 
@@ -51,7 +51,7 @@ fun ArticlePreviewLight() {
   showBackground = true,
   backgroundColor = 0xFF111318,
 )
-fun ArticlePreviewDark() {
+internal fun ArticlePreviewDark() {
   ArticleCellPreview(darkTheme = true)
 }
 
@@ -60,7 +60,7 @@ fun ArticlePreviewDark() {
   showBackground = true,
   backgroundColor = 0xFFF9F9FF,
 )
-fun ArticleCellLoadingPreviewLight() {
+internal fun ArticleCellLoadingPreviewLight() {
   ArticleCellLoadingPreview(darkTheme = false)
 }
 
@@ -69,6 +69,6 @@ fun ArticleCellLoadingPreviewLight() {
   showBackground = true,
   backgroundColor = 0xFF111318,
 )
-fun ArticleCellLoadingPreviewDark() {
+internal fun ArticleCellLoadingPreviewDark() {
   ArticleCellLoadingPreview(darkTheme = true)
 }

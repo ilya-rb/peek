@@ -17,7 +17,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.sp
 
-class TextWithBackgroundPainter(
+public class TextWithBackgroundPainter(
   text: String,
   textStyle: TextStyle,
   textMeasurer: TextMeasurer,

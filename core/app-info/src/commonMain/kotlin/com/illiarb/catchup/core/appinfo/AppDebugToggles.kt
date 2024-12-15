@@ -1,6 +1,6 @@
 package com.illiarb.catchup.core.appinfo
 
-object AppDebugToggles {
+public object AppDebugToggles {
 
-  var networkDelayEnabled = false
+  public var networkDelayEnabled: Boolean = false
 }

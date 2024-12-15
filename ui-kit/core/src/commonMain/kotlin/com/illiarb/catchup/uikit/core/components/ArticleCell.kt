@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.illiarb.catchup.uikit.core.text.AuthorText
 
 @Composable
-fun ArticleCell(
+public fun ArticleCell(
   modifier: Modifier = Modifier,
   title: String,
   author: String? = null,

@@ -5,7 +5,7 @@ import kotlinx.coroutines.CancellationException
 /**
  * suspend version of runCatching
  */
-suspend fun <T> suspendRunCatching(block: suspend () -> T): Result<T> {
+public suspend fun <T> suspendRunCatching(block: suspend () -> T): Result<T> {
   return try {
     Result.success(block())
   } catch (e: Throwable) {

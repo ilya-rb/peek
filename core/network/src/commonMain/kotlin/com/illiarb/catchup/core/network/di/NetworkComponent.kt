@@ -12,23 +12,23 @@ import io.ktor.client.plugins.api.createClientPlugin
 import me.tatarka.inject.annotations.Provides
 import io.ktor.client.HttpClient as KtorClient
 
-interface NetworkComponent {
+public interface NetworkComponent {
 
   @[Provides]
-  fun provideKtorClient(
+  public fun provideKtorClient(
     config: NetworkConfig,
     plugins: List<HttpClientPlugin<*, *>>,
   ): KtorClient = createKtorClient(config, plugins)
 
   @[Provides]
-  fun providePlugins(): List<HttpClientPlugin<*, *>> {
+  public fun providePlugins(): List<HttpClientPlugin<*, *>> {
     return listOf(
       debugDelayPlugin(),
     )
   }
 
   @[Provides]
-  fun provideNetworkConfig(): NetworkConfig {
+  public fun provideNetworkConfig(): NetworkConfig {
     return NetworkConfig(
       apiUrl = "http://10.0.2.2:8000", // https://developer.android.com/studio/run/emulator-networking
       timeouts = TimeoutConfig(
@@ -40,7 +40,7 @@ interface NetworkComponent {
   }
 
   @[Provides]
-  fun provideHttpClient(
+  public fun provideHttpClient(
     appDispatchers: AppDispatchers,
     config: NetworkConfig,
     httpClient: KtorClient,
@@ -52,8 +52,8 @@ interface NetworkComponent {
     )
   }
 
-  companion object {
-    const val DEFAULT_TIMEOUT_SECONDS = 10L
+  public companion object {
+    public const val DEFAULT_TIMEOUT_SECONDS: Long = 10L
   }
 }
 

@@ -7,7 +7,7 @@ import me.tatarka.inject.annotations.Provides
 
 @Component
 @ActivityScope
-abstract class AndroidUiComponent(
+internal abstract class AndroidUiComponent(
   @Component val appComponent: AndroidAppComponent,
   @get:Provides val activity: Activity,
 ) : UiComponent {

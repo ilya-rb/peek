@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 import com.illiarb.catchup.uikit.core.model.Identifiable
 
 @Composable
-fun <T> HorizontalList(
+public fun <T> HorizontalList(
   modifier: Modifier = Modifier,
   items: List<T>,
   itemContent: @Composable LazyItemScope.(Int, T) -> Unit,

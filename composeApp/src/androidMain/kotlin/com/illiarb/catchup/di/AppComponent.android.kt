@@ -7,7 +7,7 @@ import me.tatarka.inject.annotations.Provides
 
 @Component
 @AppScope
-abstract class AndroidAppComponent(
+internal abstract class AndroidAppComponent(
   @get:Provides val application: Application
 ) : AppComponent {
 

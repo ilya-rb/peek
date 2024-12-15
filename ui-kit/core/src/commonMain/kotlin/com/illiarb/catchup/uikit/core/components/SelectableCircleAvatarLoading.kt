@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.valentinilk.shimmer.shimmer
 
 @Composable
-fun SelectableCircleAvatarLoading(
+public fun SelectableCircleAvatarLoading(
   modifier: Modifier = Modifier,
   selected: Boolean,
 ) {

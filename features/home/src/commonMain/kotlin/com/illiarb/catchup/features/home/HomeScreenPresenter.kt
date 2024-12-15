@@ -9,7 +9,8 @@ import com.illiarb.catchup.core.data.Async
 import com.illiarb.catchup.core.data.mapContent
 import com.illiarb.catchup.features.home.HomeScreenContract.Event
 import com.illiarb.catchup.features.home.filters.FiltersOverlayResult
-import com.illiarb.catchup.features.reader.ReaderScreenContract
+import com.illiarb.catchup.features.reader.ReaderScreen
+import com.illiarb.catchup.features.settings.SettingsScreen
 import com.illiarb.catchup.service.CatchupService
 import com.illiarb.catchup.service.domain.Article
 import com.illiarb.catchup.service.domain.Tag
@@ -23,7 +24,23 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import me.tatarka.inject.annotations.Inject
 
-class HomeScreenPresenter(
+@Inject
+public class HomeScreenPresenterFactory(
+  private val catchupService: CatchupService,
+) : Presenter.Factory {
+  override fun create(
+    screen: Screen,
+    navigator: Navigator,
+    context: CircuitContext
+  ): Presenter<*>? {
+    return when (screen) {
+      is HomeScreen -> HomeScreenPresenter(catchupService, navigator)
+      else -> null
+    }
+  }
+}
+
+internal class HomeScreenPresenter(
   private val catchupService: CatchupService,
   private val navigator: Navigator,
 ) : Presenter<HomeScreenContract.State> {
@@ -75,12 +92,12 @@ class HomeScreenPresenter(
     fun eventSink(event: Event) {
       when (event) {
         is Event.SavedClicked -> Unit
-        is Event.SettingsClicked -> Unit
+        is Event.SettingsClicked -> navigator.goTo(SettingsScreen)
         is Event.ErrorRetryClicked -> reloadData = !reloadData
         is Event.FiltersClicked -> filtersShowing = true
         is Event.ArticleClicked -> {
           if (event.item.content != null) {
-            navigator.goTo(ReaderScreenContract.ReaderScreen(event.item.id))
+            navigator.goTo(ReaderScreen(event.item.id))
           } else {
             navigator.goTo(OpenUrlScreen(event.item.link.url))
           }
@@ -113,21 +130,5 @@ class HomeScreenPresenter(
       eventSink = ::eventSink,
       filtersShowing = filtersShowing,
     )
-  }
-
-  @Inject
-  class Factory(
-    private val catchupService: CatchupService,
-  ) : Presenter.Factory {
-    override fun create(
-      screen: Screen,
-      navigator: Navigator,
-      context: CircuitContext
-    ): Presenter<*>? {
-      return when (screen) {
-        is HomeScreenContract.HomeScreen -> HomeScreenPresenter(catchupService, navigator)
-        else -> null
-      }
-    }
   }
 }

@@ -10,7 +10,7 @@ import kotlinx.serialization.json.Json
 import io.ktor.client.plugins.logging.Logger as KtorLogger
 import io.ktor.client.plugins.HttpClientPlugin
 
-actual fun createKtorClient(
+internal actual fun createKtorClient(
   config: NetworkConfig,
   plugins: List<HttpClientPlugin<*, *>>,
 ): HttpClient {

@@ -6,6 +6,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-actual fun getScreenWidth(): Dp {
+public actual fun getScreenWidth(): Dp {
   return LocalConfiguration.current.screenWidthDp.dp
 }

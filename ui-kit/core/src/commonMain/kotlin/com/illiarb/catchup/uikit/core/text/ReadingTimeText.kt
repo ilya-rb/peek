@@ -11,7 +11,7 @@ import org.jetbrains.compose.resources.pluralStringResource
 import kotlin.time.Duration
 
 @Composable
-fun ReadingTimeText(
+public fun ReadingTimeText(
   modifier: Modifier = Modifier,
   style: TextStyle,
   color: Color,

@@ -8,11 +8,11 @@ import com.illiarb.catchup.core.arch.di.AppScope
 import com.illiarb.catchup.service.Database
 import me.tatarka.inject.annotations.Provides
 
-actual interface SqlDatabasePlatformComponent {
+public actual interface SqlDatabasePlatformComponent {
 
   @AppScope
   @Provides
-  fun provideSqlDriver(application: Application): SqlDriver =
+  public fun provideSqlDriver(application: Application): SqlDriver =
     AndroidSqliteDriver(
       schema = Database.Schema,
       context = application,

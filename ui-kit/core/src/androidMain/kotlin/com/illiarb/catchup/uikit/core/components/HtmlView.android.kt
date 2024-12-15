@@ -15,7 +15,7 @@ import androidx.core.text.HtmlCompat
 import com.illiarb.catchup.uikit.resources.R
 
 @Composable
-actual fun HtmlView(modifier: Modifier, content: String, style: TextStyle) {
+public actual fun HtmlView(modifier: Modifier, content: String, style: TextStyle) {
   val ctx = LocalContext.current
   val font by remember {
     mutableStateOf(ResourcesCompat.getFont(ctx, R.font.montserrat_normal))

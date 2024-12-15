@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun FullscreenState(
+public fun FullscreenState(
   modifier: Modifier = Modifier,
   title: String,
   buttonText: String?,

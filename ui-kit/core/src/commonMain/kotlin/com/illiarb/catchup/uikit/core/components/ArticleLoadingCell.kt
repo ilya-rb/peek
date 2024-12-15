@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.valentinilk.shimmer.shimmer
 
 @Composable
-fun ArticleLoadingCell() {
+public fun ArticleLoadingCell() {
   Column(modifier = Modifier.shimmer()) {
     val shimmerColor = Color.LightGray
     val shimmerCornerRadius = 8.dp

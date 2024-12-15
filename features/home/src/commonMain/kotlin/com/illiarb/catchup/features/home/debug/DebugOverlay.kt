@@ -21,10 +21,10 @@ import androidx.compose.ui.unit.dp
 import com.illiarb.catchup.core.appinfo.AppDebugToggles
 import com.slack.circuit.overlay.OverlayHost
 
-expect suspend fun OverlayHost.showDebugOverlay()
+internal expect suspend fun OverlayHost.showDebugOverlay()
 
 @Composable
-fun DebugOverlay() {
+internal fun DebugOverlay() {
   Box(
     modifier = Modifier
       .fillMaxWidth()
@@ -42,7 +42,7 @@ fun DebugOverlay() {
 }
 
 @Composable
-fun DebugSettingsItem(
+internal fun DebugSettingsItem(
   text: String,
   checked: Boolean,
   onCheckedChanged: (Boolean) -> Unit,

@@ -5,13 +5,13 @@ import com.slack.circuit.runtime.ui.Ui
 import me.tatarka.inject.annotations.IntoSet
 import me.tatarka.inject.annotations.Provides
 
-interface ReaderScreenComponent {
+public interface ReaderScreenComponent {
 
   @Provides
   @IntoSet
-  fun provideReaderScreenPresenterFactory(factory: ReaderScreenPresenter.Factory): Presenter.Factory = factory
+  public fun provideReaderScreenPresenterFactory(factory: ReaderScreenPresenterFactory): Presenter.Factory = factory
 
   @Provides
   @IntoSet
-  fun provideReaderScreenFactory(factory: Factory): Ui.Factory = factory
+  public fun provideReaderScreenFactory(factory: ReaderScreenFactory): Ui.Factory = factory
 }

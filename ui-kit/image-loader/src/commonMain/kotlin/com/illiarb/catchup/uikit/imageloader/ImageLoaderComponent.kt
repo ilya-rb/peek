@@ -8,14 +8,14 @@ import com.illiarb.catchup.core.appinfo.AppEnvironment
 import me.tatarka.inject.annotations.Provides
 import com.illiarb.catchup.core.logging.Logger as CoreLogger
 
-expect interface ImageLoaderPlatformComponent
+public expect interface ImageLoaderPlatformComponent
 
-interface ImageLoaderComponent : ImageLoaderPlatformComponent {
+public interface ImageLoaderComponent : ImageLoaderPlatformComponent {
 
-  val imageLoader: ImageLoader
+  public val imageLoader: ImageLoader
 
   @Provides
-  fun provideImageLoader(
+  public fun provideImageLoader(
     context: PlatformContext,
     debugLogger: Logger,
   ): ImageLoader {
@@ -34,7 +34,7 @@ interface ImageLoaderComponent : ImageLoaderPlatformComponent {
   }
 
   @Provides
-  fun provideDebugLogger(): Logger = object : Logger {
+  public fun provideDebugLogger(): Logger = object : Logger {
     override var minLevel: Logger.Level = Logger.Level.Debug
 
     override fun log(tag: String, level: Logger.Level, message: String?, throwable: Throwable?) {

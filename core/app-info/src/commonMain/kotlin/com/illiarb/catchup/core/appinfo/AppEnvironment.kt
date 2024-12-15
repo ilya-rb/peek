@@ -1,11 +1,11 @@
 package com.illiarb.catchup.core.appinfo
 
-enum class AppEnvironment {
+public enum class AppEnvironment {
   DEV,
   PROD,
   UNSPECIFIED;
 
-  companion object {
+  public companion object {
 
     private var environment: AppEnvironment = UNSPECIFIED
 
@@ -15,12 +15,12 @@ enum class AppEnvironment {
       }
     }
 
-    fun isDev(): Boolean {
+    public fun isDev(): Boolean {
       checkInitialized()
       return environment == DEV
     }
 
-    fun init(newEnvironment: AppEnvironment) {
+    public fun init(newEnvironment: AppEnvironment) {
       environment = newEnvironment
     }
   }

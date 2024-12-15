@@ -30,7 +30,7 @@ import com.illiarb.catchup.uikit.core.painter.TextWithBackgroundPainter
 import com.illiarb.catchup.uikit.imageloader.UrlImage
 
 @Composable
-fun SelectableCircleAvatar(
+public fun SelectableCircleAvatar(
   modifier: Modifier = Modifier,
   imageUrl: String,
   fallbackText: String,

@@ -5,7 +5,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 
 @Composable
-fun UiKitTheme(
+public fun UiKitTheme(
   useDarkTheme: Boolean = isSystemInDarkTheme(),
   useDynamicColors: Boolean,
   content: @Composable () -> Unit,

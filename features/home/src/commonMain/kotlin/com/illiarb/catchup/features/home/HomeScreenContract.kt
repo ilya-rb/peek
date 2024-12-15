@@ -15,10 +15,10 @@ import com.slack.circuit.runtime.screen.Screen
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
-interface HomeScreenContract {
+@CommonParcelize
+public object HomeScreen : Screen, CommonParcelable
 
-  @CommonParcelize
-  object HomeScreen : Screen, CommonParcelable
+internal interface HomeScreenContract {
 
   @Stable
   data class State(

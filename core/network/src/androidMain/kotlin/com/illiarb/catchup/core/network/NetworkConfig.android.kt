@@ -11,7 +11,7 @@ import kotlinx.serialization.json.Json
 import java.util.concurrent.TimeUnit
 import io.ktor.client.plugins.logging.Logger as KtorLogger
 
-actual fun createKtorClient(
+internal actual fun createKtorClient(
   config: NetworkConfig,
   plugins: List<HttpClientPlugin<*, *>>,
 ): HttpClient {

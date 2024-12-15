@@ -6,7 +6,7 @@ import com.illiarb.catchup.service.di.CatchupServiceComponent
 import com.illiarb.catchup.uikit.imageloader.ImageLoaderComponent
 import me.tatarka.inject.annotations.Provides
 
-interface AppComponent : NetworkComponent, CatchupServiceComponent, ImageLoaderComponent {
+internal interface AppComponent : NetworkComponent, CatchupServiceComponent, ImageLoaderComponent {
 
   @Provides
   fun provideAppDispatchers(): AppDispatchers = AppDispatchers()

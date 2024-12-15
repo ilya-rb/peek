@@ -3,12 +3,12 @@ package com.illiarb.catchup.core.network
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpClientPlugin
 
-data class NetworkConfig(
+public data class NetworkConfig(
   val apiUrl: String,
   val timeouts: TimeoutConfig,
 )
 
-data class TimeoutConfig(
+public data class TimeoutConfig(
   val connect: Long,
   val read: Long,
   val write: Long,

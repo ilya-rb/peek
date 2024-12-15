@@ -4,11 +4,11 @@ import com.illiarb.catchup.service.Database
 import me.tatarka.inject.annotations.Inject
 
 @Inject
-class DatabaseTransactionRunner(
+public class DatabaseTransactionRunner(
   private val db: Database,
 ) {
 
-  operator fun <T> invoke(block: () -> T): T {
+  public operator fun <T> invoke(block: () -> T): T {
     return db.transactionWithResult {
       block()
     }

@@ -42,6 +42,7 @@ include(
   ":core:data",
   "features:home",
   "features:reader",
+  "features:settings",
   ":ui-kit:core",
   ":ui-kit:resources",
   ":ui-kit:image-loader",

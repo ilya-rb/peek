@@ -5,13 +5,13 @@ import com.slack.circuit.runtime.ui.Ui
 import me.tatarka.inject.annotations.IntoSet
 import me.tatarka.inject.annotations.Provides
 
-interface HomeScreenComponent {
+public interface HomeScreenComponent {
 
   @Provides
   @IntoSet
-  fun bindHomeScreenPresenterFactory(factory: HomeScreenPresenter.Factory): Presenter.Factory = factory
+  public fun bindHomeScreenPresenterFactory(factory: HomeScreenPresenterFactory): Presenter.Factory = factory
 
   @Provides
   @IntoSet
-  fun bindHomeScreenUiFactory(factory: Factory): Ui.Factory = factory
+  public fun bindHomeScreenUiFactory(factory: HomeScreenFactory): Ui.Factory = factory
 }

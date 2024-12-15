@@ -8,7 +8,7 @@ import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.ui.Ui
 import me.tatarka.inject.annotations.Provides
 
-interface UiComponent : HomeScreenComponent, ReaderScreenComponent {
+internal interface UiComponent : HomeScreenComponent, ReaderScreenComponent {
 
   val circuit: Circuit
 

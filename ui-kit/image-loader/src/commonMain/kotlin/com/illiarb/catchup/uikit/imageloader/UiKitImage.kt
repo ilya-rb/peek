@@ -7,7 +7,7 @@ import androidx.compose.ui.layout.ContentScale
 import coil3.compose.AsyncImage
 
 @Composable
-fun UrlImage(
+public fun UrlImage(
   modifier: Modifier = Modifier,
   url: String,
   contentScale: ContentScale = ContentScale.Crop,

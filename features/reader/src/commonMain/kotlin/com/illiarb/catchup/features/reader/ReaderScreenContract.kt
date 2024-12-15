@@ -9,10 +9,10 @@ import com.illiarb.catchup.service.domain.Url
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.screen.Screen
 
-interface ReaderScreenContract {
+@CommonParcelize
+public data class ReaderScreen(val articleId: String) : Screen, CommonParcelable
 
-  @CommonParcelize
-  data class ReaderScreen(val articleId: String) : Screen, CommonParcelable
+internal interface ReaderScreenContract {
 
   @Stable
   data class State(

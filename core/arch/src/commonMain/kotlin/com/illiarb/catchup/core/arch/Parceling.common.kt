@@ -2,6 +2,6 @@ package com.illiarb.catchup.core.arch
 
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class CommonParcelize
+public annotation class CommonParcelize
 
-expect interface CommonParcelable
+public expect interface CommonParcelable

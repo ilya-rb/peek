@@ -7,16 +7,16 @@ import com.illiarb.catchup.service.repository.ArticlesRepository
 import com.illiarb.catchup.service.repository.NewsSourcesRepository
 import kotlinx.coroutines.flow.Flow
 
-interface CatchupService {
+public interface CatchupService {
 
-  fun collectLatestNewsFrom(kind: NewsSource.Kind): Flow<Async<List<Article>>>
+  public fun collectLatestNewsFrom(kind: NewsSource.Kind): Flow<Async<List<Article>>>
 
-  fun collectAvailableSources(): Flow<Async<Set<NewsSource>>>
+  public fun collectAvailableSources(): Flow<Async<Set<NewsSource>>>
 
-  fun collectArticleById(id: String): Flow<Async<Article>>
+  public fun collectArticleById(id: String): Flow<Async<Article>>
 }
 
-class DefaultCatchupService(
+internal class DefaultCatchupService(
   private val articlesRepository: ArticlesRepository,
   private val newsSourcesRepository: NewsSourcesRepository,
 ) : CatchupService {

@@ -59,10 +59,10 @@ import me.tatarka.inject.annotations.Inject
 import org.jetbrains.compose.resources.stringResource
 
 @Inject
-class Factory : Ui.Factory {
+public class ReaderScreenFactory : Ui.Factory {
   override fun create(screen: Screen, context: CircuitContext): Ui<*>? {
     return when (screen) {
-      is ReaderScreenContract.ReaderScreen -> {
+      is ReaderScreen -> {
         ui<ReaderScreenContract.State> { state, modifier ->
           ReaderScreen(modifier, state)
         }
@@ -75,7 +75,7 @@ class Factory : Ui.Factory {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReaderScreen(modifier: Modifier, state: ReaderScreenContract.State) {
+private fun ReaderScreen(modifier: Modifier, state: ReaderScreenContract.State) {
   val eventSink = state.eventSink
   val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 

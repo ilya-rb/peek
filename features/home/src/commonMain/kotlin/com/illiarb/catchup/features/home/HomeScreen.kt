@@ -72,10 +72,10 @@ import me.tatarka.inject.annotations.Inject
 import org.jetbrains.compose.resources.stringResource
 
 @Inject
-class Factory : Ui.Factory {
+public class HomeScreenFactory : Ui.Factory {
   override fun create(screen: Screen, context: CircuitContext): Ui<*>? {
     return when (screen) {
-      is HomeScreenContract.HomeScreen -> {
+      is HomeScreen -> {
         ui<HomeScreenContract.State> { state, _ ->
           HomeScreen(state)
         }
@@ -88,7 +88,7 @@ class Factory : Ui.Factory {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun HomeScreen(state: HomeScreenContract.State) {
+private fun HomeScreen(state: HomeScreenContract.State) {
   ContentWithOverlays {
     when {
       state.filtersShowing -> {
@@ -222,7 +222,7 @@ internal fun HomeScreen(state: HomeScreenContract.State) {
 }
 
 @Composable
-fun TabsLoading(modifier: Modifier = Modifier) {
+private fun TabsLoading(modifier: Modifier = Modifier) {
   LazyRow(
     modifier = modifier,
     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -238,7 +238,7 @@ fun TabsLoading(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun TabsContent(
+private fun TabsContent(
   modifier: Modifier = Modifier,
   tabs: ImmutableList<HomeScreenContract.Tab>,
   selectedTabIndex: Int,
@@ -259,7 +259,7 @@ fun TabsContent(
 }
 
 @Composable
-fun ArticlesLoading(modifier: Modifier = Modifier, contentPadding: PaddingValues) {
+private fun ArticlesLoading(modifier: Modifier = Modifier, contentPadding: PaddingValues) {
   LazyColumn(modifier = modifier, contentPadding = contentPadding) {
     items(
       count = 5,
@@ -271,7 +271,7 @@ fun ArticlesLoading(modifier: Modifier = Modifier, contentPadding: PaddingValues
 }
 
 @Composable
-fun ArticlesEmpty(
+private fun ArticlesEmpty(
   modifier: Modifier = Modifier,
   contentPadding: PaddingValues,
   onRefreshClick: () -> Unit,
@@ -299,7 +299,7 @@ fun ArticlesEmpty(
 }
 
 @Composable
-fun ArticlesContent(
+private fun ArticlesContent(
   modifier: Modifier = Modifier,
   contentPadding: PaddingValues,
   articles: List<Article>,

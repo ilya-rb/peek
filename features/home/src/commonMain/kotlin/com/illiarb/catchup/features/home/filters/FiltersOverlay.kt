@@ -25,21 +25,23 @@ import com.illiarb.catchup.service.domain.Tag
 import com.slack.circuit.overlay.OverlayHost
 import com.slack.circuit.overlay.OverlayNavigator
 
-expect suspend fun OverlayHost.showFiltersOverlay(model: FiltersOverlayModel): FiltersOverlayResult
+internal expect suspend fun OverlayHost.showFiltersOverlay(
+  model: FiltersOverlayModel
+): FiltersOverlayResult
 
-sealed interface FiltersOverlayResult {
+internal sealed interface FiltersOverlayResult {
   data class Saved(val tags: Set<Tag>) : FiltersOverlayResult
   data object Cancel : FiltersOverlayResult
 }
 
-data class FiltersOverlayModel(
+internal data class FiltersOverlayModel(
   val tags: Set<Tag>,
   val selectedTags: Set<Tag>,
 )
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun FiltersOverlay(
+internal fun FiltersOverlay(
   model: FiltersOverlayModel,
   navigator: OverlayNavigator<FiltersOverlayResult>,
 ) {

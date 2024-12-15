@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 
-class AsyncDataStore<Params, Domain>(
+public class AsyncDataStore<Params, Domain>(
   private val networkFetcher: suspend (Params) -> Domain,
   private val fromStorage: suspend (Params) -> Domain?,
   private val intoStorage: suspend (Params, Domain) -> Unit,
@@ -20,7 +20,7 @@ class AsyncDataStore<Params, Domain>(
    *  2. Force reload and time based cached strategy
    *  3. Async background reload method
    */
-  fun collect(params: Params, strategy: LoadStrategy): Flow<Async<Domain>> = flow {
+  public fun collect(params: Params, strategy: LoadStrategy): Flow<Async<Domain>> = flow {
     val memCached = suspendRunCatching { fromMemory.invoke(params) }
       .onFailure { error ->
         Logger.e(TAG, error) { "Failed to read from memory cache, skipping.." }
@@ -98,12 +98,12 @@ class AsyncDataStore<Params, Domain>(
     emit(Async.Error(error))
   }
 
-  sealed interface LoadStrategy {
-    data object CacheFirst : LoadStrategy
-    data object CacheOnly : LoadStrategy
+  public sealed interface LoadStrategy {
+    public data object CacheFirst : LoadStrategy
+    public data object CacheOnly : LoadStrategy
   }
 
-  companion object {
-    const val TAG = "AsyncDataStore"
+  internal companion object {
+    const val TAG: String = "AsyncDataStore"
   }
 }

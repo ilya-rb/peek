@@ -36,6 +36,7 @@ kotlin {
       implementation(projects.core.appInfo)
       implementation(projects.catchupService)
       implementation(projects.features.reader)
+      implementation(projects.features.settings)
     }
   }
 }
