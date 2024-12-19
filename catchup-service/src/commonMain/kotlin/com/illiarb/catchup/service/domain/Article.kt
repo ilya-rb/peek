@@ -11,6 +11,7 @@ public data class Article(
   val source: NewsSource.Kind,
   val authorName: String?,
   val content: ArticleContent?,
+  val saved: Boolean,
 )
 
 public data class ArticleContent(

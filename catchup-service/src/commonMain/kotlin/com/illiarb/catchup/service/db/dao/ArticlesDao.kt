@@ -2,6 +2,7 @@ package com.illiarb.catchup.service.db.dao
 
 import com.illiarb.catchup.core.coroutines.AppDispatchers
 import com.illiarb.catchup.core.coroutines.suspendRunCatching
+import com.illiarb.catchup.core.logging.Logger
 import com.illiarb.catchup.service.ArticleEntity
 import com.illiarb.catchup.service.Database
 import com.illiarb.catchup.service.db.DatabaseTransactionRunner
@@ -37,47 +38,74 @@ public class ArticlesDao(
     }
   }
 
+  public suspend fun saveArticle(article: Article): Result<Unit> {
+    return withContext(appDispatchers.io) {
+      suspendRunCatching {
+        db.articlesQueries.setSaved(
+          saved = if (article.saved) 1L else 0L,
+          id = article.id,
+        )
+      }
+    }.onFailure { error ->
+      Logger.e(TAG, error)
+    }
+  }
+
   public suspend fun deleteAndInsert(kind: NewsSource.Kind, articles: List<Article>): Result<Unit> {
     return withContext(appDispatchers.io) {
       suspendRunCatching {
         dbTransactionRunner {
-          db.articlesQueries.deleteBySource(kind)
-
-          articles.forEach { article ->
-            db.articlesQueries.insert(
-              id = article.id,
-              title = article.title,
-              shortSummary = article.shortSummary,
-              link = article.link,
-              tags = article.tags,
-              source = article.source,
-              createdAt = Clock.System.now(),
-              authorName = article.authorName,
-              content = article.content?.text,
-              estimatedReadingTimeSeconds = article.content?.estimatedReadingTime,
-            )
-          }
+          db.articlesQueries.deleteBySourceExceptSaved(kind)
+          articles.forEach(::insertArticle)
         }
       }
     }
   }
 
+  public suspend fun savedArticlesIds(): Result<List<String>> {
+    return withContext(appDispatchers.io) {
+      suspendRunCatching {
+        db.articlesQueries.savedArticlesIds().executeAsList()
+      }
+    }
+  }
+
+  private fun insertArticle(article: Article) {
+    db.articlesQueries.insert(
+      id = article.id,
+      title = article.title,
+      shortSummary = article.shortSummary,
+      link = article.link,
+      tags = article.tags,
+      source = article.source,
+      createdAt = Clock.System.now(),
+      authorName = article.authorName,
+      content = article.content?.text,
+      estimatedReadingTimeSeconds = article.content?.estimatedReadingTime,
+      saved = if (article.saved) 1L else 0L,
+    )
+  }
+
   private fun ArticleEntity.asArticle(): Article {
     return Article(
-      id,
-      title,
-      shortSummary,
-      link,
-      tags.orEmpty(),
-      source,
-      authorName,
-      content?.let {
+      id = id,
+      title = title,
+      shortSummary = shortSummary,
+      link = link,
+      tags = tags.orEmpty(),
+      source = source,
+      authorName = authorName,
+      content = content?.let {
         ArticleContent(
           text = it,
           estimatedReadingTime = requireNotNull(estimatedReadingTimeSeconds)
         )
-      }
+      },
+      saved = saved == 1L,
     )
   }
 
+  private companion object {
+    const val TAG = "ArticlesDao"
+  }
 }

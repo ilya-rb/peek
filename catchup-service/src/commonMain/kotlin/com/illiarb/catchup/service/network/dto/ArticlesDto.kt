@@ -27,7 +27,7 @@ internal data class ArticleDto(
   @SerialName("content") val content: ArticleContentDto?,
 ) {
 
-  fun asArticle(): Article {
+  fun asArticle(savedArticleIds: List<String>): Article {
     return Article(
       id = id,
       title = title,
@@ -36,6 +36,7 @@ internal data class ArticleDto(
       source = NewsSource.Kind.fromKey(source.key),
       tags = tags.orEmpty().map(::Tag),
       authorName = authorName,
+      saved = id in savedArticleIds,
       content = content?.let { content ->
         ArticleContent(
           text = content.text,

@@ -4,6 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import com.illiarb.catchup.core.arch.OpenUrlScreen
 import com.illiarb.catchup.core.data.Async
 import com.illiarb.catchup.core.data.mapContent
@@ -18,10 +20,12 @@ import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 
 @Inject
@@ -47,9 +51,10 @@ internal class HomeScreenPresenter(
 
   @Composable
   override fun present(): HomeScreenContract.State {
+    val coroutineScope = rememberStableCoroutineScope()
+
     var selectedTabIndex by rememberRetained { mutableStateOf(value = 0) }
-    var filtersShowing by rememberRetained { mutableStateOf(false) }
-    var reloadData by rememberRetained { mutableStateOf(false) }
+    var filtersShowing by rememberRetained { mutableStateOf(value = false) }
     var selectedTags by rememberRetained { mutableStateOf(emptySet<Tag>()) }
 
     val sources by produceRetainedState<Async<ImmutableList<HomeScreenContract.Tab>>>(
@@ -69,11 +74,20 @@ internal class HomeScreenPresenter(
       }
     }
 
-    val articles by produceRetainedState<Async<ImmutableList<Article>>>(
+    var manualTriggers by rememberRetained {
+      mutableStateOf(
+        ManualTriggers(
+          forceReload = false,
+          articleSaved = false,
+        )
+      )
+    }
+
+    val articles by produceRetainedState<Async<SnapshotStateList<Article>>>(
       initialValue = Async.Loading,
       key1 = selectedTabIndex,
       key2 = sources,
-      key3 = reloadData,
+      key3 = manualTriggers,
     ) {
       val source = when (val currentSources = sources) {
         is Async.Content -> currentSources.content.getOrNull(selectedTabIndex)
@@ -84,7 +98,7 @@ internal class HomeScreenPresenter(
         value = Async.Loading
       } else {
         catchupService.collectLatestNewsFrom(source.source.kind)
-          .mapContent { it.toImmutableList() }
+          .mapContent { it.toMutableStateList() }
           .collect { value = it }
       }
     }
@@ -93,13 +107,27 @@ internal class HomeScreenPresenter(
       when (event) {
         is Event.SavedClicked -> Unit
         is Event.SettingsClicked -> navigator.goTo(SettingsScreen)
-        is Event.ErrorRetryClicked -> reloadData = !reloadData
+        is Event.ErrorRetryClicked -> {
+          manualTriggers = manualTriggers.copy(
+            forceReload = !manualTriggers.forceReload
+          )
+        }
+
         is Event.FiltersClicked -> filtersShowing = true
         is Event.ArticleClicked -> {
           if (event.item.content != null) {
             navigator.goTo(ReaderScreen(event.item.id))
           } else {
             navigator.goTo(OpenUrlScreen(event.item.link.url))
+          }
+        }
+
+        is Event.ArticleBookmarkClicked -> {
+          coroutineScope.launch {
+            catchupService.saveArticle(event.item.copy(saved = !event.item.saved))
+              .onSuccess {
+                manualTriggers = manualTriggers.copy(articleSaved = !manualTriggers.articleSaved)
+              }
           }
         }
 
@@ -131,4 +159,9 @@ internal class HomeScreenPresenter(
       filtersShowing = filtersShowing,
     )
   }
+
+  data class ManualTriggers(
+    val forceReload: Boolean,
+    val articleSaved: Boolean,
+  )
 }

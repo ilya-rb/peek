@@ -23,6 +23,13 @@ internal fun ArticleCellPreview(darkTheme: Boolean) {
             title = title,
             caption = "Caption",
             author = "Author",
+            saved = false,
+            onClick = {
+
+            },
+            onBookmarkClick = {
+              
+            }
           )
         }
       )

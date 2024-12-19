@@ -1,17 +1,17 @@
 package com.illiarb.catchup.uikit.core.components
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.MoreHoriz
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,9 +25,11 @@ import com.illiarb.catchup.uikit.core.text.AuthorText
 public fun ArticleCell(
   modifier: Modifier = Modifier,
   title: String,
-  author: String? = null,
   caption: String,
-  onClick: () -> Unit = {},
+  saved: Boolean,
+  onClick: () -> Unit,
+  onBookmarkClick: () -> Unit,
+  author: String? = null,
 ) {
   Column(modifier = modifier.clickable { onClick.invoke() }) {
     val hasCaption = caption.isNotEmpty()
@@ -55,10 +57,7 @@ public fun ArticleCell(
       ),
     )
 
-    Row(
-      verticalAlignment = Alignment.CenterVertically,
-      modifier = Modifier.padding(bottom = 12.dp),
-    ) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
       if (author != null) {
         // TODO: Support large text correct trim
         AuthorText(
@@ -71,19 +70,25 @@ public fun ArticleCell(
 
       Spacer(Modifier.weight(1f))
 
-      Icon(
-        imageVector = Icons.Filled.BookmarkBorder,
-        tint = MaterialTheme.colorScheme.primary,
-        contentDescription = null,
-        modifier = Modifier.padding(end = 16.dp).padding(top = 8.dp)
-      )
+      IconButton(onClick = onBookmarkClick) {
+        Icon(
+          imageVector = if (saved) {
+            Icons.Filled.Bookmark
+          } else {
+            Icons.Filled.BookmarkBorder
+          },
+          tint = MaterialTheme.colorScheme.primary,
+          contentDescription = null,
+        )
+      }
 
-      Icon(
-        imageVector = Icons.Filled.MoreHoriz,
-        tint = MaterialTheme.colorScheme.primary,
-        contentDescription = null,
-        modifier = Modifier.padding(end = 24.dp).padding(top = 8.dp)
-      )
+      IconButton(onClick = {}) {
+        Icon(
+          imageVector = Icons.Filled.MoreHoriz,
+          tint = MaterialTheme.colorScheme.primary,
+          contentDescription = null,
+        )
+      }
     }
   }
 }

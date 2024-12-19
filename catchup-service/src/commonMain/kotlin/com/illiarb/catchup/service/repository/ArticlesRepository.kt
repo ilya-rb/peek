@@ -7,7 +7,6 @@ import com.illiarb.catchup.service.db.dao.ArticlesDao
 import com.illiarb.catchup.service.di.CatchupServiceComponent.Cache
 import com.illiarb.catchup.service.domain.Article
 import com.illiarb.catchup.service.domain.NewsSource
-import com.illiarb.catchup.service.network.dto.ArticleDto
 import com.illiarb.catchup.service.network.dto.ArticlesDto
 import io.ktor.client.call.body
 import kotlinx.coroutines.flow.Flow
@@ -28,7 +27,8 @@ public class ArticlesRepository(
       httpClient.get(path = "news", parameters = mapOf("source" to kind.key))
         .map {
           val response = it.body<ArticlesDto>()
-          response.articles.map(ArticleDto::asArticle)
+          val savedIds = articlesDao.savedArticlesIds().getOrNull().orEmpty()
+          response.articles.map { dto -> dto.asArticle(savedIds) }
         }
         .getOrThrow()
     },
@@ -44,6 +44,9 @@ public class ArticlesRepository(
     intoStorage = { kind, articles ->
       articlesDao.deleteAndInsert(kind, articles)
     },
+    invalidateMemory = { kind ->
+      memoryCache.value.delete(kind.key)
+    }
   )
 
   public fun articlesFrom(kind: NewsSource.Kind): Flow<Async<List<Article>>> {
@@ -68,6 +71,12 @@ public class ArticlesRepository(
       emit(Async.Loading)
     }.catch { error ->
       emit(Async.Error(error))
+    }
+  }
+
+  public suspend fun saveArticle(article: Article): Result<Unit> {
+    return articlesDao.saveArticle(article).onSuccess {
+      articlesStore.invalidateMemory(article.source)
     }
   }
 

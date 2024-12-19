@@ -1,6 +1,8 @@
 package com.illiarb.catchup.features.home
 
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import com.illiarb.catchup.core.arch.CommonParcelable
 import com.illiarb.catchup.core.arch.CommonParcelize
 import com.illiarb.catchup.core.data.Async
@@ -13,7 +15,6 @@ import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
 
 @CommonParcelize
 public object HomeScreen : Screen, CommonParcelable
@@ -22,7 +23,7 @@ internal interface HomeScreenContract {
 
   @Stable
   data class State(
-    private val articles: Async<ImmutableList<Article>>,
+    private val articles: Async<SnapshotStateList<Article>>,
     val tabs: Async<ImmutableList<Tab>>,
     val selectedTags: Set<Tag>,
     val selectedTabIndex: Int,
@@ -30,7 +31,7 @@ internal interface HomeScreenContract {
     val eventSink: (Event) -> Unit,
   ) : CircuitUiState {
 
-    val content: Async<ImmutableList<Article>>
+    val content: Async<SnapshotStateList<Article>>
       get() = when (articles) {
         is Async.Content -> {
           if (selectedTags.isEmpty()) {
@@ -41,7 +42,7 @@ internal interface HomeScreenContract {
                 article.tags.any { tag ->
                   selectedTags.contains(tag)
                 }
-              }.toImmutableList()
+              }.toMutableStateList()
             )
           }
         }
@@ -69,6 +70,7 @@ internal interface HomeScreenContract {
     data object SettingsClicked : Event
     data class TabClicked(val source: NewsSource) : Event
     data class ArticleClicked(val item: Article) : Event
+    data class ArticleBookmarkClicked(val item: Article) : Event
     data class FiltersResult(val result: FiltersOverlayResult) : Event
   }
 

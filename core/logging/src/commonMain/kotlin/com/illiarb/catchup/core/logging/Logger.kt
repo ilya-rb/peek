@@ -20,7 +20,8 @@ public object Logger {
     Napier.v(tag = tag, throwable = throwable, message = messageLazy)
   }
 
-  public fun e(tag: String, throwable: Throwable? = null, messageLazy: () -> String) {
+  public fun e(tag: String, throwable: Throwable? = null, messageLazy: (() -> String)? = null) {
+    val messageLazy = messageLazy ?: { "" }
     Napier.e(tag = tag, throwable = throwable, message = messageLazy)
   }
 }

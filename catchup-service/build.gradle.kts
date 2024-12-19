@@ -42,6 +42,7 @@ sqldelight {
   databases {
     create("Database") {
       packageName = "com.illiarb.catchup.service"
+      schemaOutputDirectory.set(File("src/commonMain/sqldelight/databases"))
     }
   }
 }

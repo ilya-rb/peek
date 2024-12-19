@@ -12,6 +12,7 @@ public class AsyncDataStore<Params, Domain>(
   private val intoStorage: suspend (Params, Domain) -> Unit,
   private val fromMemory: (Params) -> Domain?,
   private val intoMemory: (Params, Domain) -> Unit,
+  private val invalidateMemory: (Params) -> Unit = {},
 ) {
 
   /**
@@ -43,7 +44,7 @@ public class AsyncDataStore<Params, Domain>(
         .onSuccess { fromStorage ->
           if (fromStorage != null) {
             suspendRunCatching { intoMemory.invoke(params, fromStorage) }.onFailure { error ->
-              Logger.e(TAG, error) { "Failed to store warmup memory cache" }
+              Logger.e(TAG, error) { "Failed to warmup memory cache" }
             }
           }
         }
@@ -96,6 +97,15 @@ public class AsyncDataStore<Params, Domain>(
     )
   }.catch { error ->
     emit(Async.Error(error))
+  }
+
+  public suspend fun updateLocal(params: Params, domain: Domain) {
+    intoStorage.invoke(params, domain)
+    intoMemory.invoke(params, domain)
+  }
+
+  public fun invalidateMemory(params: Params) {
+    invalidateMemory.invoke(params)
   }
 
   public sealed interface LoadStrategy {

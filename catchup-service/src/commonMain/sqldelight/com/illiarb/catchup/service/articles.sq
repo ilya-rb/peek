@@ -15,7 +15,8 @@ CREATE TABLE IF NOT EXISTS `articleEntity`(
     `createdAt` INTEGER AS Instant NOT NULL,
     `authorName` TEXT,
     `content` TEXT,
-    `estimatedReadingTimeSeconds` INTEGER AS Duration
+    `estimatedReadingTimeSeconds` INTEGER AS Duration,
+    `saved` INTEGER NOT NULL
 );
 
 articlesBySource:
@@ -24,8 +25,15 @@ SELECT * FROM articleEntity WHERE source = :source;
 articleById:
 SELECT * FROM articleEntity WHERE id = :id LIMIT 1;
 
-deleteBySource:
-DELETE FROM articleEntity WHERE source = :source;
+savedArticlesIds:
+SELECT id FROM articleEntity WHERE saved = 1;
+
+deleteBySourceExceptSaved:
+DELETE FROM articleEntity WHERE source = :source AND saved = 0;
+
+setSaved:
+UPDATE articleEntity SET saved = :saved
+WHERE id = :id;
 
 insert:
 INSERT INTO articleEntity (
@@ -38,7 +46,8 @@ INSERT INTO articleEntity (
     `createdAt`,
     `authorName`,
     `content`,
-    `estimatedReadingTimeSeconds`
+    `estimatedReadingTimeSeconds`,
+    `saved`
 ) VALUES (
     :id,
     :title,
@@ -49,7 +58,8 @@ INSERT INTO articleEntity (
     :createdAt,
     :authorName,
     :content,
-    :estimatedReadingTimeSeconds
+    :estimatedReadingTimeSeconds,
+    :saved
 );
 
 

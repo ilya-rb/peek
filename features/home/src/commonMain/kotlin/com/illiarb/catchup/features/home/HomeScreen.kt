@@ -5,7 +5,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -33,12 +32,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import com.illiarb.catchup.core.data.Async
+import com.illiarb.catchup.features.home.HomeScreenContract.Event
 import com.illiarb.catchup.features.home.filters.FiltersOverlayModel
 import com.illiarb.catchup.features.home.filters.showFiltersOverlay
 import com.illiarb.catchup.service.domain.Article
@@ -97,7 +98,7 @@ private fun HomeScreen(state: HomeScreenContract.State) {
           val result = showFiltersOverlay(
             FiltersOverlayModel(state.articleTags, state.selectedTags)
           )
-          state.eventSink.invoke(HomeScreenContract.Event.FiltersResult(result))
+          state.eventSink.invoke(Event.FiltersResult(result))
         }
       }
     }
@@ -127,13 +128,13 @@ private fun HomeScreen(state: HomeScreenContract.State) {
             }
           },
           actions = {
-            IconButton(onClick = { eventSink.invoke(HomeScreenContract.Event.SettingsClicked) }) {
+            IconButton(onClick = { eventSink.invoke(Event.SettingsClicked) }) {
               Icon(
                 imageVector = Icons.Filled.Settings,
                 contentDescription = stringResource(Res.string.acsb_action_settings),
               )
             }
-            IconButton(onClick = { eventSink.invoke(HomeScreenContract.Event.SavedClicked) }) {
+            IconButton(onClick = { eventSink.invoke(Event.SavedClicked) }) {
               Icon(
                 imageVector = Icons.Filled.Bookmark,
                 contentDescription = stringResource(Res.string.acsb_action_saved),
@@ -173,7 +174,7 @@ private fun HomeScreen(state: HomeScreenContract.State) {
             if (hasFilters) {
               FloatingActionButton(
                 onClick = {
-                  eventSink.invoke(HomeScreenContract.Event.FiltersClicked)
+                  eventSink.invoke(Event.FiltersClicked)
                 }
               ) {
                 Icon(
@@ -187,13 +188,14 @@ private fun HomeScreen(state: HomeScreenContract.State) {
       },
     ) { innerPadding ->
       AnimatedContent(
+        contentKey = { it is Async.Content },
         targetState = state.content,
         transitionSpec = { fadeIn().togetherWith(fadeOut()) },
       ) { targetState ->
         when {
           targetState is Async.Error || state.tabs is Async.Error -> {
             FullscreenErrorState(Modifier.padding(innerPadding), ErrorStateKind.UNKNOWN) {
-              eventSink.invoke(HomeScreenContract.Event.ErrorRetryClicked)
+              eventSink.invoke(Event.ErrorRetryClicked)
             }
           }
 
@@ -204,7 +206,7 @@ private fun HomeScreen(state: HomeScreenContract.State) {
           targetState is Async.Content -> {
             if (targetState.content.isEmpty()) {
               ArticlesEmpty(contentPadding = innerPadding) {
-                eventSink.invoke(HomeScreenContract.Event.ErrorRetryClicked)
+                eventSink.invoke(Event.ErrorRetryClicked)
               }
             } else {
               ArticlesContent(
@@ -241,7 +243,7 @@ private fun TabsContent(
   modifier: Modifier = Modifier,
   tabs: ImmutableList<HomeScreenContract.Tab>,
   selectedTabIndex: Int,
-  eventSink: (HomeScreenContract.Event) -> Unit,
+  eventSink: (Event) -> Unit,
 ) {
   HorizontalList(
     modifier = modifier,
@@ -251,7 +253,7 @@ private fun TabsContent(
         imageUrl = tab.imageUrl,
         selected = index == selectedTabIndex,
         fallbackText = tab.source.kind.key.uppercase(),
-        onClick = { eventSink.invoke(HomeScreenContract.Event.TabClicked(tab.source)) }
+        onClick = { eventSink.invoke(Event.TabClicked(tab.source)) }
       )
     },
   )
@@ -301,8 +303,8 @@ private fun ArticlesEmpty(
 private fun ArticlesContent(
   modifier: Modifier = Modifier,
   contentPadding: PaddingValues,
-  articles: List<Article>,
-  eventSink: (HomeScreenContract.Event) -> Unit,
+  articles: SnapshotStateList<Article>,
+  eventSink: (Event) -> Unit,
 ) {
   LazyColumn(modifier, contentPadding = contentPadding) {
     items(
@@ -313,8 +315,12 @@ private fun ArticlesContent(
           title = article.title,
           author = article.authorName,
           caption = article.tags.firstOrNull()?.value.orEmpty(),
+          saved = article.saved,
           onClick = {
-            eventSink.invoke(HomeScreenContract.Event.ArticleClicked(article))
+            eventSink.invoke(Event.ArticleClicked(article))
+          },
+          onBookmarkClick = {
+            eventSink.invoke(Event.ArticleBookmarkClicked(article))
           },
           modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 8.dp)
