@@ -18,8 +18,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Bed
+import androidx.compose.material.icons.outlined.Bookmark
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -136,8 +139,12 @@ private fun HomeScreen(state: HomeScreenContract.State) {
             }
             IconButton(onClick = { eventSink.invoke(Event.SavedClicked) }) {
               Icon(
-                imageVector = Icons.Filled.Bookmark,
                 contentDescription = stringResource(Res.string.acsb_action_saved),
+                imageVector = if (state.onlyBookmarkedShowing) {
+                  Icons.Filled.Bookmark
+                } else {
+                  Icons.Filled.BookmarkBorder
+                },
               )
             }
           },

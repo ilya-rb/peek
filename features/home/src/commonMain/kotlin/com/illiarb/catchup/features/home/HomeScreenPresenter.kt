@@ -15,7 +15,6 @@ import com.illiarb.catchup.features.reader.ReaderScreen
 import com.illiarb.catchup.features.settings.SettingsScreen
 import com.illiarb.catchup.service.CatchupService
 import com.illiarb.catchup.service.domain.Article
-import com.illiarb.catchup.service.domain.Tag
 import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitContext
@@ -55,7 +54,9 @@ internal class HomeScreenPresenter(
 
     var selectedTabIndex by rememberRetained { mutableStateOf(value = 0) }
     var filtersShowing by rememberRetained { mutableStateOf(value = false) }
-    var selectedTags by rememberRetained { mutableStateOf(emptySet<Tag>()) }
+    var articlesFilter by rememberRetained {
+      mutableStateOf(ArticlesFilter.Composite(filters = emptySet()))
+    }
 
     val sources by produceRetainedState<Async<ImmutableList<HomeScreenContract.Tab>>>(
       initialValue = Async.Loading,
@@ -105,7 +106,10 @@ internal class HomeScreenPresenter(
 
     fun eventSink(event: Event) {
       when (event) {
-        is Event.SavedClicked -> Unit
+        is Event.SavedClicked -> {
+          articlesFilter = articlesFilter.withSaved(ArticlesFilter.Saved)
+        }
+
         is Event.SettingsClicked -> navigator.goTo(SettingsScreen)
         is Event.ErrorRetryClicked -> {
           manualTriggers = manualTriggers.copy(
@@ -135,7 +139,7 @@ internal class HomeScreenPresenter(
           filtersShowing = false
 
           if (event.result is FiltersOverlayResult.Saved) {
-            selectedTags = event.result.tags
+            articlesFilter = articlesFilter.withTags(ArticlesFilter.ByTag(event.result.tags))
           }
         }
 
@@ -154,9 +158,9 @@ internal class HomeScreenPresenter(
       articles = articles,
       tabs = sources,
       selectedTabIndex = selectedTabIndex,
-      selectedTags = selectedTags,
       eventSink = ::eventSink,
       filtersShowing = filtersShowing,
+      articlesFilter = articlesFilter,
     )
   }
 

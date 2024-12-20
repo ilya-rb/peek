@@ -24,8 +24,8 @@ internal interface HomeScreenContract {
   @Stable
   data class State(
     private val articles: Async<SnapshotStateList<Article>>,
+    private val articlesFilter: ArticlesFilter.Composite,
     val tabs: Async<ImmutableList<Tab>>,
-    val selectedTags: Set<Tag>,
     val selectedTabIndex: Int,
     val filtersShowing: Boolean,
     val eventSink: (Event) -> Unit,
@@ -34,21 +34,24 @@ internal interface HomeScreenContract {
     val content: Async<SnapshotStateList<Article>>
       get() = when (articles) {
         is Async.Content -> {
-          if (selectedTags.isEmpty()) {
-            articles
-          } else {
-            articles.copy(
-              articles.content.filter { article ->
-                article.tags.any { tag ->
-                  selectedTags.contains(tag)
-                }
-              }.toMutableStateList()
-            )
-          }
+          articles.copy(
+            content = articlesFilter.apply(articles.content).toMutableStateList()
+          )
         }
 
         else -> articles
       }
+
+    val onlyBookmarkedShowing: Boolean =
+      articlesFilter.filters.contains(ArticlesFilter.Saved)
+
+    val selectedTags: Set<Tag>
+      get() = articlesFilter.filters
+        .firstOrNull { it is ArticlesFilter.ByTag }
+        ?.let {
+          require(it is ArticlesFilter.ByTag)
+          it.tags
+        }.orEmpty()
 
     val articleTags: Set<Tag>
       get() = when (articles) {
