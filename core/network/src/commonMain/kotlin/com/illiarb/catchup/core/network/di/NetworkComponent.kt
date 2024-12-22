@@ -1,5 +1,7 @@
 package com.illiarb.catchup.core.network.di
 
+import com.illiarb.catchup.core.appinfo.AppConfiguration
+import com.illiarb.catchup.core.appinfo.AppEnvironment
 import com.illiarb.catchup.core.coroutines.AppDispatchers
 import com.illiarb.catchup.core.network.DefaultHttpClient
 import com.illiarb.catchup.core.network.HttpClient
@@ -8,7 +10,6 @@ import com.illiarb.catchup.core.network.TimeoutConfig
 import com.illiarb.catchup.core.network.createKtorClient
 import com.illiarb.catchup.core.network.plugins.debugDelayPlugin
 import io.ktor.client.plugins.HttpClientPlugin
-import io.ktor.client.plugins.api.createClientPlugin
 import me.tatarka.inject.annotations.Provides
 import io.ktor.client.HttpClient as KtorClient
 
@@ -21,10 +22,18 @@ public interface NetworkComponent {
   ): KtorClient = createKtorClient(config, plugins)
 
   @Provides
-  public fun providePlugins(): List<HttpClientPlugin<*, *>> {
-    return listOf(
-      debugDelayPlugin(),
-    )
+  public fun providePlugins(
+    appConfiguration: AppConfiguration,
+    environment: AppEnvironment,
+  ): List<HttpClientPlugin<*, *>> {
+    return when (environment) {
+      AppEnvironment.PROD -> emptyList()
+      AppEnvironment.DEV -> {
+        listOf(
+          debugDelayPlugin(appConfiguration)
+        )
+      }
+    }
   }
 
   @Provides

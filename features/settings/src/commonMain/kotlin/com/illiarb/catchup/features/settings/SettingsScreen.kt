@@ -2,31 +2,24 @@ package com.illiarb.catchup.features.settings
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.illiarb.catchup.core.appinfo.DebugConfig
+import com.illiarb.catchup.features.settings.SettingsScreenContract.Event
 import com.illiarb.catchup.uikit.core.components.SwitchCell
 import com.illiarb.catchup.uikit.resources.Res
 import com.illiarb.catchup.uikit.resources.acsb_navigation_back
-import com.illiarb.catchup.uikit.resources.acsb_switch_checked
 import com.illiarb.catchup.uikit.resources.settings_dynamic_colors_subtitle
 import com.illiarb.catchup.uikit.resources.settings_dynamic_colors_title
 import com.illiarb.catchup.uikit.resources.settings_screen_title
@@ -64,7 +57,7 @@ private fun SettingsScreen(state: SettingsScreenContract.State) {
           Text(stringResource(Res.string.settings_screen_title))
         },
         navigationIcon = {
-          IconButton(onClick = { events.invoke(SettingsScreenContract.Event.NavigationIconClick) }) {
+          IconButton(onClick = { events.invoke(Event.NavigationIconClick) }) {
             Icon(
               imageVector = Icons.AutoMirrored.Filled.ArrowBack,
               contentDescription = stringResource(Res.string.acsb_navigation_back),
@@ -75,14 +68,39 @@ private fun SettingsScreen(state: SettingsScreenContract.State) {
     }
   ) { innerPadding ->
     Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
-      SwitchCell(
-        checked = state.dynamicColorsEnabled,
-        title = stringResource(Res.string.settings_dynamic_colors_title),
-        subtitle = stringResource(Res.string.settings_dynamic_colors_subtitle),
-      ) { checked ->
-        events.invoke(SettingsScreenContract.Event.MaterialColorsToggleChecked(checked))
+      Column {
+        SwitchCell(
+          checked = state.dynamicColorsEnabled,
+          title = stringResource(Res.string.settings_dynamic_colors_title),
+          subtitle = stringResource(Res.string.settings_dynamic_colors_subtitle),
+        ) { checked ->
+          events.invoke(Event.MaterialColorsToggleChecked(checked))
+        }
+        if (state.debugSettings != null) {
+          DebugSettings(
+            modifier = Modifier.padding(top = 16.dp),
+            settings = state.debugSettings,
+          ) {
+            events.invoke(Event.NetworkDelayChanged(it))
+          }
+        }
       }
     }
   }
+}
+
+@Composable
+private fun DebugSettings(
+  modifier: Modifier = Modifier,
+  settings: DebugConfig,
+  onNetworkDelayChanged: (Boolean) -> Unit,
+) {
+  SwitchCell(
+    modifier = modifier,
+    checked = settings.networkDelayEnabled,
+    title = "Network request delay",
+    subtitle = "Delay each network request by 3 sec",
+    onChecked = onNetworkDelayChanged,
+  )
 }
 

@@ -13,9 +13,12 @@ public expect interface ImageLoaderPlatformComponent
 
 public interface ImageLoaderComponent : ImageLoaderPlatformComponent {
 
+  public val imageLoader: ImageLoader
+
   @Provides
   @AppScope
   public fun provideImageLoader(
+    environment: AppEnvironment,
     context: PlatformContext,
     debugLogger: Logger,
   ): ImageLoader {
@@ -26,7 +29,7 @@ public interface ImageLoaderComponent : ImageLoaderPlatformComponent {
           .build()
       }
       .apply {
-        if (AppEnvironment.isDev()) {
+        if (environment.isDev) {
           logger(debugLogger)
         }
       }

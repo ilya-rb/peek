@@ -2,9 +2,9 @@ package com.illiarb.catchup.service.repository
 
 import com.illiarb.catchup.core.data.Async
 import com.illiarb.catchup.core.data.AsyncDataStore
+import com.illiarb.catchup.core.data.ConcurrentHashMapCache
 import com.illiarb.catchup.core.network.HttpClient
 import com.illiarb.catchup.service.db.dao.ArticlesDao
-import com.illiarb.catchup.service.di.CatchupServiceComponent.Cache
 import com.illiarb.catchup.service.domain.Article
 import com.illiarb.catchup.service.domain.NewsSource
 import com.illiarb.catchup.service.network.dto.ArticlesDto
@@ -18,7 +18,7 @@ import me.tatarka.inject.annotations.Inject
 @Inject
 public class ArticlesRepository(
   private val httpClient: HttpClient,
-  private val memoryCache: Cache,
+  private val memoryCache: ConcurrentHashMapCache,
   private val articlesDao: ArticlesDao,
 ) {
 
@@ -33,10 +33,10 @@ public class ArticlesRepository(
         .getOrThrow()
     },
     fromMemory = { kind ->
-      memoryCache.value.get(kind.key)
+      memoryCache().get(kind.key)
     },
     intoMemory = { kind, articles ->
-      memoryCache.value.put(kind.key, articles)
+      memoryCache().put(kind.key, articles)
     },
     fromStorage = { kind ->
       articlesDao.articlesBySource(kind).getOrNull()
@@ -45,7 +45,7 @@ public class ArticlesRepository(
       articlesDao.deleteAndInsert(kind, articles)
     },
     invalidateMemory = { kind ->
-      memoryCache.value.delete(kind.key)
+      memoryCache().delete(kind.key)
     }
   )
 

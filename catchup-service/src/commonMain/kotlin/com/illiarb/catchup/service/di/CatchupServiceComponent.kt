@@ -2,8 +2,8 @@ package com.illiarb.catchup.service.di
 
 import app.cash.sqldelight.db.SqlDriver
 import com.illiarb.catchup.core.arch.di.AppScope
-import com.illiarb.catchup.core.data.HashMapCache
-import com.illiarb.catchup.core.data.MemoryCache
+import com.illiarb.catchup.core.data.ConcurrentHashMapCache
+import com.illiarb.catchup.core.data.DefaultConcurrentHashMapCache
 import com.illiarb.catchup.service.ArticleEntity
 import com.illiarb.catchup.service.CatchupService
 import com.illiarb.catchup.service.Database
@@ -18,9 +18,12 @@ public expect interface SqlDatabasePlatformComponent
 
 public interface CatchupServiceComponent : SqlDatabasePlatformComponent {
 
+  public val catchupService: CatchupService
+
   @AppScope
   @Provides
-  public fun provideMemoryCache(): Cache = Cache(HashMapCache())
+  public fun provideMemoryCache(): ConcurrentHashMapCache =
+    ConcurrentHashMapCache(DefaultConcurrentHashMapCache())
 
   @AppScope
   @Provides
@@ -47,6 +50,4 @@ public interface CatchupServiceComponent : SqlDatabasePlatformComponent {
       image_urlAdapter = DatabaseAdapters.urlAdapter,
     )
   )
-
-  public data class Cache(val value: MemoryCache<String>)
 }

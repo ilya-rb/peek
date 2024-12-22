@@ -49,6 +49,7 @@ kotlin {
       implementation(projects.core.coroutines)
       implementation(projects.core.logging)
       implementation(projects.core.network)
+      implementation(projects.core.data)
       implementation(projects.features.home)
       implementation(projects.features.reader)
       implementation(projects.features.settings)

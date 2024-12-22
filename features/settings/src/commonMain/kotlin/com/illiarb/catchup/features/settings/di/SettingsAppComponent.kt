@@ -7,6 +7,8 @@ import me.tatarka.inject.annotations.Provides
 
 public interface SettingsAppComponent {
 
+  public val settingsService: SettingsService
+
   @AppScope
   @Provides
   public fun provideSettingsService(): SettingsService {
