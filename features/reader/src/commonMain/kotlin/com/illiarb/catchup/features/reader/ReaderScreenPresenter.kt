@@ -2,11 +2,14 @@ package com.illiarb.catchup.features.reader
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.illiarb.catchup.core.arch.OpenUrlScreen
 import com.illiarb.catchup.core.data.Async
 import com.illiarb.catchup.service.CatchupService
 import com.illiarb.catchup.service.domain.Article
 import com.slack.circuit.retained.produceRetainedState
+import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
@@ -48,19 +51,23 @@ internal class ReaderScreenPresenter(
         value = it
       }
     }
+    var topBarPopupShowing by rememberRetained { mutableStateOf(false) }
 
-    return ReaderScreenContract.State(article) { event ->
+    return ReaderScreenContract.State(
+      article = article,
+      topBarPopupShowing = topBarPopupShowing,
+    ) { event ->
       when (event) {
-        is ReaderScreenContract.Event.NavigationIconClicked -> {
-          navigator.pop()
-        }
+        is ReaderScreenContract.Event.NavigationIconClicked -> navigator.pop()
+        is ReaderScreenContract.Event.SummarizeClicked -> Unit
+        is ReaderScreenContract.Event.TopBarMenuClicked -> topBarPopupShowing = true
+        is ReaderScreenContract.Event.TopBarMenuDismissed -> topBarPopupShowing = false
+        is ReaderScreenContract.Event.ErrorRetryClicked -> Unit
+        is ReaderScreenContract.Event.OpenInBrowserClicked -> {
+          val content = article
+          require(content is Async.Content)
 
-        is ReaderScreenContract.Event.LinkClicked -> {
-          navigator.goTo(OpenUrlScreen(event.url.url))
-        }
-
-        is ReaderScreenContract.Event.ErrorRetryClicked -> {
-
+          navigator.goTo(OpenUrlScreen(content.content.link.url))
         }
       }
     }

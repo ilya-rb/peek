@@ -43,13 +43,7 @@ internal sealed interface ArticlesFilter {
 
     fun withTags(byTag: ByTag): Composite {
       return copy(
-        filters = filters.map { item ->
-          if (item is ByTag) {
-            byTag
-          } else {
-            item
-          }
-        }.toSet()
+        filters = filters.filter { it !is ByTag }.plus(byTag).toSet()
       )
     }
   }

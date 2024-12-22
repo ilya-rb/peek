@@ -5,7 +5,6 @@ import com.illiarb.catchup.core.arch.CommonParcelable
 import com.illiarb.catchup.core.arch.CommonParcelize
 import com.illiarb.catchup.core.data.Async
 import com.illiarb.catchup.service.domain.Article
-import com.illiarb.catchup.service.domain.Url
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.screen.Screen
 
@@ -17,12 +16,16 @@ internal interface ReaderScreenContract {
   @Stable
   data class State(
     val article: Async<Article>,
+    val topBarPopupShowing: Boolean,
     val eventSink: (Event) -> Unit,
   ) : CircuitUiState
 
   sealed interface Event {
     data object NavigationIconClicked : Event
-    data class LinkClicked(val url: Url) : Event
+    data object TopBarMenuClicked : Event
+    data object TopBarMenuDismissed : Event
+    data object OpenInBrowserClicked : Event
+    data object SummarizeClicked : Event
     data object ErrorRetryClicked : Event
   }
 }

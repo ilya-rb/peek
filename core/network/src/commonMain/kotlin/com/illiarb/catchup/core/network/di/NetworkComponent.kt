@@ -14,20 +14,20 @@ import io.ktor.client.HttpClient as KtorClient
 
 public interface NetworkComponent {
 
-  @[Provides]
+  @Provides
   public fun provideKtorClient(
     config: NetworkConfig,
     plugins: List<HttpClientPlugin<*, *>>,
   ): KtorClient = createKtorClient(config, plugins)
 
-  @[Provides]
+  @Provides
   public fun providePlugins(): List<HttpClientPlugin<*, *>> {
     return listOf(
       debugDelayPlugin(),
     )
   }
 
-  @[Provides]
+  @Provides
   public fun provideNetworkConfig(): NetworkConfig {
     return NetworkConfig(
       apiUrl = "http://10.0.2.2:8000", // https://developer.android.com/studio/run/emulator-networking
@@ -39,7 +39,7 @@ public interface NetworkComponent {
     )
   }
 
-  @[Provides]
+  @Provides
   public fun provideHttpClient(
     appDispatchers: AppDispatchers,
     config: NetworkConfig,

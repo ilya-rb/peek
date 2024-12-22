@@ -14,8 +14,7 @@ public interface SettingsService {
   }
 }
 
-internal class DefaultSettingsService(
-) : SettingsService {
+internal class DefaultSettingsService : SettingsService {
 
   private val settings = mapOf(
     SettingsService.SettingType.DYNAMIC_COLORS to MemoryField(value = false)

@@ -1,23 +1,20 @@
 package com.illiarb.catchup.features.reader
 
 import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.outlined.Timer
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Summarize
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,29 +25,29 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import com.illiarb.catchup.core.data.Async
 import com.illiarb.catchup.features.reader.ReaderScreenContract.Event
 import com.illiarb.catchup.service.domain.Article
-import com.illiarb.catchup.service.domain.Url
 import com.illiarb.catchup.uikit.core.components.ArticleReaderLoading
 import com.illiarb.catchup.uikit.core.components.ErrorStateKind
 import com.illiarb.catchup.uikit.core.components.FullscreenErrorState
-import com.illiarb.catchup.uikit.core.components.HtmlView
+import com.illiarb.catchup.uikit.core.components.TopAppBarTitleLoading
+import com.illiarb.catchup.uikit.core.components.WebView
 import com.illiarb.catchup.uikit.core.configuration.getScreenWidth
-import com.illiarb.catchup.uikit.core.text.ReadingTimeText
 import com.illiarb.catchup.uikit.resources.Res
-import com.illiarb.catchup.uikit.resources.acsb_icon_reader_reading_time
+import com.illiarb.catchup.uikit.resources.acsb_action_more
+import com.illiarb.catchup.uikit.resources.acsb_action_open_in_browser
+import com.illiarb.catchup.uikit.resources.acsb_action_summarize
+import com.illiarb.catchup.uikit.resources.acsb_navigation_back
+import com.illiarb.catchup.uikit.resources.reader_action_open_in_browser
+import com.illiarb.catchup.uikit.resources.reader_action_summarize
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
@@ -77,7 +74,7 @@ public class ReaderScreenFactory : Ui.Factory {
 @Composable
 private fun ReaderScreen(modifier: Modifier, state: ReaderScreenContract.State) {
   val eventSink = state.eventSink
-  val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+  val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
   val startColor = MaterialTheme.colorScheme.surfaceContainerLow
   val endColor = MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.4f)
@@ -109,28 +106,88 @@ private fun ReaderScreen(modifier: Modifier, state: ReaderScreenContract.State) 
           IconButton(onClick = { eventSink.invoke(Event.NavigationIconClicked) }) {
             Icon(
               imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-              contentDescription = "Go back",
+              contentDescription = stringResource(Res.string.acsb_navigation_back),
             )
           }
         },
-        title = {},
+        actions = {
+          Box {
+            IconButton(
+              onClick = { eventSink.invoke(Event.TopBarMenuClicked) },
+              enabled = state.article is Async.Content,
+            ) {
+              Icon(
+                imageVector = Icons.Filled.MoreVert,
+                contentDescription = stringResource(Res.string.acsb_action_more),
+              )
+            }
+            DropdownMenu(
+              expanded = state.topBarPopupShowing,
+              onDismissRequest = { eventSink.invoke(Event.TopBarMenuDismissed) },
+            ) {
+              DropdownMenuItem(
+                text = { Text(text = stringResource(Res.string.reader_action_open_in_browser)) },
+                onClick = { eventSink.invoke(Event.OpenInBrowserClicked) },
+                trailingIcon = {
+                  Icon(
+                    imageVector = Icons.AutoMirrored.Filled.OpenInNew,
+                    contentDescription = stringResource(Res.string.acsb_action_open_in_browser),
+                  )
+                },
+              )
+              DropdownMenuItem(
+                text = { Text(text = stringResource(Res.string.reader_action_summarize)) },
+                onClick = { eventSink.invoke(Event.SummarizeClicked) },
+                trailingIcon = {
+                  Icon(
+                    imageVector = Icons.Filled.Summarize,
+                    contentDescription = stringResource(Res.string.acsb_action_summarize),
+                  )
+                }
+              )
+            }
+          }
+        },
+        title = {
+          when (val content = state.article) {
+            is Async.Loading, is Async.Error -> TopAppBarTitleLoading()
+            is Async.Content -> {
+              Column {
+                Text(
+                  text = content.content.title,
+                  style = MaterialTheme.typography.bodyLarge,
+                  maxLines = 1,
+                  overflow = TextOverflow.Ellipsis,
+                )
+                Text(
+                  text = content.content.link.url,
+                  style = MaterialTheme.typography.bodySmall,
+                  maxLines = 1,
+                  overflow = TextOverflow.Ellipsis,
+                )
+              }
+            }
+          }
+        },
       )
     },
   ) { innerPadding ->
     Box(Modifier.fillMaxSize().padding(innerPadding)) {
       when (state.article) {
-        is Async.Loading -> ArticleReaderLoading()
+        is Async.Loading -> {
+          ArticleReaderLoading()
+        }
+
         is Async.Error -> FullscreenErrorState(errorType = ErrorStateKind.UNKNOWN) {
           eventSink.invoke(Event.ErrorRetryClicked)
         }
 
-        is Async.Content -> ArticleContent(
-          article = state.article.content,
-          scrollState = contentScrollState,
-          onLinkClicked = { url ->
-            eventSink.invoke(Event.LinkClicked(url))
-          }
-        )
+        is Async.Content -> {
+          ArticleContent(
+            article = state.article.content,
+            scrollState = contentScrollState,
+          )
+        }
       }
     }
   }
@@ -141,67 +198,11 @@ private fun ArticleContent(
   modifier: Modifier = Modifier,
   article: Article,
   scrollState: ScrollState,
-  onLinkClicked: (Url) -> Unit,
 ) {
-  val content = article.content
-  requireNotNull(content)
-
-  Column(
+  WebView(
+    url = article.link.url,
     modifier = modifier
-      .verticalScroll(scrollState)
-      .padding(horizontal = 16.dp)
-      .navigationBarsPadding()
-  ) {
-    Text(
-      text = article.title,
-      style = MaterialTheme.typography.headlineMedium,
-    )
-
-    Text(
-      text = article.link.url,
-      maxLines = 1,
-      overflow = TextOverflow.Ellipsis,
-      style = MaterialTheme.typography.bodyMedium,
-      color = MaterialTheme.colorScheme.onSurface,
-      textDecoration = TextDecoration.Underline,
-      modifier = Modifier
-        .padding(top = 8.dp)
-        .clickable { onLinkClicked(article.link) },
-    )
-
-    Row(
-      modifier = Modifier.padding(top = 8.dp),
-      verticalAlignment = Alignment.CenterVertically,
-    ) {
-      Text(
-        text = "Wed, Jan 18",
-        style = MaterialTheme.typography.labelMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-      )
-
-      Spacer(Modifier.weight(1f))
-
-      Icon(
-        modifier = Modifier.size(16.dp),
-        imageVector = Icons.Outlined.Timer,
-        contentDescription = stringResource(Res.string.acsb_icon_reader_reading_time)
-      )
-      ReadingTimeText(
-        modifier = Modifier.padding(start = 8.dp),
-        duration = content.estimatedReadingTime,
-        style = MaterialTheme.typography.labelMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-      )
-    }
-
-    HtmlView(
-      content = content.text,
-      style = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
-      modifier = Modifier
-        .padding(vertical = 16.dp)
-        .clip(RoundedCornerShape(16.dp))
-        .background(MaterialTheme.colorScheme.surfaceContainer)
-        .padding(16.dp),
-    )
-  }
+      .fillMaxSize()
+      .verticalScroll(scrollState),
+  )
 }

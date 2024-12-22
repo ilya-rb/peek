@@ -6,6 +6,10 @@ plugins {
 
 kotlin {
   sourceSets {
+    androidMain.dependencies {
+      implementation(libs.androidx.browser)
+    }
+
     commonMain.dependencies {
       implementation(compose.runtime)
       implementation(compose.foundation)

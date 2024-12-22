@@ -1,0 +1,4 @@
+<resources>
+    <string name="reader_action_open_in_browser">Open in browser</string>
+    <string name="reader_action_summarize">Summarize</string>
+</resources>

@@ -118,13 +118,7 @@ internal class HomeScreenPresenter(
         }
 
         is Event.FiltersClicked -> filtersShowing = true
-        is Event.ArticleClicked -> {
-          if (event.item.content != null) {
-            navigator.goTo(ReaderScreen(event.item.id))
-          } else {
-            navigator.goTo(OpenUrlScreen(event.item.link.url))
-          }
-        }
+        is Event.ArticleClicked -> navigator.goTo(ReaderScreen(event.item.id))
 
         is Event.ArticleBookmarkClicked -> {
           coroutineScope.launch {
@@ -136,11 +130,10 @@ internal class HomeScreenPresenter(
         }
 
         is Event.FiltersResult -> {
-          filtersShowing = false
-
           if (event.result is FiltersOverlayResult.Saved) {
             articlesFilter = articlesFilter.withTags(ArticlesFilter.ByTag(event.result.tags))
           }
+          filtersShowing = false
         }
 
         is Event.TabClicked -> {
