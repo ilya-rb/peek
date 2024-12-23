@@ -1,11 +1,12 @@
 <resources>
-    <string name="acsb_action_settings">Settings</string>
-    <string name="acsb_action_saved">Saved</string>
     <string name="acsb_action_filter">Filters</string>
+    <string name="acsb_action_more">More actions</string>
+    <string name="acsb_action_open_in_browser">Open in browser</string>
+    <string name="acsb_action_settings">Settings</string>
+    <string name="acsb_action_summarize">Summarize</string>
+    <string name="acsb_icon_bookmarked">Bookmarked</string>
     <string name="acsb_icon_reader_reading_time">Estimated reading time</string>
+    <string name="acsb_icon_tags">Tags</string>
     <string name="acsb_navigation_back">Back</string>
     <string name="acsb_switch_checked">On</string>
-    <string name="acsb_action_summarize">Summarize</string>
-    <string name="acsb_action_open_in_browser">Open in browser</string>
-    <string name="acsb_action_more">More actions</string>
 </resources>

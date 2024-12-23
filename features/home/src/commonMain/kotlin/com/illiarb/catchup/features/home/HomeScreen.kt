@@ -17,12 +17,8 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Bookmark
-import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.outlined.Bed
-import androidx.compose.material.icons.outlined.Bookmark
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -43,7 +39,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import com.illiarb.catchup.core.data.Async
 import com.illiarb.catchup.features.home.HomeScreenContract.Event
-import com.illiarb.catchup.features.home.filters.FiltersOverlayModel
+import com.illiarb.catchup.features.home.filters.FiltersContract
 import com.illiarb.catchup.features.home.filters.showFiltersOverlay
 import com.illiarb.catchup.service.domain.Article
 import com.illiarb.catchup.service.domain.NewsSource
@@ -57,9 +53,9 @@ import com.illiarb.catchup.uikit.core.components.LocalLottieAnimation
 import com.illiarb.catchup.uikit.core.components.LottieAnimationType
 import com.illiarb.catchup.uikit.core.components.SelectableCircleAvatar
 import com.illiarb.catchup.uikit.core.components.SelectableCircleAvatarLoading
+import com.illiarb.catchup.uikit.core.components.TopAppBarTitleLoading
 import com.illiarb.catchup.uikit.resources.Res
 import com.illiarb.catchup.uikit.resources.acsb_action_filter
-import com.illiarb.catchup.uikit.resources.acsb_action_saved
 import com.illiarb.catchup.uikit.resources.acsb_action_settings
 import com.illiarb.catchup.uikit.resources.home_articles_empty_action
 import com.illiarb.catchup.uikit.resources.home_articles_empty_title
@@ -95,20 +91,22 @@ public class HomeScreenFactory : Ui.Factory {
 @Composable
 private fun HomeScreen(state: HomeScreenContract.State) {
   ContentWithOverlays {
+    val filtersContainerColor = MaterialTheme.colorScheme.surface
+    val eventSink = state.eventSink
+    val bottomBarBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior()
+    val topBarBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
     when {
       state.filtersShowing -> {
         OverlayEffect(Unit) {
           val result = showFiltersOverlay(
-            FiltersOverlayModel(state.articleTags, state.selectedTags)
+            model = FiltersContract.Model(state.articleTags, state.articlesFilter),
+            containerColor = filtersContainerColor,
           )
-          state.eventSink.invoke(Event.FiltersResult(result))
+          eventSink.invoke(Event.FiltersResult(result))
         }
       }
     }
-
-    val eventSink = state.eventSink
-    val bottomBarBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior()
-    val topBarBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
       modifier = Modifier
@@ -119,8 +117,7 @@ private fun HomeScreen(state: HomeScreenContract.State) {
           scrollBehavior = topBarBehavior,
           title = {
             when (val content = state.tabs) {
-              is Async.Loading -> Unit
-              is Async.Error -> Unit
+              is Async.Loading, is Async.Error -> TopAppBarTitleLoading()
               is Async.Content -> {
                 val selected = content.content[state.selectedTabIndex]
                 Text(
@@ -137,16 +134,6 @@ private fun HomeScreen(state: HomeScreenContract.State) {
                 contentDescription = stringResource(Res.string.acsb_action_settings),
               )
             }
-            IconButton(onClick = { eventSink.invoke(Event.SavedClicked) }) {
-              Icon(
-                contentDescription = stringResource(Res.string.acsb_action_saved),
-                imageVector = if (state.onlyBookmarkedShowing) {
-                  Icons.Filled.Bookmark
-                } else {
-                  Icons.Filled.BookmarkBorder
-                },
-              )
-            }
           },
         )
       },
@@ -156,7 +143,8 @@ private fun HomeScreen(state: HomeScreenContract.State) {
           actions = {
             AnimatedContent(
               targetState = state.tabs,
-              transitionSpec = { fadeIn().togetherWith(fadeOut()) }
+              transitionSpec = { fadeIn().togetherWith(fadeOut()) },
+              contentKey = { it is Async.Content },
             ) { targetState ->
               when (targetState) {
                 is Async.Loading -> {
@@ -168,7 +156,7 @@ private fun HomeScreen(state: HomeScreenContract.State) {
                     modifier = Modifier.padding(start = 16.dp),
                     tabs = targetState.content,
                     selectedTabIndex = state.selectedTabIndex,
-                    eventSink = eventSink,
+                    onTabClick = { eventSink.invoke(Event.TabClicked(it)) }
                   )
                 }
 
@@ -177,18 +165,11 @@ private fun HomeScreen(state: HomeScreenContract.State) {
             }
           },
           floatingActionButton = {
-            val hasFilters = state.articleTags.isNotEmpty()
-            if (hasFilters) {
-              FloatingActionButton(
-                onClick = {
-                  eventSink.invoke(Event.FiltersClicked)
-                }
-              ) {
-                Icon(
-                  imageVector = Icons.Filled.FilterList,
-                  contentDescription = stringResource(Res.string.acsb_action_filter),
-                )
-              }
+            FloatingActionButton(onClick = { eventSink.invoke(Event.FiltersClicked) }) {
+              Icon(
+                imageVector = Icons.Filled.FilterList,
+                contentDescription = stringResource(Res.string.acsb_action_filter),
+              )
             }
           }
         )
@@ -250,7 +231,7 @@ private fun TabsContent(
   modifier: Modifier = Modifier,
   tabs: ImmutableList<HomeScreenContract.Tab>,
   selectedTabIndex: Int,
-  eventSink: (Event) -> Unit,
+  onTabClick: (NewsSource) -> Unit,
 ) {
   HorizontalList(
     modifier = modifier,
@@ -260,7 +241,7 @@ private fun TabsContent(
         imageUrl = tab.imageUrl,
         selected = index == selectedTabIndex,
         fallbackText = tab.source.kind.key.uppercase(),
-        onClick = { eventSink.invoke(Event.TabClicked(tab.source)) }
+        onClick = { onTabClick.invoke(tab.source) }
       )
     },
   )

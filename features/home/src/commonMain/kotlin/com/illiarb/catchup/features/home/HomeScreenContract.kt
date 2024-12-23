@@ -6,7 +6,7 @@ import androidx.compose.runtime.toMutableStateList
 import com.illiarb.catchup.core.arch.CommonParcelable
 import com.illiarb.catchup.core.arch.CommonParcelize
 import com.illiarb.catchup.core.data.Async
-import com.illiarb.catchup.features.home.filters.FiltersOverlayResult
+import com.illiarb.catchup.features.home.filters.FiltersContract
 import com.illiarb.catchup.service.domain.Article
 import com.illiarb.catchup.service.domain.NewsSource
 import com.illiarb.catchup.service.domain.Tag
@@ -24,7 +24,7 @@ internal interface HomeScreenContract {
   @Stable
   data class State(
     private val articles: Async<SnapshotStateList<Article>>,
-    private val articlesFilter: ArticlesFilter.Composite,
+    val articlesFilter: ArticlesFilter.Composite,
     val tabs: Async<ImmutableList<Tab>>,
     val selectedTabIndex: Int,
     val filtersShowing: Boolean,
@@ -45,14 +45,6 @@ internal interface HomeScreenContract {
     val onlyBookmarkedShowing: Boolean =
       articlesFilter.filters.contains(ArticlesFilter.Saved)
 
-    val selectedTags: Set<Tag>
-      get() = articlesFilter.filters
-        .firstOrNull { it is ArticlesFilter.ByTag }
-        ?.let {
-          require(it is ArticlesFilter.ByTag)
-          it.tags
-        }.orEmpty()
-
     val articleTags: Set<Tag>
       get() = when (articles) {
         is Async.Content -> {
@@ -69,12 +61,11 @@ internal interface HomeScreenContract {
   sealed interface Event : CircuitUiEvent {
     data object FiltersClicked : Event
     data object ErrorRetryClicked : Event
-    data object SavedClicked : Event
     data object SettingsClicked : Event
     data class TabClicked(val source: NewsSource) : Event
     data class ArticleClicked(val item: Article) : Event
     data class ArticleBookmarkClicked(val item: Article) : Event
-    data class FiltersResult(val result: FiltersOverlayResult) : Event
+    data class FiltersResult(val result: FiltersContract.Result) : Event
   }
 
   data class Tab(

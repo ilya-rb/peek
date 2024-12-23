@@ -6,11 +6,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
-import com.illiarb.catchup.core.arch.OpenUrlScreen
 import com.illiarb.catchup.core.data.Async
 import com.illiarb.catchup.core.data.mapContent
 import com.illiarb.catchup.features.home.HomeScreenContract.Event
-import com.illiarb.catchup.features.home.filters.FiltersOverlayResult
+import com.illiarb.catchup.features.home.filters.FiltersContract
 import com.illiarb.catchup.features.reader.ReaderScreen
 import com.illiarb.catchup.features.settings.SettingsScreen
 import com.illiarb.catchup.service.CatchupService
@@ -106,10 +105,6 @@ internal class HomeScreenPresenter(
 
     fun eventSink(event: Event) {
       when (event) {
-        is Event.SavedClicked -> {
-          articlesFilter = articlesFilter.withSaved(ArticlesFilter.Saved)
-        }
-
         is Event.SettingsClicked -> navigator.goTo(SettingsScreen)
         is Event.ErrorRetryClicked -> {
           manualTriggers = manualTriggers.copy(
@@ -130,8 +125,8 @@ internal class HomeScreenPresenter(
         }
 
         is Event.FiltersResult -> {
-          if (event.result is FiltersOverlayResult.Saved) {
-            articlesFilter = articlesFilter.withTags(ArticlesFilter.ByTag(event.result.tags))
+          if (event.result is FiltersContract.Result.Saved) {
+            articlesFilter = event.result.filter
           }
           filtersShowing = false
         }

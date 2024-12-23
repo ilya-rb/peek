@@ -32,19 +32,5 @@ internal sealed interface ArticlesFilter {
         filter.apply(articles)
       }
     }
-
-    fun withSaved(filter: Saved): Composite {
-      val newFilters = filters.toMutableSet()
-      if (!newFilters.add(filter)) {
-        newFilters.remove(filter)
-      }
-      return copy(filters = newFilters)
-    }
-
-    fun withTags(byTag: ByTag): Composite {
-      return copy(
-        filters = filters.filter { it !is ByTag }.plus(byTag).toSet()
-      )
-    }
   }
 }

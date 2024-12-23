@@ -77,7 +77,7 @@ public fun SelectableCircleAvatar(
         }
       }
       .clip(CircleShape)
-      .clickable { onClick() }
+      .clickable(onClick = onClick)
   )
 }
 
