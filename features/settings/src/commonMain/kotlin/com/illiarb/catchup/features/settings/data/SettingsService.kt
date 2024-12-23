@@ -10,14 +10,16 @@ public interface SettingsService {
   public fun updateSetting(type: SettingType, value: Boolean)
 
   public enum class SettingType {
-    DYNAMIC_COLORS
+    DYNAMIC_COLORS,
+    DARK_THEME
   }
 }
 
 internal class DefaultSettingsService : SettingsService {
 
   private val settings = mapOf(
-    SettingsService.SettingType.DYNAMIC_COLORS to MemoryField(value = false)
+    SettingsService.SettingType.DYNAMIC_COLORS to MemoryField(value = false),
+    SettingsService.SettingType.DARK_THEME to MemoryField(value = true),
   )
 
   override fun observeSettingChange(type: SettingsService.SettingType): Flow<Boolean> {
