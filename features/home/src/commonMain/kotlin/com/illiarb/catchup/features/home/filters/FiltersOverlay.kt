@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -19,26 +17,27 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.toMutableStateMap
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.illiarb.catchup.features.home.ArticlesFilter
 import com.illiarb.catchup.service.domain.Tag
+import com.illiarb.catchup.uikit.core.components.cell.RowCell
+import com.illiarb.catchup.uikit.core.components.cell.SwitchCell
+import com.illiarb.catchup.uikit.core.model.VectorIcon
 import com.illiarb.catchup.uikit.resources.Res
 import com.illiarb.catchup.uikit.resources.acsb_icon_bookmarked
 import com.illiarb.catchup.uikit.resources.acsb_icon_tags
 import com.illiarb.catchup.uikit.resources.filters_action_cancel
+import com.illiarb.catchup.uikit.resources.filters_action_reset
 import com.illiarb.catchup.uikit.resources.filters_action_save
 import com.illiarb.catchup.uikit.resources.filters_header_bookmarked_only
 import com.illiarb.catchup.uikit.resources.filters_header_tags
@@ -70,15 +69,14 @@ internal fun FiltersOverlay(
   model: FiltersContract.Model,
   navigator: OverlayNavigator<FiltersContract.Result>,
 ) {
-  val selectedTags by remember {
-    mutableStateOf(
-      model.filter.filters
-        .filterIsInstance<ArticlesFilter.ByTag>()
-        .firstOrNull()
-        ?.tags
-        .orEmpty()
-        .toMutableSet()
-    )
+  val selectedTags = remember {
+    model.filter.filters
+      .filterIsInstance<ArticlesFilter.ByTag>()
+      .firstOrNull()
+      ?.tags
+      .orEmpty()
+      .map { it to true }
+      .toMutableStateMap()
   }
   var bookmarkedOnly by remember {
     mutableStateOf(
@@ -103,7 +101,7 @@ internal fun FiltersOverlay(
                   ArticlesFilter.Composite(
                     filters = setOfNotNull(
                       ArticlesFilter.Saved.takeIf { bookmarkedOnly },
-                      ArticlesFilter.ByTag(selectedTags),
+                      ArticlesFilter.ByTag(selectedTags.keys),
                     )
                   )
                 )
@@ -125,62 +123,41 @@ internal fun FiltersOverlay(
         .padding(innerPadding)
         .verticalScroll(scrollState)
     ) {
-      Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(all = 16.dp),
-      ) {
-        Icon(
+      SwitchCell(
+        text = stringResource(Res.string.filters_header_bookmarked_only),
+        startIcon = VectorIcon(
           imageVector = Icons.Filled.Bookmark,
-          contentDescription = stringResource(Res.string.acsb_icon_bookmarked)
-        )
-        Text(
-          text = stringResource(Res.string.filters_header_bookmarked_only),
-          style = MaterialTheme.typography.bodyLarge,
-          modifier = Modifier.padding(start = 16.dp),
-        )
-        Spacer(Modifier.weight(1f))
-        Switch(
-          checked = bookmarkedOnly,
-          onCheckedChange = { checked ->
-            bookmarkedOnly = checked
-          }
-        )
-      }
-      HorizontalDivider(modifier = Modifier.padding(bottom = 16.dp))
-      Row(
-        modifier = Modifier.padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        Icon(
-          imageVector = Icons.Filled.Tag,
-          contentDescription = stringResource(Res.string.acsb_icon_tags),
-        )
-        Text(
-          modifier = Modifier.padding(start = 16.dp),
-          text = stringResource(Res.string.filters_header_tags),
-          style = MaterialTheme.typography.bodyLarge,
-        )
-      }
+          contentDescription = stringResource(Res.string.acsb_icon_bookmarked),
+        ),
+        switchChecked = bookmarkedOnly,
+        onChecked = { checked -> bookmarkedOnly = checked }
+      )
+
+      HorizontalDivider()
+
       if (model.availableTags.isNotEmpty()) {
-        HorizontalDivider(modifier = Modifier.padding(top = 16.dp))
+        RowCell(
+          startIcon = Icons.Filled.Tag,
+          startIconContentDescription = stringResource(Res.string.acsb_icon_tags),
+          text = stringResource(Res.string.filters_header_tags),
+          endActionText = stringResource(Res.string.filters_action_reset),
+          onEndActionClicked = { selectedTags.clear() },
+        )
+
+        HorizontalDivider()
 
         FlowRow(
           modifier = Modifier.fillMaxWidth().padding(16.dp),
           horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
           model.availableTags.map { tag ->
-            var isSelected by remember { mutableStateOf(tag in selectedTags) }
+            val selected = selectedTags[tag] == true
 
             FilterChip(
-              selected = isSelected,
+              selected = selected,
               label = { Text(tag.value) },
               onClick = {
-                isSelected = !isSelected
-
-                val added = selectedTags.add(tag)
-                if (added.not()) {
-                  selectedTags.remove(tag)
-                }
+                selectedTags[tag] = !selected
               },
             )
           }

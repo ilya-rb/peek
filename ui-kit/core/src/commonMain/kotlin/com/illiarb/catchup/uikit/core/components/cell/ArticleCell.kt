@@ -1,4 +1,4 @@
-package com.illiarb.catchup.uikit.core.components
+package com.illiarb.catchup.uikit.core.components.cell
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column

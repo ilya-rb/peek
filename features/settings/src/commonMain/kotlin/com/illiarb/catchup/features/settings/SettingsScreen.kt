@@ -14,10 +14,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.illiarb.catchup.core.appinfo.DebugConfig
 import com.illiarb.catchup.features.settings.SettingsScreenContract.Event
-import com.illiarb.catchup.uikit.core.components.SwitchCell
+import com.illiarb.catchup.uikit.core.components.cell.SwitchCell
 import com.illiarb.catchup.uikit.resources.Res
 import com.illiarb.catchup.uikit.resources.acsb_navigation_back
 import com.illiarb.catchup.uikit.resources.settings_dynamic_colors_subtitle
@@ -70,19 +69,18 @@ private fun SettingsScreen(state: SettingsScreenContract.State) {
     Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
       Column {
         SwitchCell(
-          checked = state.dynamicColorsEnabled,
-          title = stringResource(Res.string.settings_dynamic_colors_title),
+          switchChecked = state.dynamicColorsEnabled,
+          text = stringResource(Res.string.settings_dynamic_colors_title),
           subtitle = stringResource(Res.string.settings_dynamic_colors_subtitle),
-        ) { checked ->
-          events.invoke(Event.MaterialColorsToggleChecked(checked))
-        }
+          onChecked = { checked ->
+            events.invoke(Event.MaterialColorsToggleChecked(checked))
+          }
+        )
         if (state.debugSettings != null) {
           DebugSettings(
-            modifier = Modifier.padding(top = 16.dp),
             settings = state.debugSettings,
-          ) {
-            events.invoke(Event.NetworkDelayChanged(it))
-          }
+            onNetworkDelayChanged = { events.invoke(Event.NetworkDelayChanged(it)) }
+          )
         }
       }
     }
@@ -97,8 +95,8 @@ private fun DebugSettings(
 ) {
   SwitchCell(
     modifier = modifier,
-    checked = settings.networkDelayEnabled,
-    title = "Network request delay",
+    switchChecked = settings.networkDelayEnabled,
+    text = "Network request delay",
     subtitle = "Delay each network request by 3 sec",
     onChecked = onNetworkDelayChanged,
   )

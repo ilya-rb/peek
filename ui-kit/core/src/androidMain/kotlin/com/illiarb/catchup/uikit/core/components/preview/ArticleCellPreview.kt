@@ -3,8 +3,8 @@ package com.illiarb.catchup.uikit.core.components.preview
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.illiarb.catchup.uikit.core.components.ArticleCell
-import com.illiarb.catchup.uikit.core.components.ArticleLoadingCell
+import com.illiarb.catchup.uikit.core.components.cell.ArticleCell
+import com.illiarb.catchup.uikit.core.components.cell.ArticleLoadingCell
 import com.illiarb.catchup.uikit.core.theme.UiKitTheme
 import kotlin.random.Random
 

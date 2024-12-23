@@ -43,8 +43,8 @@ import com.illiarb.catchup.features.home.filters.FiltersContract
 import com.illiarb.catchup.features.home.filters.showFiltersOverlay
 import com.illiarb.catchup.service.domain.Article
 import com.illiarb.catchup.service.domain.NewsSource
-import com.illiarb.catchup.uikit.core.components.ArticleCell
-import com.illiarb.catchup.uikit.core.components.ArticleLoadingCell
+import com.illiarb.catchup.uikit.core.components.cell.ArticleCell
+import com.illiarb.catchup.uikit.core.components.cell.ArticleLoadingCell
 import com.illiarb.catchup.uikit.core.components.ErrorStateKind
 import com.illiarb.catchup.uikit.core.components.FullscreenErrorState
 import com.illiarb.catchup.uikit.core.components.FullscreenState
