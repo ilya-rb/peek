@@ -2,6 +2,7 @@ package com.illiarb.catchup.core.appinfo.di
 
 import com.illiarb.catchup.core.appinfo.AppConfiguration
 import com.illiarb.catchup.core.appinfo.AppEnvironment
+import com.illiarb.catchup.core.appinfo.BuildKonfig
 import com.illiarb.catchup.core.appinfo.internal.DefaultAppConfiguration
 import com.illiarb.catchup.core.arch.di.AppScope
 import com.illiarb.catchup.core.data.KeyValueStorage
@@ -13,7 +14,9 @@ public interface AppConfigurationComponent {
   public val appConfiguration: AppConfiguration
 
   @Provides
-  public fun provideEnvironment(): AppEnvironment = AppEnvironment.DEV
+  public fun provideEnvironment(): AppEnvironment {
+    return AppEnvironment.valueOf(BuildKonfig.ENV)
+  }
 
   @Provides
   @AppScope

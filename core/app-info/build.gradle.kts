@@ -1,8 +1,11 @@
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
+
 plugins {
   id("com.illiarb.catchup.android.library")
   id("com.illiarb.catchup.kotlin.multiplatform")
 
   alias(libs.plugins.kotlinSerialization)
+  alias(libs.plugins.buildConfig)
 }
 
 android {
@@ -18,5 +21,17 @@ kotlin {
       implementation(projects.core.data)
       implementation(projects.core.arch)
     }
+  }
+}
+
+buildkonfig {
+  packageName = "com.illiarb.catchup.core.appinfo"
+
+  defaultConfigs {
+    buildConfigField(STRING, "ENV", "PROD")
+  }
+
+  defaultConfigs("dev") {
+    buildConfigField(STRING, "ENV", "DEV")
   }
 }

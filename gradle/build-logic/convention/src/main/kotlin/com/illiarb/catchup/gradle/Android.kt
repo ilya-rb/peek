@@ -17,6 +17,8 @@ fun Project.configureAndroid() {
     compileOptions {
       isCoreLibraryDesugaringEnabled = true
     }
+
+    buildFeatures.buildConfig = false
   }
 
   dependencies {

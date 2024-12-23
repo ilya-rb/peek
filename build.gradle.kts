@@ -10,4 +10,5 @@ plugins {
     alias(libs.plugins.kotlinParcelize) apply false
     alias(libs.plugins.kotlinSerialization) apply false
     alias(libs.plugins.kotlinKsp) apply false
+    alias(libs.plugins.buildConfig) apply false
 }
