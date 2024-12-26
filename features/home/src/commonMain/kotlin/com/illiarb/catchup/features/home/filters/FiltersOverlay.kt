@@ -28,7 +28,6 @@ import androidx.compose.runtime.toMutableStateMap
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.illiarb.catchup.features.home.ArticlesFilter
 import com.illiarb.catchup.service.domain.Tag
 import com.illiarb.catchup.uikit.core.components.cell.RowCell
 import com.illiarb.catchup.uikit.core.components.cell.SwitchCell

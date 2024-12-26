@@ -25,6 +25,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Size
@@ -32,8 +33,10 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
+import com.illiarb.catchup.core.arch.CommonParcelable
+import com.illiarb.catchup.core.arch.CommonParcelize
 import com.illiarb.catchup.core.data.Async
-import com.illiarb.catchup.features.reader.ReaderScreenContract.Event
+import com.illiarb.catchup.features.reader.ReaderScreen.Event
 import com.illiarb.catchup.service.domain.Article
 import com.illiarb.catchup.uikit.core.components.ArticleReaderLoading
 import com.illiarb.catchup.uikit.core.components.ErrorStateKind
@@ -49,6 +52,7 @@ import com.illiarb.catchup.uikit.resources.acsb_navigation_back
 import com.illiarb.catchup.uikit.resources.reader_action_open_in_browser
 import com.illiarb.catchup.uikit.resources.reader_action_summarize
 import com.slack.circuit.runtime.CircuitContext
+import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
@@ -60,7 +64,7 @@ public class ReaderScreenFactory : Ui.Factory {
   override fun create(screen: Screen, context: CircuitContext): Ui<*>? {
     return when (screen) {
       is ReaderScreen -> {
-        ui<ReaderScreenContract.State> { state, modifier ->
+        ui<ReaderScreen.State> { state, modifier ->
           ReaderScreen(modifier, state)
         }
       }
@@ -72,7 +76,7 @@ public class ReaderScreenFactory : Ui.Factory {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ReaderScreen(modifier: Modifier, state: ReaderScreenContract.State) {
+private fun ReaderScreen(modifier: Modifier, state: ReaderScreen.State) {
   val eventSink = state.eventSink
   val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 

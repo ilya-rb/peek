@@ -51,11 +51,10 @@ public class ArticlesDao(
     }
   }
 
-  public suspend fun deleteAndInsert(kind: NewsSource.Kind, articles: List<Article>): Result<Unit> {
+  public suspend fun saveArticles(articles: List<Article>): Result<Unit> {
     return withContext(appDispatchers.io) {
       suspendRunCatching {
         dbTransactionRunner {
-          db.articlesQueries.deleteBySourceExceptSaved(kind)
           articles.forEach(::insertArticle)
         }
       }

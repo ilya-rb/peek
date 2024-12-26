@@ -36,7 +36,7 @@ UPDATE articleEntity SET saved = :saved
 WHERE id = :id;
 
 insert:
-INSERT INTO articleEntity (
+INSERT OR REPLACE INTO articleEntity (
     `id`,
     `title`,
     `shortSummary`,

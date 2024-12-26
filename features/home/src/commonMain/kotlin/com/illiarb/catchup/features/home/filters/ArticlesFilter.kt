@@ -1,4 +1,4 @@
-package com.illiarb.catchup.features.home
+package com.illiarb.catchup.features.home.filters
 
 import com.illiarb.catchup.service.domain.Article
 import com.illiarb.catchup.service.domain.Tag

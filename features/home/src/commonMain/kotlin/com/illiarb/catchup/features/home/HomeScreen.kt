@@ -38,7 +38,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import com.illiarb.catchup.core.data.Async
-import com.illiarb.catchup.features.home.HomeScreenContract.Event
+import com.illiarb.catchup.features.home.HomeScreen.Event
 import com.illiarb.catchup.features.home.filters.FiltersContract
 import com.illiarb.catchup.features.home.filters.showFiltersOverlay
 import com.illiarb.catchup.service.domain.Article
@@ -77,7 +77,7 @@ public class HomeScreenFactory : Ui.Factory {
   override fun create(screen: Screen, context: CircuitContext): Ui<*>? {
     return when (screen) {
       is HomeScreen -> {
-        ui<HomeScreenContract.State> { state, _ ->
+        ui<HomeScreen.State> { state, _ ->
           HomeScreen(state)
         }
       }
@@ -89,7 +89,7 @@ public class HomeScreenFactory : Ui.Factory {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun HomeScreen(state: HomeScreenContract.State) {
+private fun HomeScreen(state: HomeScreen.State) {
   ContentWithOverlays {
     val filtersContainerColor = MaterialTheme.colorScheme.surface
     val eventSink = state.eventSink
@@ -100,7 +100,7 @@ private fun HomeScreen(state: HomeScreenContract.State) {
       state.filtersShowing -> {
         OverlayEffect(Unit) {
           val result = showFiltersOverlay(
-            model = FiltersContract.Model(state.articleTags, state.articlesFilter),
+            model = FiltersContract.Model(state.articlesTags, state.articlesFilter),
             containerColor = filtersContainerColor,
           )
           eventSink.invoke(Event.FiltersResult(result))
@@ -229,7 +229,7 @@ private fun TabsLoading(modifier: Modifier = Modifier) {
 @Composable
 private fun TabsContent(
   modifier: Modifier = Modifier,
-  tabs: ImmutableList<HomeScreenContract.Tab>,
+  tabs: ImmutableList<HomeScreen.Tab>,
   selectedTabIndex: Int,
   onTabClick: (NewsSource) -> Unit,
 ) {
@@ -310,6 +310,9 @@ private fun ArticlesContent(
           onBookmarkClick = {
             eventSink.invoke(Event.ArticleBookmarkClicked(article))
           },
+          onSummarizeClick = {
+            eventSink.invoke(Event.ArticleSummarizeClicked(article))
+          },
           modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .clip(RoundedCornerShape(16.dp))
@@ -321,7 +324,7 @@ private fun ArticlesContent(
 }
 
 @Composable
-private fun HomeScreenContract.Tab.serviceName(): String {
+private fun HomeScreen.Tab.serviceName(): String {
   return when (source.kind) {
     NewsSource.Kind.IrishTimes -> stringResource(Res.string.service_irish_times_name)
     NewsSource.Kind.HackerNews -> stringResource(Res.string.service_hacker_news_name)

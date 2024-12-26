@@ -8,7 +8,8 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import com.illiarb.catchup.core.data.Async
 import com.illiarb.catchup.core.data.mapContent
-import com.illiarb.catchup.features.home.HomeScreenContract.Event
+import com.illiarb.catchup.features.home.HomeScreen.Event
+import com.illiarb.catchup.features.home.filters.ArticlesFilter
 import com.illiarb.catchup.features.home.filters.FiltersContract
 import com.illiarb.catchup.features.reader.ReaderScreen
 import com.illiarb.catchup.features.settings.SettingsScreen
@@ -45,10 +46,10 @@ public class HomeScreenPresenterFactory(
 internal class HomeScreenPresenter(
   private val catchupService: CatchupService,
   private val navigator: Navigator,
-) : Presenter<HomeScreenContract.State> {
+) : Presenter<HomeScreen.State> {
 
   @Composable
-  override fun present(): HomeScreenContract.State {
+  override fun present(): HomeScreen.State {
     val coroutineScope = rememberStableCoroutineScope()
 
     var selectedTabIndex by rememberRetained { mutableStateOf(value = 0) }
@@ -57,13 +58,13 @@ internal class HomeScreenPresenter(
       mutableStateOf(ArticlesFilter.Composite(filters = emptySet()))
     }
 
-    val sources by produceRetainedState<Async<ImmutableList<HomeScreenContract.Tab>>>(
+    val sources by produceRetainedState<Async<ImmutableList<HomeScreen.Tab>>>(
       initialValue = Async.Loading,
       key1 = catchupService,
     ) {
       catchupService.collectAvailableSources().mapContent { sources ->
         sources.map { source ->
-          HomeScreenContract.Tab(
+          HomeScreen.Tab(
             id = source.kind.name,
             source = source,
             imageUrl = source.imageUrl.url,
@@ -124,6 +125,10 @@ internal class HomeScreenPresenter(
           }
         }
 
+        is Event.ArticleSummarizeClicked -> {
+
+        }
+
         is Event.FiltersResult -> {
           if (event.result is FiltersContract.Result.Saved) {
             articlesFilter = event.result.filter
@@ -133,7 +138,7 @@ internal class HomeScreenPresenter(
 
         is Event.TabClicked -> {
           val value = sources
-          require(value is Async.Content<ImmutableList<HomeScreenContract.Tab>>)
+          require(value is Async.Content<ImmutableList<HomeScreen.Tab>>)
 
           selectedTabIndex = value.content
             .map { it.source }
@@ -142,7 +147,7 @@ internal class HomeScreenPresenter(
       }
     }
 
-    return HomeScreenContract.State(
+    return HomeScreen.State(
       articles = articles,
       tabs = sources,
       selectedTabIndex = selectedTabIndex,

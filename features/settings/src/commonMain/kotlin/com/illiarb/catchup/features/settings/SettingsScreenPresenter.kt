@@ -62,11 +62,11 @@ internal class SettingsScreenPresenter(
       events = { event ->
         when (event) {
           is Event.NavigationIconClick -> navigator.pop()
-          is Event.MaterialColorsToggleChecked -> {
+          is Event.MaterialColorsToggleChecked -> coroutineScope.launch {
             settingsService.updateSetting(DYNAMIC_COLORS, event.checked)
           }
 
-          is Event.DarkThemeEnabledChecked -> {
+          is Event.DarkThemeEnabledChecked -> coroutineScope.launch {
             settingsService.updateSetting(DARK_THEME, event.checked)
           }
 

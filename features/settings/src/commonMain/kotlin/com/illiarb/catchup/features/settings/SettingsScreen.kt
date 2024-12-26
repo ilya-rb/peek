@@ -15,13 +15,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.illiarb.catchup.core.appinfo.DebugConfig
-import com.illiarb.catchup.core.arch.CommonParcelable
-import com.illiarb.catchup.core.arch.CommonParcelize
 import com.illiarb.catchup.features.settings.SettingsScreen.Event
 import com.illiarb.catchup.uikit.core.components.cell.RowCell
 import com.illiarb.catchup.uikit.core.components.cell.SwitchCell
@@ -32,31 +28,11 @@ import com.illiarb.catchup.uikit.resources.settings_dynamic_colors_subtitle
 import com.illiarb.catchup.uikit.resources.settings_dynamic_colors_title
 import com.illiarb.catchup.uikit.resources.settings_screen_title
 import com.slack.circuit.runtime.CircuitContext
-import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import me.tatarka.inject.annotations.Inject
 import org.jetbrains.compose.resources.stringResource
-
-@CommonParcelize
-public data object SettingsScreen : Screen, CommonParcelable {
-
-  @Stable
-  internal data class State(
-    val events: (Event) -> Unit,
-    val dynamicColorsEnabled: Boolean,
-    val darkThemeEnabled: Boolean,
-    val debugSettings: DebugConfig?,
-  ) : CircuitUiState
-
-  internal sealed interface Event {
-    data object NavigationIconClick : Event
-    data class MaterialColorsToggleChecked(val checked: Boolean) : Event
-    data class DarkThemeEnabledChecked(val checked: Boolean) : Event
-    data class NetworkDelayChanged(val checked: Boolean) : Event
-  }
-}
 
 @Inject
 public class SettingsScreenFactory : Ui.Factory {

@@ -6,6 +6,7 @@ import androidx.compose.runtime.toMutableStateList
 import com.illiarb.catchup.core.arch.CommonParcelable
 import com.illiarb.catchup.core.arch.CommonParcelize
 import com.illiarb.catchup.core.data.Async
+import com.illiarb.catchup.features.home.filters.ArticlesFilter
 import com.illiarb.catchup.features.home.filters.FiltersContract
 import com.illiarb.catchup.service.domain.Article
 import com.illiarb.catchup.service.domain.NewsSource
@@ -17,12 +18,10 @@ import com.slack.circuit.runtime.screen.Screen
 import kotlinx.collections.immutable.ImmutableList
 
 @CommonParcelize
-public object HomeScreen : Screen, CommonParcelable
-
-internal interface HomeScreenContract {
+public object HomeScreen : Screen, CommonParcelable {
 
   @Stable
-  data class State(
+  internal data class State(
     private val articles: Async<SnapshotStateList<Article>>,
     val articlesFilter: ArticlesFilter.Composite,
     val tabs: Async<ImmutableList<Tab>>,
@@ -42,10 +41,7 @@ internal interface HomeScreenContract {
         else -> articles
       }
 
-    val onlyBookmarkedShowing: Boolean =
-      articlesFilter.filters.contains(ArticlesFilter.Saved)
-
-    val articleTags: Set<Tag>
+    val articlesTags: Set<Tag>
       get() = when (articles) {
         is Async.Content -> {
           articles.content
@@ -58,17 +54,18 @@ internal interface HomeScreenContract {
       }
   }
 
-  sealed interface Event : CircuitUiEvent {
+  internal sealed interface Event : CircuitUiEvent {
     data object FiltersClicked : Event
     data object ErrorRetryClicked : Event
     data object SettingsClicked : Event
     data class TabClicked(val source: NewsSource) : Event
     data class ArticleClicked(val item: Article) : Event
     data class ArticleBookmarkClicked(val item: Article) : Event
+    data class ArticleSummarizeClicked(val item: Article) : Event
     data class FiltersResult(val result: FiltersContract.Result) : Event
   }
 
-  data class Tab(
+  internal data class Tab(
     override val id: String,
     val imageUrl: String,
     val source: NewsSource,

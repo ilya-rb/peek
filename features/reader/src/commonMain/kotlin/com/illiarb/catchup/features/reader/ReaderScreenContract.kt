@@ -9,18 +9,16 @@ import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.screen.Screen
 
 @CommonParcelize
-public data class ReaderScreen(val articleId: String) : Screen, CommonParcelable
-
-internal interface ReaderScreenContract {
+public data class ReaderScreen(val articleId: String) : Screen, CommonParcelable {
 
   @Stable
-  data class State(
+  internal data class State(
     val article: Async<Article>,
     val topBarPopupShowing: Boolean,
     val eventSink: (Event) -> Unit,
   ) : CircuitUiState
 
-  sealed interface Event {
+  internal sealed interface Event {
     data object NavigationIconClicked : Event
     data object TopBarMenuClicked : Event
     data object TopBarMenuDismissed : Event

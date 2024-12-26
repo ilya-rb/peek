@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.illiarb.catchup.core.arch.OpenUrlScreen
 import com.illiarb.catchup.core.data.Async
+import com.illiarb.catchup.features.reader.ReaderScreen.Event
 import com.illiarb.catchup.service.CatchupService
 import com.illiarb.catchup.service.domain.Article
 import com.slack.circuit.retained.produceRetainedState
@@ -42,10 +43,10 @@ internal class ReaderScreenPresenter(
   private val articleId: String,
   private val catchupService: CatchupService,
   private val navigator: Navigator,
-) : Presenter<ReaderScreenContract.State> {
+) : Presenter<ReaderScreen.State> {
 
   @Composable
-  override fun present(): ReaderScreenContract.State {
+  override fun present(): ReaderScreen.State {
     val article by produceRetainedState<Async<Article>>(initialValue = Async.Loading) {
       catchupService.collectArticleById(articleId).collect {
         value = it
@@ -53,17 +54,17 @@ internal class ReaderScreenPresenter(
     }
     var topBarPopupShowing by rememberRetained { mutableStateOf(false) }
 
-    return ReaderScreenContract.State(
+    return ReaderScreen.State(
       article = article,
       topBarPopupShowing = topBarPopupShowing,
     ) { event ->
       when (event) {
-        is ReaderScreenContract.Event.NavigationIconClicked -> navigator.pop()
-        is ReaderScreenContract.Event.SummarizeClicked -> Unit
-        is ReaderScreenContract.Event.TopBarMenuClicked -> topBarPopupShowing = true
-        is ReaderScreenContract.Event.TopBarMenuDismissed -> topBarPopupShowing = false
-        is ReaderScreenContract.Event.ErrorRetryClicked -> Unit
-        is ReaderScreenContract.Event.OpenInBrowserClicked -> {
+        is Event.NavigationIconClicked -> navigator.pop()
+        is Event.SummarizeClicked -> Unit
+        is Event.TopBarMenuClicked -> topBarPopupShowing = true
+        is Event.TopBarMenuDismissed -> topBarPopupShowing = false
+        is Event.ErrorRetryClicked -> Unit
+        is Event.OpenInBrowserClicked -> {
           val content = article
           require(content is Async.Content)
 

@@ -41,8 +41,8 @@ public class ArticlesRepository(
     fromStorage = { kind ->
       articlesDao.articlesBySource(kind).getOrNull()
     },
-    intoStorage = { kind, articles ->
-      articlesDao.deleteAndInsert(kind, articles)
+    intoStorage = { _, articles ->
+      articlesDao.saveArticles(articles)
     },
     invalidateMemory = { kind ->
       memoryCache().delete(kind.key)

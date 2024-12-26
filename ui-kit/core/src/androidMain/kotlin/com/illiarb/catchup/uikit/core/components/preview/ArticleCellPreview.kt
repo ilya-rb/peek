@@ -25,10 +25,10 @@ internal fun ArticleCellPreview(darkTheme: Boolean) {
             author = "Author",
             saved = false,
             onClick = {
-
             },
             onBookmarkClick = {
-              
+            },
+            onSummarizeClick = {
             }
           )
         }
