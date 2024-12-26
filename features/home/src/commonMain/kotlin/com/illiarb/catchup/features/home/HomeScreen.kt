@@ -41,8 +41,11 @@ import com.illiarb.catchup.core.data.Async
 import com.illiarb.catchup.features.home.HomeScreen.Event
 import com.illiarb.catchup.features.home.filters.FiltersContract
 import com.illiarb.catchup.features.home.filters.showFiltersOverlay
+import com.illiarb.catchup.features.home.summary.SummaryOverlayContract
+import com.illiarb.catchup.features.home.summary.showSummaryOverlay
 import com.illiarb.catchup.service.domain.Article
 import com.illiarb.catchup.service.domain.NewsSource
+import com.illiarb.catchup.summarizer.domain.ArticleSummary
 import com.illiarb.catchup.uikit.core.components.cell.ArticleCell
 import com.illiarb.catchup.uikit.core.components.cell.ArticleLoadingCell
 import com.illiarb.catchup.uikit.core.components.ErrorStateKind
@@ -104,6 +107,15 @@ private fun HomeScreen(state: HomeScreen.State) {
             containerColor = filtersContainerColor,
           )
           eventSink.invoke(Event.FiltersResult(result))
+        }
+      }
+
+      state.articleSummary is Async.Content -> {
+        OverlayEffect(Unit) {
+          showSummaryOverlay(
+            SummaryOverlayContract.Model(state.articleSummary)
+          )
+          eventSink.invoke(Event.SummaryResult)
         }
       }
     }

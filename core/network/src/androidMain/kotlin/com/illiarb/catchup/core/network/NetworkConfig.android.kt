@@ -32,6 +32,7 @@ internal actual fun createKtorClient(
     install(ContentNegotiation) {
       json(Json {
         prettyPrint = true
+        ignoreUnknownKeys = true
       })
     }
 

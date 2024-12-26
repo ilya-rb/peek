@@ -55,6 +55,7 @@ kotlin {
       implementation(projects.features.settings)
       implementation(projects.uiKit.core)
       implementation(projects.uiKit.imageLoader)
+      implementation(projects.articleSummarizer)
     }
   }
 }

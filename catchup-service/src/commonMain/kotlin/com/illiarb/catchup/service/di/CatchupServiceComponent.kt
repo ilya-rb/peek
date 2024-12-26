@@ -19,6 +19,7 @@ public expect interface SqlDatabasePlatformComponent
 public interface CatchupServiceComponent : SqlDatabasePlatformComponent {
 
   public val catchupService: CatchupService
+  public val catchupDatabase: Database
 
   @AppScope
   @Provides

@@ -46,4 +46,5 @@ include(
   ":ui-kit:core",
   ":ui-kit:resources",
   ":ui-kit:image-loader",
+  ":article-summarizer",
 )

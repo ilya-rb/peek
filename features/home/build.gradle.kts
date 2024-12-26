@@ -37,6 +37,7 @@ kotlin {
       implementation(projects.catchupService)
       implementation(projects.features.reader)
       implementation(projects.features.settings)
+      implementation(projects.articleSummarizer)
     }
   }
 }

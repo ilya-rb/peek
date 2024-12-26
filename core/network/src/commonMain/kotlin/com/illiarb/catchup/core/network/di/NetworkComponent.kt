@@ -5,6 +5,7 @@ import com.illiarb.catchup.core.appinfo.AppEnvironment
 import com.illiarb.catchup.core.coroutines.AppDispatchers
 import com.illiarb.catchup.core.network.DefaultHttpClient
 import com.illiarb.catchup.core.network.HttpClient
+import com.illiarb.catchup.core.network.HttpClientFactory
 import com.illiarb.catchup.core.network.NetworkConfig
 import com.illiarb.catchup.core.network.TimeoutConfig
 import com.illiarb.catchup.core.network.createKtorClient
@@ -40,11 +41,7 @@ public interface NetworkComponent {
   public fun provideNetworkConfig(): NetworkConfig {
     return NetworkConfig(
       apiUrl = "http://10.0.2.2:8000", // https://developer.android.com/studio/run/emulator-networking
-      timeouts = TimeoutConfig(
-        connect = DEFAULT_TIMEOUT_SECONDS,
-        read = DEFAULT_TIMEOUT_SECONDS,
-        write = DEFAULT_TIMEOUT_SECONDS,
-      ),
+      timeouts = TimeoutConfig.default(),
     )
   }
 
@@ -61,8 +58,12 @@ public interface NetworkComponent {
     )
   }
 
-  public companion object {
-    public const val DEFAULT_TIMEOUT_SECONDS: Long = 10L
+  @Provides
+  public fun provideHttpClientFactory(
+    appDispatchers: AppDispatchers,
+    plugins: List<HttpClientPlugin<*, *>>,
+  ): HttpClient.Factory {
+    return HttpClientFactory(plugins, appDispatchers)
   }
 }
 

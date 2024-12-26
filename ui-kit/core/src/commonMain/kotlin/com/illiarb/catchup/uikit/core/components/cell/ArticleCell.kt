@@ -111,7 +111,10 @@ public fun ArticleCell(
         ) {
           DropdownMenuItem(
             text = { Text(text = stringResource(Res.string.reader_action_summarize)) },
-            onClick = onSummarizeClick,
+            onClick = {
+              moreMenuExpanded = false
+              onSummarizeClick()
+            },
             trailingIcon = {
               Icon(
                 imageVector = Icons.Filled.Summarize,

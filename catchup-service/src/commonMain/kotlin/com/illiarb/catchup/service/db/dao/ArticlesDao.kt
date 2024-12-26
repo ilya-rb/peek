@@ -5,7 +5,6 @@ import com.illiarb.catchup.core.coroutines.suspendRunCatching
 import com.illiarb.catchup.core.logging.Logger
 import com.illiarb.catchup.service.ArticleEntity
 import com.illiarb.catchup.service.Database
-import com.illiarb.catchup.service.db.DatabaseTransactionRunner
 import com.illiarb.catchup.service.domain.Article
 import com.illiarb.catchup.service.domain.ArticleContent
 import com.illiarb.catchup.service.domain.NewsSource
@@ -16,7 +15,6 @@ import me.tatarka.inject.annotations.Inject
 @Inject
 public class ArticlesDao(
   private val db: Database,
-  private val dbTransactionRunner: DatabaseTransactionRunner,
   private val appDispatchers: AppDispatchers,
 ) {
 
@@ -54,7 +52,7 @@ public class ArticlesDao(
   public suspend fun saveArticles(articles: List<Article>): Result<Unit> {
     return withContext(appDispatchers.io) {
       suspendRunCatching {
-        dbTransactionRunner {
+        db.transactionWithResult {
           articles.forEach(::insertArticle)
         }
       }

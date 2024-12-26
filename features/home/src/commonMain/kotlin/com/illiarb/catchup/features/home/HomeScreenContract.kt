@@ -11,6 +11,7 @@ import com.illiarb.catchup.features.home.filters.FiltersContract
 import com.illiarb.catchup.service.domain.Article
 import com.illiarb.catchup.service.domain.NewsSource
 import com.illiarb.catchup.service.domain.Tag
+import com.illiarb.catchup.summarizer.domain.ArticleSummary
 import com.illiarb.catchup.uikit.core.model.Identifiable
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
@@ -28,6 +29,7 @@ public object HomeScreen : Screen, CommonParcelable {
     val selectedTabIndex: Int,
     val filtersShowing: Boolean,
     val eventSink: (Event) -> Unit,
+    val articleSummary: Async<ArticleSummary>,
   ) : CircuitUiState {
 
     val content: Async<SnapshotStateList<Article>>
@@ -63,6 +65,7 @@ public object HomeScreen : Screen, CommonParcelable {
     data class ArticleBookmarkClicked(val item: Article) : Event
     data class ArticleSummarizeClicked(val item: Article) : Event
     data class FiltersResult(val result: FiltersContract.Result) : Event
+    data object SummaryResult : Event
   }
 
   internal data class Tab(
