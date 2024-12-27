@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -13,6 +14,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Summarize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,7 +27,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Size
@@ -33,8 +38,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
-import com.illiarb.catchup.core.arch.CommonParcelable
-import com.illiarb.catchup.core.arch.CommonParcelize
+import androidx.compose.ui.unit.dp
 import com.illiarb.catchup.core.data.Async
 import com.illiarb.catchup.features.reader.ReaderScreen.Event
 import com.illiarb.catchup.service.domain.Article
@@ -52,7 +56,6 @@ import com.illiarb.catchup.uikit.resources.acsb_navigation_back
 import com.illiarb.catchup.uikit.resources.reader_action_open_in_browser
 import com.illiarb.catchup.uikit.resources.reader_action_summarize
 import com.slack.circuit.runtime.CircuitContext
-import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
@@ -87,6 +90,8 @@ private fun ReaderScreen(modifier: Modifier, state: ReaderScreen.State) {
   val percent = (contentScrollState.value.toFloat() / contentScrollState.maxValue.toFloat()) * 100f
   val scrolledWidth = percent / 100f * size.value
 
+  var pageLoaded by remember { mutableStateOf(false) }
+
   Scaffold(
     modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -116,15 +121,23 @@ private fun ReaderScreen(modifier: Modifier, state: ReaderScreen.State) {
         },
         actions = {
           Box {
-            IconButton(
-              onClick = { eventSink.invoke(Event.TopBarMenuClicked) },
-              enabled = state.article is Async.Content,
-            ) {
-              Icon(
-                imageVector = Icons.Filled.MoreVert,
-                contentDescription = stringResource(Res.string.acsb_action_more),
+            if (pageLoaded) {
+              IconButton(
+                onClick = { eventSink.invoke(Event.TopBarMenuClicked) },
+                enabled = state.article is Async.Content,
+              ) {
+                Icon(
+                  imageVector = Icons.Filled.MoreVert,
+                  contentDescription = stringResource(Res.string.acsb_action_more),
+                )
+              }
+            } else {
+              CircularProgressIndicator(
+                strokeWidth = 2.dp,
+                modifier = Modifier.padding(end = 16.dp).size(24.dp)
               )
             }
+
             DropdownMenu(
               expanded = state.topBarPopupShowing,
               onDismissRequest = { eventSink.invoke(Event.TopBarMenuDismissed) },
@@ -190,6 +203,7 @@ private fun ReaderScreen(modifier: Modifier, state: ReaderScreen.State) {
           ArticleContent(
             article = state.article.content,
             scrollState = contentScrollState,
+            onPageLoaded = { pageLoaded = true }
           )
         }
       }
@@ -202,9 +216,11 @@ private fun ArticleContent(
   modifier: Modifier = Modifier,
   article: Article,
   scrollState: ScrollState,
+  onPageLoaded: () -> Unit,
 ) {
   WebView(
     url = article.link.url,
+    onPageLoaded = onPageLoaded,
     modifier = modifier
       .fillMaxSize()
       .verticalScroll(scrollState),

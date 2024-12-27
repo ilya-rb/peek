@@ -19,9 +19,9 @@ kotlin {
       implementation(compose.components.resources)
       implementation(compose.components.uiToolingPreview)
 
+      implementation(libs.androidx.webkit)
       implementation(libs.circuit.core)
       implementation(libs.circuit.overlay)
-
       implementation(libs.coil.network)
       implementation(libs.coil.compose)
       implementation(libs.shimmer)
