@@ -16,6 +16,6 @@ internal actual suspend fun OverlayHost.showFiltersOverlay(
       sheetContainerColor = containerColor,
       skipPartiallyExpandedState = true,
       onDismiss = { FiltersContract.Result.Cancel },
-    ) { _, navigator -> FiltersOverlay(model, navigator) }
+    ) { _, navigator -> FiltersOverlay(containerColor, model, navigator) }
   )
 }

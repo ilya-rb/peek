@@ -1,17 +1,26 @@
 package com.illiarb.catchup.features.home.summary
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.OpenInBrowser
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.illiarb.catchup.core.data.Async
+import com.illiarb.catchup.service.domain.Article
 import com.illiarb.catchup.summarizer.domain.ArticleSummary
 import com.slack.circuit.overlay.OverlayHost
 import com.slack.circuit.overlay.OverlayNavigator
@@ -19,34 +28,65 @@ import com.slack.circuit.overlay.OverlayNavigator
 internal interface SummaryOverlayContract {
 
   data class Model(
-    val summary: Async<ArticleSummary>,
+    val article: Article,
+    val summary: ArticleSummary,
   )
+
+  sealed interface Result {
+    data object Close : Result
+    data class OpenInReader(val article: Article) : Result
+  }
 }
 
-internal expect suspend fun OverlayHost.showSummaryOverlay(model: SummaryOverlayContract.Model)
+internal expect suspend fun OverlayHost.showSummaryOverlay(
+  model: SummaryOverlayContract.Model,
+  containerColor: Color,
+): SummaryOverlayContract.Result
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun SummaryOverlay(
+  containerColor: Color,
   model: SummaryOverlayContract.Model,
-  navigator: OverlayNavigator<Unit>,
+  navigator: OverlayNavigator<SummaryOverlayContract.Result>,
 ) {
-  val scrollState = rememberScrollState()
-
-  Box(
-    Modifier
-      .fillMaxSize()
-      .verticalScroll(scrollState)
-      .navigationBarsPadding()
-  ) {
-    when (val summary = model.summary) {
-      is Async.Loading, is Async.Error -> TODO()
-      is Async.Content -> {
-        Text(
-          text = summary.content.content,
-          modifier = Modifier.padding(horizontal = 16.dp).padding(top = 16.dp),
-          style = MaterialTheme.typography.bodyMedium,
-        )
-      }
+  Scaffold(
+    topBar = {
+      TopAppBar(
+        colors = TopAppBarDefaults.topAppBarColors().copy(containerColor = containerColor),
+        windowInsets = WindowInsets(0, 0, 0, 0),
+        title = {
+        },
+        navigationIcon = {
+          IconButton(onClick = { navigator.finish(SummaryOverlayContract.Result.Close) }) {
+            Icon(
+              imageVector = Icons.Filled.Close,
+              contentDescription = "Close",
+            )
+          }
+        },
+        actions = {
+          IconButton(
+            onClick = {
+              navigator.finish(SummaryOverlayContract.Result.OpenInReader(model.article))
+            },
+            content = {
+              Icon(
+                imageVector = Icons.Filled.OpenInBrowser,
+                contentDescription = "Open in browser"
+              )
+            },
+          )
+        },
+      )
+    },
+  ) { innerPadding ->
+    Box(Modifier.background(containerColor).fillMaxSize().padding(innerPadding)) {
+      Text(
+        text = model.summary.content,
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        style = MaterialTheme.typography.bodyMedium,
+      )
     }
   }
 }

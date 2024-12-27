@@ -9,14 +9,15 @@ import androidx.compose.runtime.toMutableStateList
 import com.illiarb.catchup.core.data.Async
 import com.illiarb.catchup.core.data.mapContent
 import com.illiarb.catchup.features.home.HomeScreen.Event
+import com.illiarb.catchup.features.home.HomeScreen.SummarizedArticle
 import com.illiarb.catchup.features.home.filters.ArticlesFilter
 import com.illiarb.catchup.features.home.filters.FiltersContract
+import com.illiarb.catchup.features.home.summary.SummaryOverlayContract
 import com.illiarb.catchup.features.reader.ReaderScreen
 import com.illiarb.catchup.features.settings.SettingsScreen
 import com.illiarb.catchup.service.CatchupService
 import com.illiarb.catchup.service.domain.Article
 import com.illiarb.catchup.summarizer.SummarizerService
-import com.illiarb.catchup.summarizer.domain.ArticleSummary
 import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitContext
@@ -65,7 +66,7 @@ internal class HomeScreenPresenter(
     }
 
     var articleSummary by rememberRetained {
-      mutableStateOf<Async<ArticleSummary>>(value = Async.Loading)
+      mutableStateOf<Async<SummarizedArticle>>(value = Async.Loading)
     }
 
     val sources by produceRetainedState<Async<ImmutableList<HomeScreen.Tab>>>(
@@ -136,15 +137,23 @@ internal class HomeScreenPresenter(
         }
 
         is Event.ArticleSummarizeClicked -> coroutineScope.launch {
-          val summary = summarizerService.summarizeArticle(event.item.link.url)
+          val summarizedArticle = summarizerService.summarizeArticle(event.item.link.url)
+            .mapContent { content -> SummarizedArticle(event.item, content) }
             .filter { it !is Async.Loading }
             .first()
 
-          articleSummary = summary
+          articleSummary = summarizedArticle
         }
 
         is Event.SummaryResult -> {
           articleSummary = Async.Loading
+
+          when (event.result) {
+            is SummaryOverlayContract.Result.Close -> Unit
+            is SummaryOverlayContract.Result.OpenInReader -> {
+              navigator.goTo(ReaderScreen(event.result.article.id))
+            }
+          }
         }
 
         is Event.FiltersResult -> {

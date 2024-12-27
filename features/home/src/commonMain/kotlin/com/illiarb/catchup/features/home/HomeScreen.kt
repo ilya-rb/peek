@@ -45,9 +45,6 @@ import com.illiarb.catchup.features.home.summary.SummaryOverlayContract
 import com.illiarb.catchup.features.home.summary.showSummaryOverlay
 import com.illiarb.catchup.service.domain.Article
 import com.illiarb.catchup.service.domain.NewsSource
-import com.illiarb.catchup.summarizer.domain.ArticleSummary
-import com.illiarb.catchup.uikit.core.components.cell.ArticleCell
-import com.illiarb.catchup.uikit.core.components.cell.ArticleLoadingCell
 import com.illiarb.catchup.uikit.core.components.ErrorStateKind
 import com.illiarb.catchup.uikit.core.components.FullscreenErrorState
 import com.illiarb.catchup.uikit.core.components.FullscreenState
@@ -57,6 +54,8 @@ import com.illiarb.catchup.uikit.core.components.LottieAnimationType
 import com.illiarb.catchup.uikit.core.components.SelectableCircleAvatar
 import com.illiarb.catchup.uikit.core.components.SelectableCircleAvatarLoading
 import com.illiarb.catchup.uikit.core.components.TopAppBarTitleLoading
+import com.illiarb.catchup.uikit.core.components.cell.ArticleCell
+import com.illiarb.catchup.uikit.core.components.cell.ArticleLoadingCell
 import com.illiarb.catchup.uikit.resources.Res
 import com.illiarb.catchup.uikit.resources.acsb_action_filter
 import com.illiarb.catchup.uikit.resources.acsb_action_settings
@@ -94,7 +93,7 @@ public class HomeScreenFactory : Ui.Factory {
 @Composable
 private fun HomeScreen(state: HomeScreen.State) {
   ContentWithOverlays {
-    val filtersContainerColor = MaterialTheme.colorScheme.surface
+    val bottomSheetContainer = MaterialTheme.colorScheme.surfaceContainerHigh
     val eventSink = state.eventSink
     val bottomBarBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior()
     val topBarBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -104,7 +103,7 @@ private fun HomeScreen(state: HomeScreen.State) {
         OverlayEffect(Unit) {
           val result = showFiltersOverlay(
             model = FiltersContract.Model(state.articlesTags, state.articlesFilter),
-            containerColor = filtersContainerColor,
+            containerColor = bottomSheetContainer,
           )
           eventSink.invoke(Event.FiltersResult(result))
         }
@@ -112,10 +111,14 @@ private fun HomeScreen(state: HomeScreen.State) {
 
       state.articleSummary is Async.Content -> {
         OverlayEffect(Unit) {
-          showSummaryOverlay(
-            SummaryOverlayContract.Model(state.articleSummary)
+          val result = showSummaryOverlay(
+            containerColor = bottomSheetContainer,
+            model = SummaryOverlayContract.Model(
+              state.articleSummary.content.article,
+              state.articleSummary.content.summary,
+            ),
           )
-          eventSink.invoke(Event.SummaryResult)
+          eventSink.invoke(Event.SummaryResult(result))
         }
       }
     }

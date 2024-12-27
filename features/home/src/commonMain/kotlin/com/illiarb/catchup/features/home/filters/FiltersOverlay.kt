@@ -1,5 +1,6 @@
 package com.illiarb.catchup.features.home.filters
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -65,6 +66,7 @@ internal expect suspend fun OverlayHost.showFiltersOverlay(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun FiltersOverlay(
+  containerColor: Color,
   model: FiltersContract.Model,
   navigator: OverlayNavigator<FiltersContract.Result>,
 ) {
@@ -119,6 +121,7 @@ internal fun FiltersOverlay(
   ) { innerPadding ->
     Column(
       modifier = Modifier
+        .background(containerColor)
         .padding(innerPadding)
         .verticalScroll(scrollState)
     ) {

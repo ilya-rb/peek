@@ -8,6 +8,7 @@ import com.illiarb.catchup.core.arch.CommonParcelize
 import com.illiarb.catchup.core.data.Async
 import com.illiarb.catchup.features.home.filters.ArticlesFilter
 import com.illiarb.catchup.features.home.filters.FiltersContract
+import com.illiarb.catchup.features.home.summary.SummaryOverlayContract
 import com.illiarb.catchup.service.domain.Article
 import com.illiarb.catchup.service.domain.NewsSource
 import com.illiarb.catchup.service.domain.Tag
@@ -29,7 +30,7 @@ public object HomeScreen : Screen, CommonParcelable {
     val selectedTabIndex: Int,
     val filtersShowing: Boolean,
     val eventSink: (Event) -> Unit,
-    val articleSummary: Async<ArticleSummary>,
+    val articleSummary: Async<SummarizedArticle>,
   ) : CircuitUiState {
 
     val content: Async<SnapshotStateList<Article>>
@@ -65,8 +66,13 @@ public object HomeScreen : Screen, CommonParcelable {
     data class ArticleBookmarkClicked(val item: Article) : Event
     data class ArticleSummarizeClicked(val item: Article) : Event
     data class FiltersResult(val result: FiltersContract.Result) : Event
-    data object SummaryResult : Event
+    data class SummaryResult(val result: SummaryOverlayContract.Result) : Event
   }
+
+  internal data class SummarizedArticle(
+    val article: Article,
+    val summary: ArticleSummary,
+  )
 
   internal data class Tab(
     override val id: String,
