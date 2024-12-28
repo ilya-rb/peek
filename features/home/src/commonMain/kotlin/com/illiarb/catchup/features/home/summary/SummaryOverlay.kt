@@ -22,8 +22,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.illiarb.catchup.service.domain.Article
 import com.illiarb.catchup.summarizer.domain.ArticleSummary
+import com.illiarb.catchup.uikit.resources.Res
+import com.illiarb.catchup.uikit.resources.acsb_action_close
+import com.illiarb.catchup.uikit.resources.acsb_action_open_in_browser
 import com.slack.circuit.overlay.OverlayHost
 import com.slack.circuit.overlay.OverlayNavigator
+import org.jetbrains.compose.resources.stringResource
 
 internal interface SummaryOverlayContract {
 
@@ -61,7 +65,7 @@ internal fun SummaryOverlay(
           IconButton(onClick = { navigator.finish(SummaryOverlayContract.Result.Close) }) {
             Icon(
               imageVector = Icons.Filled.Close,
-              contentDescription = "Close",
+              contentDescription = stringResource(Res.string.acsb_action_close),
             )
           }
         },
@@ -73,7 +77,7 @@ internal fun SummaryOverlay(
             content = {
               Icon(
                 imageVector = Icons.Filled.OpenInBrowser,
-                contentDescription = "Open in browser"
+                contentDescription = stringResource(Res.string.acsb_action_open_in_browser),
               )
             },
           )
@@ -81,10 +85,15 @@ internal fun SummaryOverlay(
       )
     },
   ) { innerPadding ->
-    Box(Modifier.background(containerColor).fillMaxSize().padding(innerPadding)) {
+    Box(
+      Modifier
+        .background(containerColor)
+        .fillMaxSize()
+        .padding(innerPadding)
+    ) {
       Text(
         text = model.summary.content,
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        modifier = Modifier.padding(horizontal = 16.dp),
         style = MaterialTheme.typography.bodyMedium,
       )
     }

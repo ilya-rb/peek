@@ -158,9 +158,7 @@ internal fun FiltersOverlay(
             FilterChip(
               selected = selected,
               label = { Text(tag.value) },
-              onClick = {
-                selectedTags[tag] = !selected
-              },
+              onClick = { selectedTags[tag] = !selected },
             )
           }
         }

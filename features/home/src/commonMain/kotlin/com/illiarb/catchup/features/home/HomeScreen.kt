@@ -31,10 +31,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import com.illiarb.catchup.core.data.Async
@@ -70,6 +72,11 @@ import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.haze
+import dev.chrisbanes.haze.hazeChild
+import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
+import dev.chrisbanes.haze.materials.HazeMaterials
 import kotlinx.collections.immutable.ImmutableList
 import me.tatarka.inject.annotations.Inject
 import org.jetbrains.compose.resources.stringResource
@@ -89,7 +96,7 @@ public class HomeScreenFactory : Ui.Factory {
   }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalHazeMaterialsApi::class)
 @Composable
 private fun HomeScreen(state: HomeScreen.State) {
   ContentWithOverlays {
@@ -97,6 +104,9 @@ private fun HomeScreen(state: HomeScreen.State) {
     val eventSink = state.eventSink
     val bottomBarBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior()
     val topBarBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
+    val hazeState = remember { HazeState() }
+    val hazeStyle = HazeMaterials.thin(MaterialTheme.colorScheme.surface)
 
     when {
       state.filtersShowing -> {
@@ -130,6 +140,11 @@ private fun HomeScreen(state: HomeScreen.State) {
       topBar = {
         TopAppBar(
           scrollBehavior = topBarBehavior,
+          colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color.Transparent,
+            scrolledContainerColor = Color.Transparent,
+          ),
+          modifier = Modifier.hazeChild(state = hazeState, style = hazeStyle),
           title = {
             when (val content = state.tabs) {
               is Async.Loading, is Async.Error -> TopAppBarTitleLoading()
@@ -154,7 +169,9 @@ private fun HomeScreen(state: HomeScreen.State) {
       },
       bottomBar = {
         BottomAppBar(
+          modifier = Modifier.hazeChild(state = hazeState, style = hazeStyle),
           scrollBehavior = bottomBarBehavior,
+          containerColor = Color.Transparent,
           actions = {
             AnimatedContent(
               targetState = state.tabs,
@@ -213,6 +230,7 @@ private fun HomeScreen(state: HomeScreen.State) {
               }
             } else {
               ArticlesContent(
+                modifier = Modifier.haze(state = hazeState),
                 contentPadding = innerPadding,
                 articles = targetState.content,
                 eventSink = eventSink,
