@@ -16,6 +16,8 @@ internal class DefaultAppConfiguration(
   private val memoryField: MemoryField<DebugConfig?> = MemoryField(value = null),
 ) : AppConfiguration {
 
+  override val isAndroidQ: Boolean get() = isAndroidQ()
+
   override fun debugConfig(): Flow<DebugConfig> {
     if (environment != AppEnvironment.DEV) {
       return emptyFlow()

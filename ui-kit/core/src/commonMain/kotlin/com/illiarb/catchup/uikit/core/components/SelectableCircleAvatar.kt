@@ -40,6 +40,8 @@ public fun SelectableCircleAvatar(
   val colors = listOf(
     MaterialTheme.colorScheme.primary,
     MaterialTheme.colorScheme.primaryContainer,
+    MaterialTheme.colorScheme.onPrimary,
+    MaterialTheme.colorScheme.primary,
   )
 
   val alpha: Float by animateFloatAsState(if (selected) 1f else 0.5f)

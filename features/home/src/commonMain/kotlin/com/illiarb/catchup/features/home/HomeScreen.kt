@@ -100,8 +100,8 @@ public class HomeScreenFactory : Ui.Factory {
 @Composable
 private fun HomeScreen(state: HomeScreen.State) {
   ContentWithOverlays {
-    val bottomSheetContainer = MaterialTheme.colorScheme.surfaceContainerHigh
     val eventSink = state.eventSink
+    val bottomSheetContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh
     val bottomBarBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior()
     val topBarBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
@@ -113,7 +113,7 @@ private fun HomeScreen(state: HomeScreen.State) {
         OverlayEffect(Unit) {
           val result = showFiltersOverlay(
             model = FiltersContract.Model(state.articlesTags, state.articlesFilter),
-            containerColor = bottomSheetContainer,
+            containerColor = bottomSheetContainerColor,
           )
           eventSink.invoke(Event.FiltersResult(result))
         }
@@ -122,7 +122,7 @@ private fun HomeScreen(state: HomeScreen.State) {
       state.articleSummary is Async.Content -> {
         OverlayEffect(Unit) {
           val result = showSummaryOverlay(
-            containerColor = bottomSheetContainer,
+            containerColor = bottomSheetContainerColor,
             model = SummaryOverlayContract.Model(
               state.articleSummary.content.article,
               state.articleSummary.content.summary,

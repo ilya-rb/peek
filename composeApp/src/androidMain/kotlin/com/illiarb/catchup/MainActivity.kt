@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
+import androidx.activity.addCallback
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.browser.customtabs.CustomTabColorSchemeParams
@@ -38,6 +39,14 @@ internal class MainActivity : ComponentActivity() {
     val appComponent = applicationContext.appComponent()
     val activityComponent = AndroidUiComponent.create(appComponent, activity = this)
     val settingsService = appComponent.settingsService
+
+    if (appComponent.appConfiguration.isAndroidQ && isTaskRoot) {
+      onBackPressedDispatcher.addCallback {
+        // https://twitter.com/Piwai/status/1169274622614704129
+        // https://issuetracker.google.com/issues/139738913
+        finishAfterTransition()
+      }
+    }
 
     setContent {
       val backStack = rememberSaveableBackStack(root = HomeScreen)

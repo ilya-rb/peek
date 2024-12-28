@@ -13,6 +13,8 @@ public data class DebugConfig(
 
 public interface AppConfiguration {
 
+  public val isAndroidQ: Boolean
+
   public fun debugConfig(): Flow<DebugConfig>
 
   public suspend fun updateDebugConfig(newConfig: DebugConfig): Result<Unit>
