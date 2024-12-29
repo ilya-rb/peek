@@ -42,6 +42,8 @@ import androidx.compose.ui.unit.dp
 import com.illiarb.catchup.core.data.Async
 import com.illiarb.catchup.features.reader.ReaderScreen.Event
 import com.illiarb.catchup.service.domain.Article
+import com.illiarb.catchup.summarizer.ui.SummaryScreen
+import com.illiarb.catchup.summarizer.ui.showSummaryOverlay
 import com.illiarb.catchup.uikit.core.components.ArticleReaderLoading
 import com.illiarb.catchup.uikit.core.components.ErrorStateKind
 import com.illiarb.catchup.uikit.core.components.FullscreenErrorState
@@ -55,6 +57,8 @@ import com.illiarb.catchup.uikit.resources.acsb_action_summarize
 import com.illiarb.catchup.uikit.resources.acsb_navigation_back
 import com.illiarb.catchup.uikit.resources.reader_action_open_in_browser
 import com.illiarb.catchup.uikit.resources.reader_action_summarize
+import com.slack.circuit.overlay.ContentWithOverlays
+import com.slack.circuit.overlay.OverlayEffect
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
@@ -68,7 +72,7 @@ public class ReaderScreenFactory : Ui.Factory {
     return when (screen) {
       is ReaderScreen -> {
         ui<ReaderScreen.State> { state, modifier ->
-          ReaderScreen(modifier, state)
+          ReaderScreen(modifier, screen, state)
         }
       }
 
@@ -79,132 +83,147 @@ public class ReaderScreenFactory : Ui.Factory {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ReaderScreen(modifier: Modifier, state: ReaderScreen.State) {
-  val eventSink = state.eventSink
-  val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+private fun ReaderScreen(
+  modifier: Modifier,
+  screen: ReaderScreen,
+  state: ReaderScreen.State,
+) {
+  ContentWithOverlays {
+    val eventSink = state.eventSink
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
-  val startColor = MaterialTheme.colorScheme.surfaceContainerLow
-  val endColor = MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.4f)
-  val contentScrollState = rememberScrollState()
-  val size = getScreenWidth() * LocalDensity.current.density
-  val percent = (contentScrollState.value.toFloat() / contentScrollState.maxValue.toFloat()) * 100f
-  val scrolledWidth = percent / 100f * size.value
+    val startColor = MaterialTheme.colorScheme.surfaceContainerLow
+    val endColor = MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.4f)
+    val contentScrollState = rememberScrollState()
+    val size = getScreenWidth() * LocalDensity.current.density
+    val percent = (contentScrollState.value.toFloat() / contentScrollState.maxValue.toFloat()) * 100f
+    val scrolledWidth = percent / 100f * size.value
 
-  var pageLoaded by remember { mutableStateOf(false) }
+    var pageLoaded by remember { mutableStateOf(false) }
 
-  Scaffold(
-    modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-    contentWindowInsets = WindowInsets(0, 0, 0, 0),
-    topBar = {
-      TopAppBar(
-        modifier = Modifier.drawWithContent {
-          drawContent()
-          drawRect(
-            brush = SolidColor(endColor),
-            size = Size(
-              height = this.size.height,
-              width = scrolledWidth.coerceIn(0f, this.size.width),
+    if (state.summaryShowing) {
+      OverlayEffect(Unit) {
+        showSummaryOverlay(
+          SummaryScreen(articleId = screen.articleId, context = SummaryScreen.Context.READER)
+        )
+        eventSink.invoke(Event.SummarizeCloseClicked)
+      }
+    }
+
+    Scaffold(
+      modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+      contentWindowInsets = WindowInsets(0, 0, 0, 0),
+      topBar = {
+        TopAppBar(
+          modifier = Modifier.drawWithContent {
+            drawContent()
+            drawRect(
+              brush = SolidColor(endColor),
+              size = Size(
+                height = this.size.height,
+                width = scrolledWidth.coerceIn(0f, this.size.width),
+              )
             )
-          )
-        },
-        scrollBehavior = scrollBehavior,
-        colors = TopAppBarDefaults.topAppBarColors(
-          scrolledContainerColor = startColor,
-        ),
-        navigationIcon = {
-          IconButton(onClick = { eventSink.invoke(Event.NavigationIconClicked) }) {
-            Icon(
-              imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-              contentDescription = stringResource(Res.string.acsb_navigation_back),
-            )
-          }
-        },
-        actions = {
-          Box {
-            if (pageLoaded) {
-              IconButton(
-                onClick = { eventSink.invoke(Event.TopBarMenuClicked) },
-                enabled = state.article is Async.Content,
-              ) {
-                Icon(
-                  imageVector = Icons.Filled.MoreVert,
-                  contentDescription = stringResource(Res.string.acsb_action_more),
-                )
-              }
-            } else {
-              CircularProgressIndicator(
-                strokeWidth = 2.dp,
-                modifier = Modifier.padding(end = 16.dp).size(24.dp)
+          },
+          scrollBehavior = scrollBehavior,
+          colors = TopAppBarDefaults.topAppBarColors(
+            scrolledContainerColor = startColor,
+          ),
+          navigationIcon = {
+            IconButton(onClick = { eventSink.invoke(Event.NavigationIconClicked) }) {
+              Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = stringResource(Res.string.acsb_navigation_back),
               )
             }
-
-            DropdownMenu(
-              expanded = state.topBarPopupShowing,
-              onDismissRequest = { eventSink.invoke(Event.TopBarMenuDismissed) },
-            ) {
-              DropdownMenuItem(
-                text = { Text(text = stringResource(Res.string.reader_action_open_in_browser)) },
-                onClick = { eventSink.invoke(Event.OpenInBrowserClicked) },
-                trailingIcon = {
+          },
+          actions = {
+            Box {
+              if (pageLoaded) {
+                IconButton(
+                  onClick = { eventSink.invoke(Event.TopBarMenuClicked) },
+                  enabled = state.article is Async.Content,
+                ) {
                   Icon(
-                    imageVector = Icons.AutoMirrored.Filled.OpenInNew,
-                    contentDescription = stringResource(Res.string.acsb_action_open_in_browser),
-                  )
-                },
-              )
-              DropdownMenuItem(
-                text = { Text(text = stringResource(Res.string.reader_action_summarize)) },
-                onClick = { eventSink.invoke(Event.SummarizeClicked) },
-                trailingIcon = {
-                  Icon(
-                    imageVector = Icons.Filled.Summarize,
-                    contentDescription = stringResource(Res.string.acsb_action_summarize),
+                    imageVector = Icons.Filled.MoreVert,
+                    contentDescription = stringResource(Res.string.acsb_action_more),
                   )
                 }
-              )
-            }
-          }
-        },
-        title = {
-          when (val content = state.article) {
-            is Async.Loading, is Async.Error -> TopAppBarTitleLoading()
-            is Async.Content -> {
-              Column {
-                Text(
-                  text = content.content.title,
-                  style = MaterialTheme.typography.bodyLarge,
-                  maxLines = 1,
-                  overflow = TextOverflow.Ellipsis,
+              } else {
+                CircularProgressIndicator(
+                  strokeWidth = 2.dp,
+                  modifier = Modifier.padding(end = 16.dp).size(24.dp)
                 )
-                Text(
-                  text = content.content.link.url,
-                  style = MaterialTheme.typography.bodySmall,
-                  maxLines = 1,
-                  overflow = TextOverflow.Ellipsis,
+              }
+
+              DropdownMenu(
+                expanded = state.topBarPopupShowing,
+                onDismissRequest = { eventSink.invoke(Event.TopBarMenuDismissed) },
+              ) {
+                DropdownMenuItem(
+                  text = { Text(text = stringResource(Res.string.reader_action_open_in_browser)) },
+                  onClick = { eventSink.invoke(Event.OpenInBrowserClicked) },
+                  trailingIcon = {
+                    Icon(
+                      imageVector = Icons.AutoMirrored.Filled.OpenInNew,
+                      contentDescription = stringResource(Res.string.acsb_action_open_in_browser),
+                    )
+                  },
+                )
+                DropdownMenuItem(
+                  text = { Text(text = stringResource(Res.string.reader_action_summarize)) },
+                  onClick = { eventSink.invoke(Event.SummarizeClicked) },
+                  trailingIcon = {
+                    Icon(
+                      imageVector = Icons.Filled.Summarize,
+                      contentDescription = stringResource(Res.string.acsb_action_summarize),
+                    )
+                  }
                 )
               }
             }
+          },
+          title = {
+            when (val content = state.article) {
+              is Async.Loading, is Async.Error -> TopAppBarTitleLoading()
+              is Async.Content -> {
+                Column {
+                  Text(
+                    text = content.content.title,
+                    style = MaterialTheme.typography.bodyLarge,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                  )
+                  Text(
+                    text = content.content.link.url,
+                    style = MaterialTheme.typography.bodySmall,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                  )
+                }
+              }
+            }
+          },
+        )
+      },
+    ) { innerPadding ->
+      Box(Modifier.fillMaxSize().padding(innerPadding)) {
+        when (state.article) {
+          is Async.Loading -> {
+            ArticleReaderLoading()
           }
-        },
-      )
-    },
-  ) { innerPadding ->
-    Box(Modifier.fillMaxSize().padding(innerPadding)) {
-      when (state.article) {
-        is Async.Loading -> {
-          ArticleReaderLoading()
-        }
 
-        is Async.Error -> FullscreenErrorState(errorType = ErrorStateKind.UNKNOWN) {
-          eventSink.invoke(Event.ErrorRetryClicked)
-        }
+          is Async.Error -> FullscreenErrorState(errorType = ErrorStateKind.UNKNOWN) {
+            eventSink.invoke(Event.ErrorRetryClicked)
+          }
 
-        is Async.Content -> {
-          ArticleContent(
-            article = state.article.content,
-            scrollState = contentScrollState,
-            onPageLoaded = { pageLoaded = true }
-          )
+          is Async.Content -> {
+            ArticleContent(
+              article = state.article.content,
+              scrollState = contentScrollState,
+              onPageLoaded = { pageLoaded = true }
+            )
+          }
         }
       }
     }

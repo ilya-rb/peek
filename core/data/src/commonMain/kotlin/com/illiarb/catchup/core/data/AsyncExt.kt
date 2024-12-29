@@ -1,6 +1,9 @@
 package com.illiarb.catchup.core.data
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
 public fun <T, R> Flow<Async<T>>.mapContent(mapper: (T) -> R): Flow<Async<R>> {
@@ -11,6 +14,19 @@ public fun <T, R> Flow<Async<T>>.mapContent(mapper: (T) -> R): Flow<Async<R>> {
       is Async.Content -> {
         Async.Content(mapper(data.content))
       }
+    }
+  }
+}
+
+@OptIn(ExperimentalCoroutinesApi::class)
+public fun <T, R> Flow<Async<T>>.flatMapLatestContent(
+  mapper: (T) -> Flow<Async<R>>
+): Flow<Async<R>> {
+  return flatMapLatest { data ->
+    when (data) {
+      is Async.Content -> mapper(data.content)
+      is Async.Error -> flowOf(Async.Error(data.error))
+      is Async.Loading -> flowOf(Async.Loading)
     }
   }
 }

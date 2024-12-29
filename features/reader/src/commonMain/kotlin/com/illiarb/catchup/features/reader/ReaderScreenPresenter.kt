@@ -53,18 +53,27 @@ internal class ReaderScreenPresenter(
       }
     }
     var topBarPopupShowing by rememberRetained { mutableStateOf(false) }
+    var summaryShowing by rememberRetained { mutableStateOf(false) }
 
     return ReaderScreen.State(
       article = article,
       topBarPopupShowing = topBarPopupShowing,
+      summaryShowing = summaryShowing,
     ) { event ->
       when (event) {
         is Event.NavigationIconClicked -> navigator.pop()
-        is Event.SummarizeClicked -> Unit
+        is Event.SummarizeClicked -> {
+          topBarPopupShowing = false
+          summaryShowing = true
+        }
+
         is Event.TopBarMenuClicked -> topBarPopupShowing = true
         is Event.TopBarMenuDismissed -> topBarPopupShowing = false
+        is Event.SummarizeCloseClicked -> summaryShowing = false
         is Event.ErrorRetryClicked -> Unit
         is Event.OpenInBrowserClicked -> {
+          topBarPopupShowing = false
+
           val content = article
           require(content is Async.Content)
 

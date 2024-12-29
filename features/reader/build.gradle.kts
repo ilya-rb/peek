@@ -17,6 +17,7 @@ kotlin {
       implementation(compose.components.resources)
 
       implementation(libs.circuit.core)
+      implementation(libs.circuit.overlay)
       implementation(libs.kotlin.inject.runtime)
 
       implementation(projects.uiKit.core)
@@ -27,6 +28,7 @@ kotlin {
       implementation(projects.core.logging)
       implementation(projects.core.data)
       implementation(projects.catchupService)
+      implementation(projects.articleSummarizer)
     }
   }
 }

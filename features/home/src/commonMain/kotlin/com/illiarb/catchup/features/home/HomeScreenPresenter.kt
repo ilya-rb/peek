@@ -9,15 +9,13 @@ import androidx.compose.runtime.toMutableStateList
 import com.illiarb.catchup.core.data.Async
 import com.illiarb.catchup.core.data.mapContent
 import com.illiarb.catchup.features.home.HomeScreen.Event
-import com.illiarb.catchup.features.home.HomeScreen.SummarizedArticle
 import com.illiarb.catchup.features.home.filters.ArticlesFilter
 import com.illiarb.catchup.features.home.filters.FiltersContract
-import com.illiarb.catchup.features.home.summary.SummaryOverlayContract
 import com.illiarb.catchup.features.reader.ReaderScreen
 import com.illiarb.catchup.features.settings.SettingsScreen
 import com.illiarb.catchup.service.CatchupService
 import com.illiarb.catchup.service.domain.Article
-import com.illiarb.catchup.summarizer.SummarizerService
+import com.illiarb.catchup.summarizer.ui.SummaryScreen
 import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitContext
@@ -27,15 +25,12 @@ import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 
 @Inject
 public class HomeScreenPresenterFactory(
   private val catchupService: CatchupService,
-  private val summarizerService: SummarizerService,
 ) : Presenter.Factory {
   override fun create(
     screen: Screen,
@@ -43,7 +38,7 @@ public class HomeScreenPresenterFactory(
     context: CircuitContext
   ): Presenter<*>? {
     return when (screen) {
-      is HomeScreen -> HomeScreenPresenter(catchupService, summarizerService, navigator)
+      is HomeScreen -> HomeScreenPresenter(catchupService, navigator)
       else -> null
     }
   }
@@ -51,7 +46,6 @@ public class HomeScreenPresenterFactory(
 
 internal class HomeScreenPresenter(
   private val catchupService: CatchupService,
-  private val summarizerService: SummarizerService,
   private val navigator: Navigator,
 ) : Presenter<HomeScreen.State> {
 
@@ -65,8 +59,8 @@ internal class HomeScreenPresenter(
       mutableStateOf(ArticlesFilter.Composite(filters = emptySet()))
     }
 
-    var articleSummary by rememberRetained {
-      mutableStateOf<Async<SummarizedArticle>>(value = Async.Loading)
+    var articleToShowSummary by rememberRetained {
+      mutableStateOf<Article?>(value = null)
     }
 
     val sources by produceRetainedState<Async<ImmutableList<HomeScreen.Tab>>>(
@@ -136,22 +130,17 @@ internal class HomeScreenPresenter(
           }
         }
 
-        is Event.ArticleSummarizeClicked -> coroutineScope.launch {
-          val summarizedArticle = summarizerService.summarizeArticle(event.item.link.url)
-            .mapContent { content -> SummarizedArticle(event.item, content) }
-            .filter { it !is Async.Loading }
-            .first()
-
-          articleSummary = summarizedArticle
+        is Event.ArticleSummarizeClicked -> {
+          articleToShowSummary = event.item
         }
 
         is Event.SummaryResult -> {
-          articleSummary = Async.Loading
+          articleToShowSummary = null
 
           when (event.result) {
-            is SummaryOverlayContract.Result.Close -> Unit
-            is SummaryOverlayContract.Result.OpenInReader -> {
-              navigator.goTo(ReaderScreen(event.result.article.id))
+            is SummaryScreen.Result.Close -> Unit
+            is SummaryScreen.Result.OpenInReader -> {
+              navigator.goTo(ReaderScreen(event.result.articleId))
             }
           }
         }
@@ -181,7 +170,7 @@ internal class HomeScreenPresenter(
       eventSink = ::eventSink,
       filtersShowing = filtersShowing,
       articlesFilter = articlesFilter,
-      articleSummary = articleSummary,
+      articleToShowSummary = articleToShowSummary,
     )
   }
 

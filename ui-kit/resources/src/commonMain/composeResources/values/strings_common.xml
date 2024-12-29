@@ -5,4 +5,10 @@
     <string name="service_irish_times_name">The Irish Times</string>
     <string name="service_dou_name">DOU</string>
     <string name="service_hacker_news_name">Hacker News</string>
+
+    <plurals name="duration_reading_time">
+        <item quantity="one">%1$d minute</item>
+        <item quantity="zero">Less than a minute</item>
+        <item quantity="other">%1$d minutes</item>
+    </plurals>
 </resources>

@@ -15,6 +15,7 @@ public data class ReaderScreen(val articleId: String) : Screen, CommonParcelable
   internal data class State(
     val article: Async<Article>,
     val topBarPopupShowing: Boolean,
+    val summaryShowing: Boolean,
     val eventSink: (Event) -> Unit,
   ) : CircuitUiState
 
@@ -24,6 +25,7 @@ public data class ReaderScreen(val articleId: String) : Screen, CommonParcelable
     data object TopBarMenuDismissed : Event
     data object OpenInBrowserClicked : Event
     data object SummarizeClicked : Event
+    data object SummarizeCloseClicked : Event
     data object ErrorRetryClicked : Event
   }
 }

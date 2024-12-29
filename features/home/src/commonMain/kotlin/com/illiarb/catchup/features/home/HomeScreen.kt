@@ -43,10 +43,10 @@ import com.illiarb.catchup.core.data.Async
 import com.illiarb.catchup.features.home.HomeScreen.Event
 import com.illiarb.catchup.features.home.filters.FiltersContract
 import com.illiarb.catchup.features.home.filters.showFiltersOverlay
-import com.illiarb.catchup.features.home.summary.SummaryOverlayContract
-import com.illiarb.catchup.features.home.summary.showSummaryOverlay
 import com.illiarb.catchup.service.domain.Article
 import com.illiarb.catchup.service.domain.NewsSource
+import com.illiarb.catchup.summarizer.ui.SummaryScreen
+import com.illiarb.catchup.summarizer.ui.showSummaryOverlay
 import com.illiarb.catchup.uikit.core.components.ErrorStateKind
 import com.illiarb.catchup.uikit.core.components.FullscreenErrorState
 import com.illiarb.catchup.uikit.core.components.FullscreenState
@@ -119,13 +119,12 @@ private fun HomeScreen(state: HomeScreen.State) {
         }
       }
 
-      state.articleSummary is Async.Content -> {
+      state.articleToShowSummary != null -> {
         OverlayEffect(Unit) {
           val result = showSummaryOverlay(
-            containerColor = bottomSheetContainerColor,
-            model = SummaryOverlayContract.Model(
-              state.articleSummary.content.article,
-              state.articleSummary.content.summary,
+            SummaryScreen(
+              state.articleToShowSummary.id,
+              context = SummaryScreen.Context.HOME,
             ),
           )
           eventSink.invoke(Event.SummaryResult(result))
