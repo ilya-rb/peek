@@ -9,6 +9,7 @@
     <string name="acsb_icon_bookmarked">Bookmarked</string>
     <string name="acsb_icon_reader_reading_time">Estimated reading time</string>
     <string name="acsb_icon_tags">Tags</string>
+    <string name="acsb_icon_appearance">Appearance</string>
     <string name="acsb_navigation_back">Back</string>
     <string name="acsb_switch_checked">On</string>
 </resources>

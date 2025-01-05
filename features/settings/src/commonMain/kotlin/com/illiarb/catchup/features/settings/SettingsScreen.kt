@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.BugReport
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -21,8 +22,11 @@ import com.illiarb.catchup.core.appinfo.DebugConfig
 import com.illiarb.catchup.features.settings.SettingsScreen.Event
 import com.illiarb.catchup.uikit.core.components.cell.RowCell
 import com.illiarb.catchup.uikit.core.components.cell.SwitchCell
+import com.illiarb.catchup.uikit.core.model.VectorIcon
 import com.illiarb.catchup.uikit.resources.Res
+import com.illiarb.catchup.uikit.resources.acsb_icon_appearance
 import com.illiarb.catchup.uikit.resources.acsb_navigation_back
+import com.illiarb.catchup.uikit.resources.settings_appearance_title
 import com.illiarb.catchup.uikit.resources.settings_dark_theme_title
 import com.illiarb.catchup.uikit.resources.settings_dynamic_colors_subtitle
 import com.illiarb.catchup.uikit.resources.settings_dynamic_colors_title
@@ -73,6 +77,13 @@ private fun SettingsScreen(state: SettingsScreen.State) {
   ) { innerPadding ->
     Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
       Column {
+        SettingsHeader(
+          text = stringResource(Res.string.settings_appearance_title),
+          icon = VectorIcon(
+            imageVector = Icons.Filled.Palette,
+            contentDescription = stringResource(Res.string.acsb_icon_appearance),
+          ),
+        )
         SwitchCell(
           switchChecked = state.dynamicColorsEnabled,
           text = stringResource(Res.string.settings_dynamic_colors_title),
@@ -90,15 +101,14 @@ private fun SettingsScreen(state: SettingsScreen.State) {
           }
         )
         if (state.debugSettings != null) {
-          RowCell(
-            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
+          SettingsHeader(
+            modifier = Modifier.padding(top = 16.dp),
             text = "Debug",
-            startIcon = Icons.Filled.BugReport,
-            startIconContentDescription = "Debug",
+            icon = VectorIcon(
+              imageVector = Icons.Filled.BugReport,
+              contentDescription = "Debug",
+            )
           )
-
-          HorizontalDivider()
-
           DebugSettings(
             settings = state.debugSettings,
             onNetworkDelayChanged = { events.invoke(Event.NetworkDelayChanged(it)) }
@@ -107,6 +117,21 @@ private fun SettingsScreen(state: SettingsScreen.State) {
       }
     }
   }
+}
+
+@Composable
+private fun SettingsHeader(
+  modifier: Modifier = Modifier,
+  text: String,
+  icon: VectorIcon,
+) {
+  RowCell(
+    modifier = modifier.padding(bottom = 8.dp),
+    text = text,
+    startIcon = icon.imageVector,
+    startIconContentDescription = icon.contentDescription,
+  )
+  HorizontalDivider()
 }
 
 @Composable
