@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.BottomAppBarDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -28,7 +29,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -55,7 +55,6 @@ import com.illiarb.catchup.uikit.core.components.LocalLottieAnimation
 import com.illiarb.catchup.uikit.core.components.LottieAnimationType
 import com.illiarb.catchup.uikit.core.components.SelectableCircleAvatar
 import com.illiarb.catchup.uikit.core.components.SelectableCircleAvatarLoading
-import com.illiarb.catchup.uikit.core.components.TopAppBarTitleLoading
 import com.illiarb.catchup.uikit.core.components.cell.ArticleCell
 import com.illiarb.catchup.uikit.core.components.cell.ArticleLoadingCell
 import com.illiarb.catchup.uikit.resources.Res
@@ -63,9 +62,7 @@ import com.illiarb.catchup.uikit.resources.acsb_action_filter
 import com.illiarb.catchup.uikit.resources.acsb_action_settings
 import com.illiarb.catchup.uikit.resources.home_articles_empty_action
 import com.illiarb.catchup.uikit.resources.home_articles_empty_title
-import com.illiarb.catchup.uikit.resources.service_dou_name
-import com.illiarb.catchup.uikit.resources.service_hacker_news_name
-import com.illiarb.catchup.uikit.resources.service_irish_times_name
+import com.illiarb.catchup.uikit.resources.home_screen_title
 import com.slack.circuit.overlay.ContentWithOverlays
 import com.slack.circuit.overlay.OverlayEffect
 import com.slack.circuit.runtime.CircuitContext
@@ -73,8 +70,8 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.haze
-import dev.chrisbanes.haze.hazeChild
+import dev.chrisbanes.haze.hazeEffect
+import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import dev.chrisbanes.haze.materials.HazeMaterials
 import kotlinx.collections.immutable.ImmutableList
@@ -137,24 +134,15 @@ private fun HomeScreen(state: HomeScreen.State) {
         .nestedScroll(bottomBarBehavior.nestedScrollConnection)
         .nestedScroll(topBarBehavior.nestedScrollConnection),
       topBar = {
-        TopAppBar(
+        CenterAlignedTopAppBar(
           scrollBehavior = topBarBehavior,
           colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color.Transparent,
             scrolledContainerColor = Color.Transparent,
           ),
-          modifier = Modifier.hazeChild(state = hazeState, style = hazeStyle),
+          modifier = Modifier.hazeEffect(state = hazeState, style = hazeStyle),
           title = {
-            when (val content = state.tabs) {
-              is Async.Loading, is Async.Error -> TopAppBarTitleLoading()
-              is Async.Content -> {
-                val selected = content.content[state.selectedTabIndex]
-                Text(
-                  text = selected.serviceName(),
-                  style = MaterialTheme.typography.titleLarge,
-                )
-              }
-            }
+            Text(stringResource(Res.string.home_screen_title))
           },
           actions = {
             IconButton(onClick = { eventSink.invoke(Event.SettingsClicked) }) {
@@ -168,7 +156,7 @@ private fun HomeScreen(state: HomeScreen.State) {
       },
       bottomBar = {
         BottomAppBar(
-          modifier = Modifier.hazeChild(state = hazeState, style = hazeStyle),
+          modifier = Modifier.hazeEffect(state = hazeState, style = hazeStyle),
           scrollBehavior = bottomBarBehavior,
           containerColor = Color.Transparent,
           actions = {
@@ -229,7 +217,7 @@ private fun HomeScreen(state: HomeScreen.State) {
               }
             } else {
               ArticlesContent(
-                modifier = Modifier.haze(state = hazeState),
+                modifier = Modifier.hazeSource(state = hazeState),
                 contentPadding = innerPadding,
                 articles = targetState.content,
                 eventSink = eventSink,
@@ -352,15 +340,5 @@ private fun ArticlesContent(
         )
       }
     )
-  }
-}
-
-@Composable
-private fun HomeScreen.Tab.serviceName(): String {
-  return when (source.kind) {
-    NewsSource.Kind.IrishTimes -> stringResource(Res.string.service_irish_times_name)
-    NewsSource.Kind.HackerNews -> stringResource(Res.string.service_hacker_news_name)
-    NewsSource.Kind.Dou -> stringResource(Res.string.service_dou_name)
-    NewsSource.Kind.Unknown -> ""
   }
 }
