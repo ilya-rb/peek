@@ -72,9 +72,6 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     concurrency: deploy-group
-    defaults:
-      run:
-        working-directory: ./server
     steps:
       - uses: actions/checkout@v4
       - uses: superfly/flyctl-actions/setup-flyctl@master
