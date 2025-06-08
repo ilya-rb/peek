@@ -15,7 +15,7 @@ SUPERUSER="${SUPERUSER:=postgres}"
 SUPERUSER_PWD="${SUPERUSER_PWD:=password}"
 APP_USER="${APP_USER:=app}"
 APP_USER_PWD="${APP_USER_PWD:=secret}"
-APP_DB_NAME="${APP_DB_NAME:=catchup}"
+APP_DB_NAME="${APP_DB_NAME:=peek}"
 
 if [[ -z "${SKIP_DOCKER}" ]]
 then

@@ -2,8 +2,8 @@ use sqlx::PgPool;
 use std::sync::LazyLock;
 use uuid::Uuid;
 
-use catchup_server::telemetry::LogLevel;
-use catchup_server::{app, configuration, telemetry};
+use peek_server::telemetry::LogLevel;
+use peek_server::{app, configuration, telemetry};
 
 static TRACING: LazyLock<()> = LazyLock::new(|| {
     if std::env::var("TEST_LOG").is_ok() {

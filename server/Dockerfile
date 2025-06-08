@@ -26,8 +26,8 @@ RUN apt-get update -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /app/target/release/catchup-server catchup-server
+COPY --from=builder /app/target/release/peek-server peek-server
 COPY configuration configuration
 
 ENV APP_ENVIRONMENT prod
-ENTRYPOINT ["./catchup-server"]
+ENTRYPOINT ["./peek-server"]
