@@ -1,4 +1,4 @@
-FROM lukemathwalker/cargo-chef:latest-rust-1.80.1 as chef
+FROM lukemathwalker/cargo-chef:latest as chef
 WORKDIR /app
 RUN apt update && apt install lld clang -y
 
@@ -15,7 +15,7 @@ RUN cargo chef cook --release --recipe-path recipe.json
 # Build project
 COPY ./server .
 ENV SQLX_OFFLINE true
-RUN cargo build --release --bin [peek-server]
+RUN cargo build --release --bin peek-server
 
 # Final image
 FROM debian:bookworm-slim AS runtime
