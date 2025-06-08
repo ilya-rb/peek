@@ -18,8 +18,8 @@ memory_mb = 256
 
 [env]
 APP_ENVIRONMENT = "prod"
-APP_APPLICATION__PORT = 8080
-APP_APPLICATION__BASE_URL = "https://peek-dzdqhg.fly.dev"
+APP_APP__PORT = 8080
+APP_APP__BASE_URL = "https://peek-dzdqhg.fly.dev"
 
 [http_service]
 internal_port = 8080
