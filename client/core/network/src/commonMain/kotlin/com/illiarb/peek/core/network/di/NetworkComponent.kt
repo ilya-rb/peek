@@ -3,6 +3,7 @@ package com.illiarb.peek.core.network.di
 import com.illiarb.peek.core.appinfo.AppConfiguration
 import com.illiarb.peek.core.appinfo.AppEnvironment
 import com.illiarb.peek.core.coroutines.AppDispatchers
+import com.illiarb.peek.core.network.BuildKonfig
 import com.illiarb.peek.core.network.DefaultHttpClient
 import com.illiarb.peek.core.network.HttpClient
 import com.illiarb.peek.core.network.HttpClientFactory
@@ -40,7 +41,7 @@ public interface NetworkComponent {
   @Provides
   public fun provideNetworkConfig(): NetworkConfig {
     return NetworkConfig(
-      apiUrl = "http://10.0.2.2:8000", // https://developer.android.com/studio/run/emulator-networking
+      apiUrl = BuildKonfig.API_URL,
       timeouts = TimeoutConfig.default(),
     )
   }
