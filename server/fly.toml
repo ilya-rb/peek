@@ -26,7 +26,7 @@ internal_port = 8080
 force_https = true
 min_machines_running = 0
 auto_start_machines = true
-auto_stop_machines = true
+auto_stop_machines = "stop"
 processes = ["app"]
 
 [[services]]
