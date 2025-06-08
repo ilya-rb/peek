@@ -65,6 +65,10 @@ protocol = "http"
 restart_limit = 0
 headers = {}
 
+[[statics]]
+guest_path = "/app/static"
+url_prefix = "/assets"
+
 [processes]
 app = "./peek-server"
 

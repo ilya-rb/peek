@@ -28,6 +28,7 @@ RUN apt-get update -y \
 
 COPY --from=builder /app/target/release/peek-server peek-server
 COPY configuration configuration
+COPY static static
 
 EXPOSE 8080
 
