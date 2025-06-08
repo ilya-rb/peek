@@ -5,8 +5,8 @@ kill_signal = "SIGINT"
 kill_timeout = 5
 
 [build]
-dockerfile = "Dockerfile"
-build_context = "./server"
+dockerfile = "./server/Dockerfile"
+build_context = "."
 
 [experimental]
 cmd = ["./peek-server"]
