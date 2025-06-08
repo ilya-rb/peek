@@ -5,11 +5,11 @@ kill_signal = "SIGINT"
 kill_timeout = 5
 
 [build]
-dockerfile = "Dockerfile"
+dockerfile = "./server/Dockerfile"
+build_context = "."
 
 [experimental]
 cmd = ["./peek-server"]
-working_dir = "/server"
 
 [[vm]]
 cpu_kind = "shared"

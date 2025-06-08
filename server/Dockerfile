@@ -23,5 +23,7 @@ WORKDIR /app
 COPY --from=builder /app/target/release/peek-server peek-server
 COPY configuration configuration
 
+EXPOSE 8080
+
 ENV APP_ENVIRONMENT prod
 ENTRYPOINT ["./peek-server"]
