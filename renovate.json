@@ -1,0 +1,23 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "schedule": "* 0 * * *",
+  "packageRules": [
+    {
+      "matchPaths": [
+        "client/**"
+      ],
+      "groupName": "client dependencies",
+      "commitMessagePrefix": "[client]"
+    },
+    {
+      "matchPaths": [
+        "server/**"
+      ],
+      "groupName": "server dependencies",
+      "commitMessagePrefix": "[server]"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+app:
+  name: "catchup-server"
+  port: 8000
+  host: 0.0.0.0
+database:
+  host: "127.0.0.1"
+  port: 5432
+  username: "postgres"
+  password: "password"
+  database_name: "catchup"
+  require_ssl: false
+http_client:
+  timeout_millis: 10000
+scraper_config:
+  schedule: "0 */12 * * *"
+services:
+  irish_times:
+    key: "irishtimes"
+    url: "https://irishtimes.com/article-index"
+  hacker_news:
+    key: "hackernews"
+    url: "https://hacker-news.firebaseio.com/v0"
+  dou:
+    key: "dou"
+    url: "https://dou.ua/forums/feed/tag/tech"

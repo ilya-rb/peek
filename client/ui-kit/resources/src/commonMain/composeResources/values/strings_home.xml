@@ -1,0 +1,9 @@
+<resources>
+    <string name="home_articles_empty_title">Articles will appear here</string>
+    <string name="home_articles_empty_action">Refresh</string>
+    <string name="home_articles_tags_title">Tags</string>
+    <string name="home_screen_title">Home</string>
+    <string name="bookmarks_screen_title">Saved</string>
+    <string name="bookmarks_action_saved">Added to bookmarks</string>
+    <string name="bookmarks_empty">Bookmarks will appear here</string>
+</resources>
