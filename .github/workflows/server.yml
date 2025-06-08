@@ -76,5 +76,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl apps list
-      - run: flyctl deploy ./server --remote-only --app peek-dzdqh
+      - run: flyctl deploy ./server --remote-only --app peek-dzdqhg
