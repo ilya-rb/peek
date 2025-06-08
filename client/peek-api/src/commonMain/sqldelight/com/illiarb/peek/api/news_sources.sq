@@ -1,0 +1,22 @@
+import com.illiarb.peek.api.domain.NewsSource;
+import com.illiarb.peek.api.domain.Url;
+
+CREATE TABLE IF NOT EXISTS `newsSourceEntity`(
+   `kind` TEXT AS NewsSource.Kind PRIMARY KEY NOT NULL,
+   `image_url` TEXT AS Url NOT NULL
+);
+
+all:
+SELECT * FROM newsSourceEntity;
+
+delete:
+DELETE FROM newsSourceEntity;
+
+insert:
+INSERT INTO newsSourceEntity(
+    `kind`,
+    `image_url`
+) VALUES (
+    :key,
+    :image_url
+);
