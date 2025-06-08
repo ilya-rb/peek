@@ -23,8 +23,10 @@ APP_APPLICATION__PORT = 8080
 [http_service]
 internal_port = 8080
 force_https = true
+min_machines_running = 0
 auto_start_machines = true
 auto_stop_machines = true
+processes = ["app"]
 
 [[services]]
 protocol = "tcp"
