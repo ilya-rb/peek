@@ -1,15 +1,15 @@
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 
 plugins {
-  id("com.illiarb.catchup.android.library")
-  id("com.illiarb.catchup.kotlin.multiplatform")
+  id("com.illiarb.peek.android.library")
+  id("com.illiarb.peek.kotlin.multiplatform")
 
   alias(libs.plugins.kotlinSerialization)
   alias(libs.plugins.buildConfig)
 }
 
 android {
-  namespace = "com.illiarb.catchup.core.appinfo"
+  namespace = "com.illiarb.peek.core.appinfo"
 }
 
 kotlin {
@@ -25,7 +25,7 @@ kotlin {
 }
 
 buildkonfig {
-  packageName = "com.illiarb.catchup.core.appinfo"
+  packageName = "com.illiarb.peek.core.appinfo"
 
   defaultConfigs {
     buildConfigField(STRING, "ENV", "PROD")

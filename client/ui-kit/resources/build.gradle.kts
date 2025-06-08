@@ -1,7 +1,7 @@
 plugins {
-  id("com.illiarb.catchup.android.library")
-  id("com.illiarb.catchup.kotlin.multiplatform")
-  id("com.illiarb.catchup.compose")
+  id("com.illiarb.peek.android.library")
+  id("com.illiarb.peek.kotlin.multiplatform")
+  id("com.illiarb.peek.compose")
 }
 
 kotlin {
@@ -14,7 +14,7 @@ kotlin {
 }
 
 android {
-  namespace = "com.illiarb.catchup.uikit.resources"
+  namespace = "com.illiarb.peek.uikit.resources"
 
   sourceSets["main"].resources.srcDirs("src/commonMain/composeResources")
 
@@ -25,7 +25,7 @@ android {
 
 compose.resources {
   publicResClass = true
-  packageOfResClass = "com.illiarb.catchup.uikit.resources"
+  packageOfResClass = "com.illiarb.peek.uikit.resources"
   generateResClass = always
 }
 

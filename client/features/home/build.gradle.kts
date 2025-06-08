@@ -1,7 +1,7 @@
 plugins {
-  id("com.illiarb.catchup.android.library")
-  id("com.illiarb.catchup.kotlin.multiplatform")
-  id("com.illiarb.catchup.compose")
+  id("com.illiarb.peek.android.library")
+  id("com.illiarb.peek.kotlin.multiplatform")
+  id("com.illiarb.peek.compose")
 
   alias(libs.plugins.kotlinParcelize)
 }
@@ -38,16 +38,16 @@ kotlin {
       implementation(projects.core.logging)
       implementation(projects.core.data)
       implementation(projects.core.appInfo)
-      implementation(projects.catchupService)
+      implementation(projects.peekApi)
       implementation(projects.features.reader)
       implementation(projects.features.settings)
-      implementation(projects.articleSummarizer)
+      implementation(projects.summarizer)
     }
   }
 }
 
 android {
-  namespace = "com.illiarb.catchup.features.home"
+  namespace = "com.illiarb.peek.features.home"
 
   buildFeatures.compose = true
 

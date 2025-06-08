@@ -1,6 +1,6 @@
 plugins {
-  id("com.illiarb.catchup.android.library")
-  id("com.illiarb.catchup.kotlin.multiplatform")
+  id("com.illiarb.peek.android.library")
+  id("com.illiarb.peek.kotlin.multiplatform")
 }
 
 kotlin {
@@ -15,5 +15,5 @@ kotlin {
 }
 
 android {
-  namespace = "com.illiarb.catchup.core.coroutines"
+  namespace = "com.illiarb.peek.core.coroutines"
 }

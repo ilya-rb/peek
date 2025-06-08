@@ -18,23 +18,23 @@ dependencies {
 gradlePlugin {
   plugins {
     register("kotlinMultiplatform") {
-      id = "com.illiarb.catchup.kotlin.multiplatform"
-      implementationClass = "com.illiarb.catchup.gradle.KotlinMultiplatform"
+      id = "com.illiarb.peek.kotlin.multiplatform"
+      implementationClass = "com.illiarb.peek.gradle.KotlinMultiplatform"
     }
 
     register("androidApplication") {
-      id = "com.illiarb.catchup.android.application"
-      implementationClass = "com.illiarb.catchup.gradle.AndroidApplication"
+      id = "com.illiarb.peek.android.application"
+      implementationClass = "com.illiarb.peek.gradle.AndroidApplication"
     }
 
     register("androidLibrary") {
-      id = "com.illiarb.catchup.android.library"
-      implementationClass = "com.illiarb.catchup.gradle.AndroidLibrary"
+      id = "com.illiarb.peek.android.library"
+      implementationClass = "com.illiarb.peek.gradle.AndroidLibrary"
     }
 
     register("compose") {
-      id = "com.illiarb.catchup.compose"
-      implementationClass = "com.illiarb.catchup.gradle.Compose"
+      id = "com.illiarb.peek.compose"
+      implementationClass = "com.illiarb.peek.gradle.Compose"
     }
   }
 }

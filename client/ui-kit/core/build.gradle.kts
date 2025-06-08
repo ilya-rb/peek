@@ -1,7 +1,7 @@
 plugins {
-  id("com.illiarb.catchup.android.library")
-  id("com.illiarb.catchup.kotlin.multiplatform")
-  id("com.illiarb.catchup.compose")
+  id("com.illiarb.peek.android.library")
+  id("com.illiarb.peek.kotlin.multiplatform")
+  id("com.illiarb.peek.compose")
 }
 
 kotlin {
@@ -37,7 +37,7 @@ kotlin {
 }
 
 android {
-  namespace = "com.illiarb.catchup.uikit.core"
+  namespace = "com.illiarb.peek.uikit.core"
 
   buildFeatures.compose = true
 

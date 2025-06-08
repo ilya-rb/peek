@@ -1,7 +1,7 @@
 plugins {
-  id("com.illiarb.catchup.android.library")
-  id("com.illiarb.catchup.kotlin.multiplatform")
-  id("com.illiarb.catchup.compose")
+  id("com.illiarb.peek.android.library")
+  id("com.illiarb.peek.kotlin.multiplatform")
+  id("com.illiarb.peek.compose")
 
   alias(libs.plugins.kotlinParcelize)
 }
@@ -32,7 +32,7 @@ kotlin {
 }
 
 android {
-  namespace = "com.illiarb.catchup.features.settings"
+  namespace = "com.illiarb.peek.features.settings"
 
   buildFeatures.compose = true
 

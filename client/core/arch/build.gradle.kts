@@ -1,12 +1,12 @@
 plugins {
-  id("com.illiarb.catchup.android.library")
-  id("com.illiarb.catchup.kotlin.multiplatform")
+  id("com.illiarb.peek.android.library")
+  id("com.illiarb.peek.kotlin.multiplatform")
 
   alias(libs.plugins.kotlinParcelize)
 }
 
 android {
-  namespace = "com.illiarb.catchup.core.arch"
+  namespace = "com.illiarb.peek.core.arch"
 }
 
 kotlin {

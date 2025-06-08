@@ -1,4 +1,4 @@
-rootProject.name = "catchup-mobile"
+rootProject.name = "peek"
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
@@ -32,8 +32,8 @@ dependencyResolutionManagement {
 }
 
 include(
-  ":catchup-service",
-  ":composeApp",
+  ":peek-api",
+  ":app",
   ":core:coroutines",
   ":core:logging",
   ":core:network",
@@ -46,5 +46,5 @@ include(
   ":ui-kit:core",
   ":ui-kit:resources",
   ":ui-kit:image-loader",
-  ":article-summarizer",
+  ":summarizer",
 )
