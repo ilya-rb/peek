@@ -1,0 +1,69 @@
+app = "peek-server"
+primary_region = "lhr" # UK
+
+kill_signal = "SIGINT"
+kill_timeout = 5
+
+[build]
+dockerfile = "Dockerfile"
+
+[experimental]
+cmd = ["./peek-server"]
+working_dir = "./server"
+
+[[vm]]
+cpu_kind = "shared"
+cpu_count = 1
+memory_mb = 256
+
+[env]
+APP_ENVIRONMENT = "prod"
+APP_APPLICATION__PORT = 8080
+
+[http_service]
+internal_port = 8080
+force_https = true
+auto_start_machines = true
+auto_stop_machines = true
+
+[[services]]
+protocol = "tcp"
+internal_port = 8080
+processes = ["app"]
+
+[[services.ports]]
+port = 80
+handlers = ["http"]
+force_https = true
+
+[[services.ports]]
+port = 443
+handlers = ["tls", "http"]
+
+[services.concurrency]
+type = "connections"
+hard_limit = 10
+soft_limit = 8
+
+[[services.tcp_checks]]
+grace_period = "1s"
+interval = "15s"
+port = "8080"
+restart_limit = 5
+timeout = "2s"
+
+[[services.http_checks]]
+interval = "10s"
+timeout = "5s"
+grace_period = "5s"
+method = "get"
+path = "/healthcheck"
+protocol = "http"
+restart_limit = 0
+headers = {}
+
+[processes]
+app = "./peek-server"
+
+# [deploy]
+# release_command = "SKIP_DOCKER=1 ./scripts/init_db.sh"

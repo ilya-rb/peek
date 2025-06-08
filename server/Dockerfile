@@ -15,17 +15,11 @@ RUN cargo chef cook --release --recipe-path recipe.json
 # Build project
 COPY . .
 ENV SQLX_OFFLINE true
-RUN cargo build --release
+RUN cargo build --release --bin [peek-server]
 
 # Final image
 FROM debian:bookworm-slim AS runtime
 WORKDIR /app
-RUN apt-get update -y \
-    && apt-get install -y --no-install-recommends openssl ca-certificates \
-    && apt-get autoremove -y \
-    && apt-get clean -y \
-    && rm -rf /var/lib/apt/lists/*
-
 COPY --from=builder /app/target/release/peek-server peek-server
 COPY configuration configuration
 
