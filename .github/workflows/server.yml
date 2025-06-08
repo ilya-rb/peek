@@ -69,6 +69,7 @@ jobs:
 
   deploy:
     name: Deploy
+    needs: test
     runs-on: ubuntu-latest
     concurrency: deploy-group
     defaults:
@@ -77,4 +78,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy --remote-only
+      - run: flyctl deploy -a peek-dzdqh --remote-only
