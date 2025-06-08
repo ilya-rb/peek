@@ -1,8 +1,8 @@
 use actix_web::web::Data;
-use actix_web::{web, HttpServer};
+use actix_web::{HttpServer, web};
 use reqwest::Client;
-use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
+use sqlx::postgres::PgPoolOptions;
 use std::net::TcpListener;
 use tracing_actix_web::TracingLogger;
 

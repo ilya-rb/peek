@@ -1,5 +1,5 @@
 use crate::configuration::Settings;
-use actix_web::{web, HttpResponse};
+use actix_web::{HttpResponse, web};
 use serde::Serialize;
 use url::Url;
 

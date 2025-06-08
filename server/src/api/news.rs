@@ -3,7 +3,7 @@ use crate::domain::{Article, NewsSource, NewsSourceKind};
 use crate::error::error_chain_fmt;
 use crate::services::{dou, hacker_news, irish_times};
 use actix_web::http::StatusCode;
-use actix_web::{web, HttpResponse, ResponseError};
+use actix_web::{HttpResponse, ResponseError, web};
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use std::fmt::Formatter;

@@ -2,7 +2,7 @@ use crate::configuration::Settings;
 use crate::repository;
 use crate::services::dou;
 use actix_web::web;
-use anyhow::{anyhow, Context, Result};
+use anyhow::{Context, Result, anyhow};
 use reqwest::Client;
 use sqlx::PgPool;
 

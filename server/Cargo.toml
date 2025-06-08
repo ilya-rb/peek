@@ -1,7 +1,7 @@
 [package]
 name = "peek-server"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 authors = ["Illia Riabchuk ilya.ryabchuk@gmail.com"]
 
 [lib]

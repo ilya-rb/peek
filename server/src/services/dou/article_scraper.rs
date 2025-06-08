@@ -1,9 +1,9 @@
 use crate::domain::{Article, NewsSource, NewsSourceKind, Tags};
+use NewsSourceKind::Dou;
 use anyhow::Result;
 use feed_rs::parser;
 use reqwest::Client;
 use url::Url;
-use NewsSourceKind::Dou;
 
 pub async fn scrape_latest_articles(http_client: &Client, url: Url) -> Result<Vec<Article>> {
     let response = http_client.get(url).send().await?.error_for_status()?;

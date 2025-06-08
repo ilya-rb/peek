@@ -1,4 +1,4 @@
-use anyhow::{bail, Result};
+use anyhow::{Result, bail};
 use chrono::{DateTime, Utc};
 use reqwest::Client;
 use scraper::{ElementRef, Html, Selector};
@@ -133,14 +133,16 @@ mod tests {
         let url = Url::parse("https://irishtimes.com").unwrap();
         let date = Utc::now();
 
-        let expected = vec![Article::new(
-            String::from("Article title"),
-            date,
-            Url::parse("https://irishtimes.com/path-to-article").unwrap(),
-            NewsSource::of_kind(IrishTimes),
-            Tags(vec![Tag::new(String::from("Article tag")).unwrap()]),
-        )
-        .unwrap()];
+        let expected = vec![
+            Article::new(
+                String::from("Article title"),
+                date,
+                Url::parse("https://irishtimes.com/path-to-article").unwrap(),
+                NewsSource::of_kind(IrishTimes),
+                Tags(vec![Tag::new(String::from("Article tag")).unwrap()]),
+            )
+            .unwrap(),
+        ];
         let actual = parse_articles(&url, &Html::parse_fragment(SAMPLE_HTML), date).unwrap();
 
         assert_eq!(actual, expected);
