@@ -4,15 +4,14 @@ on:
     - cron: '0 0 * * *'
   push:
     paths:
-      - '**/Cargo.toml'
-      - '**/Cargo.lock'
+      - '**/server/Cargo.toml'
+      - '**/server/Cargo.lock'
 jobs:
   security-audit:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Switch to working directory
-        run: cd server
       - uses: taiki-e/install-action@cargo-deny
       - name: Scan for vulnerabilities
         run: cargo deny check advisories
+	working-directory: ./server
