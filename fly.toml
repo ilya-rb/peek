@@ -9,7 +9,7 @@ dockerfile = "Dockerfile"
 
 [experimental]
 cmd = ["./peek-server"]
-working_dir = "./server"
+working_dir = "/server"
 
 [[vm]]
 cpu_kind = "shared"
