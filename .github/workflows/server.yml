@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'server/**'
+      - '.github/workflows/server.yml'
     branches:
       - master
 
@@ -33,9 +34,6 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
-
-      - name: Switch to working directory
-        run: cd server
 
       - name: Install the Rust toolchain
         uses: actions-rust-lang/setup-rust-toolchain@v1
