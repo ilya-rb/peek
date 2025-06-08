@@ -4,7 +4,7 @@ RUN apt update && apt install lld clang -y
 
 # Compute a lock file
 FROM chef as planner
-COPY . .
+COPY ./server .
 RUN cargo chef prepare --recipe-path recipe.json
 
 # Build dependencies
@@ -13,7 +13,7 @@ COPY --from=planner /app/recipe.json recipe.json
 RUN cargo chef cook --release --recipe-path recipe.json
 
 # Build project
-COPY . .
+COPY ./server .
 ENV SQLX_OFFLINE true
 RUN cargo build --release --bin [peek-server]
 
@@ -21,7 +21,7 @@ RUN cargo build --release --bin [peek-server]
 FROM debian:bookworm-slim AS runtime
 WORKDIR /app
 COPY --from=builder /app/target/release/peek-server peek-server
-COPY configuration configuration
+COPY ./server/configuration configuration
 
 EXPOSE 8080
 
