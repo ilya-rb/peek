@@ -18,6 +18,9 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./server
     services:
       postgres:
         image: postgres:14
@@ -57,7 +60,7 @@ jobs:
 
       - name: Migrate database
         run: |
-          SKIP_DOCKER=true ./server/scripts/init_db.sh
+          SKIP_DOCKER=true ./scripts/init_db.sh
 
       - name: Run tests
         run: cargo test
