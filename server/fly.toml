@@ -75,5 +75,5 @@ url_prefix = "/assets"
 [processes]
 app = "./peek-server"
 
-# [deploy]
+[deploy]
 release_command = "SKIP_DOCKER=1 ./scripts/init_db.sh"
