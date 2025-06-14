@@ -28,6 +28,7 @@ RUN apt-get update -y \
 
 COPY --from=builder /app/target/release/peek-server peek-server
 COPY configuration configuration
+COPY migrations migrations
 COPY static static
 COPY scripts/init_db.sh init_db.sh
 
