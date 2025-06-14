@@ -5,7 +5,7 @@ use peek_server::jobs::cleanup_job::cleanup_old_articles;
 use peek_server::telemetry::LogLevel;
 use peek_server::{configuration, telemetry};
 use sqlx::postgres::PgPoolOptions;
-//use std::env;
+use std::env;
 use std::fmt::{Debug, Display};
 use tokio::task::JoinError;
 
@@ -15,10 +15,10 @@ async fn main() -> Result<(), anyhow::Error> {
 
     telemetry::init_tracing(String::from("peek-server"), LogLevel::Info, std::io::stdout);
 
-    // let args: Vec<String> = env::args().collect();
-    // if args.len() > 1 && args[1] == "migrate" {
-    run_migrations(&settings).await?;
-    // }
+    let args: Vec<String> = env::args().collect();
+    if args.len() > 1 && args[1] == "migrate" {
+        run_migrations(&settings).await?;
+    }
 
     let worker_settings = settings.clone();
     tokio::spawn(async { cleanup_old_articles(worker_settings).await });

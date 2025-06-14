@@ -1,0 +1,38 @@
+services:
+- type: web
+  name: peek-server
+  runtime: docker
+  repo: https://github.com/ilya-rb/peek
+  plan: free
+  envVars:
+  - key: APP_DATABASE__DATABASE_NAME
+    sync: false
+  - key: APP_DATABASE__HOST
+    sync: false
+  - key: APP_DATABASE__PORT
+    sync: false
+  - key: APP_DATABASE__PASSWORD
+    sync: false
+  - key: APP_DATABASE__USERNAME
+    sync: false
+  - key: APP_APP__BASE_URL
+    sync: false
+  region: frankfurt
+  healthCheckPath: /healthcheck
+  dockerContext: .
+  dockerfilePath: ./Dockerfile
+  autoDeployTrigger: "off"
+  rootDir: server
+
+databases:
+- name: peek-db
+  databaseName: peek_lcsh
+  user: peek_lcsh_user
+  plan: free
+  region: frankfurt
+  ipAllowList:
+  - source: 0.0.0.0/0
+    description: everywhere
+  postgresMajorVersion: "16"
+
+version: "1"

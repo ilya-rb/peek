@@ -15,7 +15,6 @@ env:
   APP_USER: app
   APP_USER_PWD: secret
   APP_DB_NAME: peek
-  FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
 jobs:
   test:
@@ -75,5 +74,4 @@ jobs:
     concurrency: deploy-group
     steps:
       - uses: actions/checkout@v4
-      - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy ./server --remote-only --app peek-server
+      - run: curl ${{ secrets.RENDER_DEPLOY_URL }}
