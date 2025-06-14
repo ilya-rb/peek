@@ -45,8 +45,8 @@ fn source_name(source: &NewsSource) -> &'static str {
 
 fn source_icon(source: &NewsSource) -> &'static str {
     match source.kind {
-        NewsSourceKind::IrishTimes => "assets/icons/irish-times.png",
-        NewsSourceKind::HackerNews => "assets/icons/hacker-news.png",
+        NewsSourceKind::IrishTimes => "assets/icons/irishtimes.png",
+        NewsSourceKind::HackerNews => "assets/icons/hackernews.png",
         NewsSourceKind::Dou => "assets/icons/dou.png",
     }
 }
