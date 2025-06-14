@@ -3,12 +3,12 @@
     {
       "id": "irishtimes",
       "name": "Irish Times",
-      "icon": "http://127.0.0.1/assets/icons/irish-times.png"
+      "icon": "http://127.0.0.1/assets/icons/irishtimes.png"
     },
     {
       "id": "hackernews",
       "name": "Hacker News",
-      "icon": "http://127.0.0.1/assets/icons/hacker-news.png"
+      "icon": "http://127.0.0.1/assets/icons/hackernews.png"
     },
     {
       "id": "dou",
