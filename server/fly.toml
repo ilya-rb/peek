@@ -19,7 +19,7 @@ memory_mb = 256
 [env]
 APP_ENVIRONMENT = "prod"
 APP_APP__PORT = 8080
-APP_APP__BASE_URL = "https://peek-dzdqhg.fly.dev"
+APP_APP__BASE_URL = "https://peek-server.fly.dev"
 APP_DATABASE__DATABASE_NAME = "peek-db"
 APP_DATABASE__PORT = 5432
 APP_DATABASE__HOST = "peek-db.flycast" # peek-db.internal
