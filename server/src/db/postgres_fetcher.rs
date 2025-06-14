@@ -30,7 +30,7 @@ impl CacheFetcher for PostgresFetcher {
 
         let records = sqlx::query!(
             r#"
-            SELECT id, link, title, date, tags
+            SELECT link, title, date, tags
             FROM articles
             WHERE source = $1 AND date::date = $2"#,
             key,
@@ -49,7 +49,6 @@ impl CacheFetcher for PostgresFetcher {
         let articles = records
             .into_iter()
             .map(|row| Article {
-                id: row.id,
                 link: Url::parse(row.link.as_str()).unwrap(),
                 date: row.date,
                 title: row.title,
@@ -75,14 +74,18 @@ impl CacheFetcher for PostgresFetcher {
 
             sqlx::query!(
                 r#"
-                INSERT INTO articles (id, source, title, date, link, tags, created_at)
-                VALUES ($1, $2, $3, $4, $5, $6, $7)
+                INSERT INTO articles (link, source, title, date, tags, created_at)
+                VALUES ($1, $2, $3, $4, $5, $6)
+                ON CONFLICT (link) DO UPDATE SET
+                    title = EXCLUDED.title,
+                    date = EXCLUDED.date,
+                    tags = EXCLUDED.tags,
+                    created_at = EXCLUDED.created_at
                 "#,
-                article.id,
+                Into::<String>::into(article.link.clone()),
                 article.source.key,
                 article.title,
                 article.date,
-                Into::<String>::into(article.link.clone()),
                 tags,
                 Utc::now(),
             )
