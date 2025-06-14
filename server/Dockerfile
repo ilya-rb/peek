@@ -29,6 +29,7 @@ RUN apt-get update -y \
 COPY --from=builder /app/target/release/peek-server peek-server
 COPY configuration configuration
 COPY static static
+COPY scripts/init_db.sh init_db.sh
 
 EXPOSE 8080
 
