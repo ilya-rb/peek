@@ -18,7 +18,7 @@ pub struct TestApp {
 }
 
 impl TestApp {
-    pub async fn new(db_pool: PgPool) -> TestApp {
+    pub async fn new(_: PgPool) -> TestApp {
         LazyLock::force(&TRACING);
 
         let configuration = {
@@ -30,7 +30,7 @@ impl TestApp {
             c
         };
 
-        let app = app::App::with_custom_db(configuration.clone(), db_pool)
+        let app = app::App::build(configuration.clone())
             .await
             .expect("Failed to build server");
 

@@ -4,7 +4,7 @@ use serde::{Deserialize, Deserializer, Serialize};
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Tag(pub String);
 
-#[derive(Debug, PartialEq, Serialize)]
+#[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Tags(pub Vec<Tag>);
 
 impl Tag {

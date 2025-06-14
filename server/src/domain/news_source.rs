@@ -1,47 +1,47 @@
 use anyhow::{Result, bail};
+use serde::Serialize;
 
-#[derive(Clone, Debug, PartialEq, serde::Serialize)]
+pub const KEY_IRISH_TIMES: &str = "irishtimes";
+pub const KEY_DOU: &str = "dou";
+pub const KEY_HACKER_NEWS: &str = "hackernews";
+
+pub const IRISH_TIMES: NewsSource = NewsSource {
+    key: KEY_IRISH_TIMES,
+    kind: NewsSourceKind::IrishTimes,
+};
+
+pub const DOU: NewsSource = NewsSource {
+    key: KEY_DOU,
+    kind: NewsSourceKind::Dou,
+};
+
+pub const HACKER_NEWS: NewsSource = NewsSource {
+    key: KEY_HACKER_NEWS,
+    kind: NewsSourceKind::HackerNews,
+};
+
+#[derive(Clone, Copy, Debug, PartialEq, Serialize)]
 pub struct NewsSource {
-    pub key: String,
+    pub key: &'static str,
     pub kind: NewsSourceKind,
 }
 
-#[derive(Clone, Debug, PartialEq, serde::Serialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize)]
 pub enum NewsSourceKind {
     IrishTimes,
-    HackerNews,
     Dou,
+    HackerNews,
 }
 
-const KEY_IRISH_TIMES: &str = "irishtimes";
-const KEY_HACKER_NEWS: &str = "hackernews";
-const KEY_DOU: &str = "dou";
+impl TryFrom<&str> for NewsSource {
+    type Error = anyhow::Error;
 
-impl NewsSource {
-    pub fn from_key(key: &str) -> Result<NewsSource> {
-        let kind = match key {
-            KEY_IRISH_TIMES => NewsSourceKind::IrishTimes,
-            KEY_HACKER_NEWS => NewsSourceKind::HackerNews,
-            KEY_DOU => NewsSourceKind::Dou,
-            _ => bail!(format!("Unsupported news source kind {}", key)),
-        };
-
-        Ok(NewsSource {
-            key: String::from(key),
-            kind,
-        })
-    }
-
-    pub fn of_kind(kind: NewsSourceKind) -> NewsSource {
-        let key = match kind {
-            NewsSourceKind::IrishTimes => KEY_IRISH_TIMES,
-            NewsSourceKind::HackerNews => KEY_HACKER_NEWS,
-            NewsSourceKind::Dou => KEY_DOU,
-        };
-
-        NewsSource {
-            key: String::from(key),
-            kind,
+    fn try_from(source_key: &str) -> Result<Self, Self::Error> {
+        match source_key {
+            KEY_IRISH_TIMES => Ok(IRISH_TIMES),
+            KEY_DOU => Ok(DOU),
+            KEY_HACKER_NEWS => Ok(HACKER_NEWS),
+            _ => bail!("Unsupported news source: {}", source_key),
         }
     }
 }

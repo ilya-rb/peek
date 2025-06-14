@@ -1,21 +1,44 @@
+use crate::domain::article::Article;
+use crate::domain::news_source::NewsSource;
+use crate::domain::tag::{Tag, Tags};
+use crate::services::scraper::Scraper;
 use anyhow::{Result, bail};
+use async_trait::async_trait;
 use chrono::{DateTime, Utc};
 use reqwest::Client;
 use scraper::{ElementRef, Html, Selector};
 use url::Url;
 
-use crate::domain::{Article, NewsSource, NewsSourceKind::IrishTimes, Tag, Tags};
+pub struct IrishTimesScraper {
+    source: NewsSource,
+    base_url: Url,
+}
 
-pub async fn scrape_latest_articles(http_client: &Client, base_url: &Url) -> Result<Vec<Article>> {
-    let today: DateTime<Utc> = Utc::now();
-    let today_string = today.format("%Y/%m/%d").to_string();
-    let url = Url::parse(format!("{}/{}", base_url, today_string).as_str())?;
-    let response = http_client.get(url).send().await?.error_for_status()?;
-    let body = response.text().await?;
-    let document = Html::parse_document(&body);
-    let articles = parse_articles(base_url, &document, today)?;
+impl IrishTimesScraper {
+    pub fn new(source: NewsSource, base_url: Url) -> Self {
+        Self { source, base_url }
+    }
+}
 
-    Ok(articles)
+#[async_trait]
+impl Scraper for IrishTimesScraper {
+    async fn scrape_articles(&self, http_client: &Client) -> Result<Vec<Article>> {
+        self.scrape_latest_articles(http_client).await
+    }
+}
+
+impl IrishTimesScraper {
+    async fn scrape_latest_articles(&self, http_client: &Client) -> Result<Vec<Article>> {
+        let today: DateTime<Utc> = Utc::now();
+        let today_string = today.format("%Y/%m/%d").to_string();
+        let url = Url::parse(format!("{}/{}", &self.base_url, today_string).as_str())?;
+        let response = http_client.get(url).send().await?.error_for_status()?;
+        let body = response.text().await?;
+        let document = Html::parse_document(&body);
+        let articles = parse_articles(self.source, &self.base_url, &document, today)?;
+
+        Ok(articles)
+    }
 }
 
 struct Headline {
@@ -23,7 +46,12 @@ struct Headline {
     pub href: String,
 }
 
-fn parse_articles(url: &Url, document: &Html, date: DateTime<Utc>) -> Result<Vec<Article>> {
+fn parse_articles(
+    source: NewsSource,
+    url: &Url,
+    document: &Html,
+    date: DateTime<Utc>,
+) -> Result<Vec<Article>> {
     let selector = match Selector::parse("article") {
         Ok(r) => r,
         Err(e) => {
@@ -54,15 +82,9 @@ fn parse_articles(url: &Url, document: &Html, date: DateTime<Utc>) -> Result<Vec
             let mut url = url.clone();
             url.set_path(headline.href.as_str());
 
-            Article::new(
-                headline.text,
-                date,
-                url,
-                NewsSource::of_kind(IrishTimes),
-                Tags(vec![tag.clone()]),
-            )
-            .map_err(|e| tracing::error!("Failed to create article, skipping {:?}", e))
-            .ok()
+            Article::new(headline.text, date, url, source, Tags(vec![tag.clone()]))
+                .map_err(|e| tracing::error!("Failed to create article, skipping {:?}", e))
+                .ok()
         })
         .collect::<Vec<Article>>();
 
@@ -107,7 +129,9 @@ mod tests {
     use scraper::Html;
     use url::Url;
 
-    use crate::domain::{Article, NewsSource, NewsSourceKind::IrishTimes, Tag, Tags};
+    use crate::domain::article::Article;
+    use crate::domain::news_source::IRISH_TIMES;
+    use crate::domain::tag::{Tag, Tags};
 
     use super::parse_articles;
 
@@ -138,12 +162,13 @@ mod tests {
                 String::from("Article title"),
                 date,
                 Url::parse("https://irishtimes.com/path-to-article").unwrap(),
-                NewsSource::of_kind(IrishTimes),
+                IRISH_TIMES,
                 Tags(vec![Tag::new(String::from("Article tag")).unwrap()]),
             )
             .unwrap(),
         ];
-        let actual = parse_articles(&url, &Html::parse_fragment(SAMPLE_HTML), date).unwrap();
+        let actual =
+            parse_articles(IRISH_TIMES, &url, &Html::parse_fragment(SAMPLE_HTML), date).unwrap();
 
         assert_eq!(actual, expected);
     }

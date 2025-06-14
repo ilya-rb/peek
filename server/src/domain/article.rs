@@ -4,10 +4,10 @@ use serde::Serialize;
 use url::Url;
 use uuid::Uuid;
 
-use crate::domain::NewsSource;
+use crate::domain::news_source::NewsSource;
 use crate::domain::tag::Tags;
 
-#[derive(Debug, PartialEq, Serialize)]
+#[derive(Debug, Serialize, PartialEq, Clone)]
 pub struct Article {
     pub id: Uuid,
     pub title: String,

@@ -65,9 +65,15 @@ impl App {
                 .app_data(db.clone())
                 .app_data(http_client.clone())
                 .app_data(settings.clone())
-                .route("/healthcheck", web::get().to(api::health_check))
-                .route("/news", web::get().to(api::get_news))
-                .route("/supported_sources", web::get().to(api::supported_sources))
+                .route(
+                    "/healthcheck",
+                    web::get().to(api::health_check::health_check),
+                )
+                .route("/news", web::get().to(api::news::get_news))
+                .route(
+                    "/supported_sources",
+                    web::get().to(api::supported_sources::supported_sources),
+                )
                 .service(actix_files::Files::new("/assets", "./static/"))
         })
         .listen(self.request_listener)?

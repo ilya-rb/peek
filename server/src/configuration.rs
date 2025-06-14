@@ -55,7 +55,6 @@ pub struct Services {
 
 #[derive(serde::Deserialize, Clone)]
 pub struct Service {
-    pub key: String,
     pub url: Url,
 }
 
