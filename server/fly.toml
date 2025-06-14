@@ -20,6 +20,9 @@ memory_mb = 256
 APP_ENVIRONMENT = "prod"
 APP_APP__PORT = 8080
 APP_APP__BASE_URL = "https://peek-dzdqhg.fly.dev"
+APP_DATABASE__DATABASE_NAME = "peek-db"
+APP_DATABASE__PORT = 5432
+APP_DATABASE__HOST = "peek-db.flycast" # peek-db.internal
 
 [http_service]
 internal_port = 8080
@@ -73,4 +76,4 @@ url_prefix = "/assets"
 app = "./peek-server"
 
 # [deploy]
-# release_command = "SKIP_DOCKER=1 ./scripts/init_db.sh"
+release_command = "SKIP_DOCKER=1 ./scripts/init_db.sh"
