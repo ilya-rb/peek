@@ -29,9 +29,7 @@ databases:
   user: peek_lcsh_user
   plan: free
   region: frankfurt
-  ipAllowList:
-  - source: 0.0.0.0/0
-    description: everywhere
+  ipAllowList: []
   postgresMajorVersion: "16"
 
 version: "1"
