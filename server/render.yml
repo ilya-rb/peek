@@ -18,7 +18,6 @@ services:
   - key: APP_APP__BASE_URL
     sync: false
   region: frankfurt
-  healthCheckPath: /healthcheck
   dockerContext: .
   dockerfilePath: ./Dockerfile
   autoDeployTrigger: "off"
