@@ -1,1 +1,1 @@
-pub mod scraper_job;
+pub mod cleanup_job;
