@@ -1,7 +1,7 @@
 package com.illiarb.peek.api.network.dto
 
 import com.illiarb.peek.api.domain.NewsSource
-import com.illiarb.peek.api.domain.Url
+import com.illiarb.peek.core.types.Url
 
 import io.ktor.http.URLBuilder
 import kotlinx.serialization.SerialName

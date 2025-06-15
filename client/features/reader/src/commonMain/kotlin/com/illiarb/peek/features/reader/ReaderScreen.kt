@@ -88,7 +88,7 @@ private fun ReaderScreen(
   if (state.summaryShowing) {
     OverlayEffect(Unit) {
       showSummaryOverlay(
-        SummaryScreen(articleId = screen.articleId, context = SummaryScreen.Context.READER)
+        SummaryScreen(url = screen.url, context = SummaryScreen.Context.READER)
       )
       eventSink.invoke(Event.SummarizeCloseClicked)
     }
@@ -165,7 +165,7 @@ private fun ReaderScreen(
                   overflow = TextOverflow.Ellipsis,
                 )
                 Text(
-                  text = content.content.link.url,
+                  text = content.content.url.url,
                   style = MaterialTheme.typography.bodySmall,
                   maxLines = 1,
                   overflow = TextOverflow.Ellipsis,
@@ -191,7 +191,7 @@ private fun ReaderScreen(
 
         is Async.Content -> {
           WebView(
-            url = state.article.content.link.url,
+            url = state.article.content.url.url,
             modifier = modifier.fillMaxSize().verticalScroll(contentScrollState),
           )
         }

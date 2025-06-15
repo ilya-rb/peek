@@ -1,12 +1,13 @@
 package com.illiarb.peek.api.db.dao
 
-import com.illiarb.peek.core.coroutines.AppDispatchers
-import com.illiarb.peek.core.coroutines.suspendRunCatching
-import com.illiarb.peek.core.logging.Logger
 import com.illiarb.peek.api.ArticleEntity
 import com.illiarb.peek.api.Database
 import com.illiarb.peek.api.domain.Article
 import com.illiarb.peek.api.domain.NewsSource
+import com.illiarb.peek.core.types.Url
+import com.illiarb.peek.core.coroutines.AppDispatchers
+import com.illiarb.peek.core.coroutines.suspendRunCatching
+import com.illiarb.peek.core.logging.Logger
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Inject
 
@@ -26,10 +27,10 @@ public class ArticlesDao(
     }
   }
 
-  public suspend fun articleById(id: String): Result<Article?> {
+  public suspend fun articleByUrl(url: Url): Result<Article?> {
     return withContext(appDispatchers.io) {
       suspendRunCatching {
-        db.articlesQueries.articleById(id = id).executeAsOneOrNull()?.asArticle()
+        db.articlesQueries.articleByUrl(url).executeAsOneOrNull()?.asArticle()
       }
     }
   }
@@ -39,11 +40,12 @@ public class ArticlesDao(
       suspendRunCatching {
         db.articlesQueries.setSaved(
           saved = if (article.saved) 1L else 0L,
-          id = article.id,
+          url = article.url,
         )
+        Unit
       }
     }.onFailure { error ->
-      Logger.e(TAG, error)
+      Logger.e(throwable = error)
     }
   }
 
@@ -67,19 +69,18 @@ public class ArticlesDao(
     }
   }
 
-  public suspend fun savedArticlesIds(): Result<List<String>> {
+  public suspend fun savedArticlesUrls(): Result<List<Url>> {
     return withContext(appDispatchers.io) {
       suspendRunCatching {
-        db.articlesQueries.savedArticlesIds().executeAsList()
+        db.articlesQueries.savedArticlesUrls().executeAsList()
       }
     }
   }
 
   private fun insertArticle(article: Article) {
     db.articlesQueries.insert(
-      id = article.id,
+      url = article.url,
       title = article.title,
-      link = article.link,
       tags = article.tags,
       source = article.source,
       date = article.date,
@@ -89,17 +90,12 @@ public class ArticlesDao(
 
   private fun ArticleEntity.asArticle(): Article {
     return Article(
-      id = id,
+      url = url,
       title = title,
-      link = link,
       tags = tags.orEmpty(),
       source = source,
       saved = saved == 1L,
       date = date,
     )
-  }
-
-  private companion object {
-    const val TAG = "ArticlesDao"
   }
 }

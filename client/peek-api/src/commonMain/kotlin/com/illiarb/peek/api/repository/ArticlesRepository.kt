@@ -1,13 +1,14 @@
 package com.illiarb.peek.api.repository
 
+import com.illiarb.peek.api.db.dao.ArticlesDao
+import com.illiarb.peek.api.domain.Article
+import com.illiarb.peek.api.domain.NewsSource
+import com.illiarb.peek.core.types.Url
+import com.illiarb.peek.api.network.dto.ArticlesDto
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.core.data.AsyncDataStore
 import com.illiarb.peek.core.data.ConcurrentHashMapCache
 import com.illiarb.peek.core.network.HttpClient
-import com.illiarb.peek.api.db.dao.ArticlesDao
-import com.illiarb.peek.api.domain.Article
-import com.illiarb.peek.api.domain.NewsSource
-import com.illiarb.peek.api.network.dto.ArticlesDto
 import io.ktor.client.call.body
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -27,7 +28,7 @@ public class ArticlesRepository(
       httpClient.get(path = "news", parameters = mapOf("source" to kind.key))
         .map {
           val response = it.body<ArticlesDto>()
-          val savedIds = articlesDao.savedArticlesIds().getOrNull().orEmpty()
+          val savedIds = articlesDao.savedArticlesUrls().getOrNull().orEmpty()
           response.articles.map { dto -> dto.asArticle(savedIds) }
         }
         .getOrThrow()
@@ -70,9 +71,9 @@ public class ArticlesRepository(
     }
   }
 
-  public fun articleById(id: String): Flow<Async<Article>> {
+  public fun articleByUrl(url: Url): Flow<Async<Article>> {
     return flow {
-      articlesDao.articleById(id).fold(
+      articlesDao.articleByUrl(url).fold(
         onSuccess = {
           if (it != null) {
             emit(Async.Content(it))

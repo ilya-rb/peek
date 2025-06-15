@@ -4,12 +4,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.illiarb.peek.api.PeekApiService
+import com.illiarb.peek.api.domain.Article
+import com.illiarb.peek.core.types.Url
 import com.illiarb.peek.core.arch.OpenUrlScreen
 import com.illiarb.peek.core.arch.ShareScreen
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.reader.ReaderScreen.Event
-import com.illiarb.peek.api.PeekApiService
-import com.illiarb.peek.api.domain.Article
 import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitContext
@@ -30,7 +31,7 @@ public class ReaderScreenPresenterFactory(
   ): Presenter<*>? {
     return when (screen) {
       is ReaderScreen -> ReaderScreenPresenter(
-        articleId = screen.articleId,
+        url = screen.url,
         peekApiService = peekApiService,
         navigator = navigator,
       )
@@ -41,7 +42,7 @@ public class ReaderScreenPresenterFactory(
 }
 
 internal class ReaderScreenPresenter(
-  private val articleId: String,
+  private val url: Url,
   private val peekApiService: PeekApiService,
   private val navigator: Navigator,
 ) : Presenter<ReaderScreen.State> {
@@ -49,7 +50,7 @@ internal class ReaderScreenPresenter(
   @Composable
   override fun present(): ReaderScreen.State {
     val article by produceRetainedState<Async<Article>>(initialValue = Async.Loading) {
-      peekApiService.collectArticleById(articleId).collect {
+      peekApiService.collectArticleByUrl(url).collect {
         value = it
       }
     }
@@ -85,7 +86,7 @@ internal class ReaderScreenPresenter(
         is Event.ErrorRetryClicked -> Unit
 
         is Event.TopBarShare -> {
-          val url = requireNotNull(article.contentOrNull()).link.url
+          val url = requireNotNull(article.contentOrNull()).url.url
           navigator.goTo(ShareScreen(url))
         }
 
@@ -97,7 +98,7 @@ internal class ReaderScreenPresenter(
           val content = article
           require(content is Async.Content)
 
-          navigator.goTo(OpenUrlScreen(content.content.link.url))
+          navigator.goTo(OpenUrlScreen(content.content.url.url))
         }
       }
     }

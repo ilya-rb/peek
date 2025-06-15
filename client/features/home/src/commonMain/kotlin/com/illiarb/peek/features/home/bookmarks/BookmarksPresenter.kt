@@ -98,11 +98,11 @@ internal class BookmarksPresenter(
           }
 
           is ArticlesUiEvent.ArticleClicked -> {
-            navigator.goTo(ReaderScreen(event.item.id))
+            navigator.goTo(ReaderScreen(event.item.url))
           }
 
           is ArticlesUiEvent.ArticleShareClicked -> {
-            navigator.goTo(ShareScreen(event.item.link.url))
+            navigator.goTo(ShareScreen(event.item.url.url))
           }
 
           is ArticlesUiEvent.ArticleSummarizeClicked -> {

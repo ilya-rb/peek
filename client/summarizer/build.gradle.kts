@@ -47,6 +47,7 @@ kotlin {
       implementation(projects.core.data)
       implementation(projects.core.arch)
       implementation(projects.core.coroutines)
+      implementation(projects.core.types)
       implementation(projects.peekApi)
     }
 

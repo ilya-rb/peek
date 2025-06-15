@@ -40,6 +40,7 @@ include(
   ":core:app-info",
   ":core:arch",
   ":core:data",
+  ":core:types",
   "features:home",
   "features:reader",
   "features:settings",

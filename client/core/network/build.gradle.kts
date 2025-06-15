@@ -1,11 +1,8 @@
-import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
-
 plugins {
   id("com.illiarb.peek.android.library")
   id("com.illiarb.peek.kotlin.multiplatform")
 
   alias(libs.plugins.kotlinSerialization)
-  alias(libs.plugins.buildConfig)
 }
 
 kotlin {
@@ -33,12 +30,4 @@ kotlin {
 
 android {
   namespace = "com.illiarb.peek.core.network"
-}
-
-buildkonfig {
-  packageName = "com.illiarb.peek.core.network"
-
-  defaultConfigs {
-    buildConfigField(STRING, "API_URL", "https://peek-dzdqhg.fly.dev")
-  }
 }

@@ -6,6 +6,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
+import com.illiarb.peek.api.PeekApiService
+import com.illiarb.peek.api.domain.Article
+import com.illiarb.peek.api.domain.NewsSource
+import com.illiarb.peek.api.domain.Tag
 import com.illiarb.peek.core.arch.ShareScreen
 import com.illiarb.peek.core.arch.message.MessageDispatcher
 import com.illiarb.peek.core.data.Async
@@ -17,10 +21,6 @@ import com.illiarb.peek.features.home.bookmarks.BookmarksScreen
 import com.illiarb.peek.features.home.overlay.TagFilterContract
 import com.illiarb.peek.features.reader.ReaderScreen
 import com.illiarb.peek.features.settings.SettingsScreen
-import com.illiarb.peek.api.PeekApiService
-import com.illiarb.peek.api.domain.Article
-import com.illiarb.peek.api.domain.NewsSource
-import com.illiarb.peek.api.domain.Tag
 import com.illiarb.peek.summarizer.ui.SummaryScreen
 import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.retained.rememberRetained
@@ -138,7 +138,7 @@ internal class HomeScreenPresenter(
             when (event.result) {
               is SummaryScreen.Result.Close -> Unit
               is SummaryScreen.Result.OpenInReader -> {
-                navigator.goTo(ReaderScreen(event.result.articleId))
+                navigator.goTo(ReaderScreen(event.result.url))
               }
             }
           }
@@ -171,7 +171,7 @@ internal class HomeScreenPresenter(
       articlesEventSink = { event ->
         when (event) {
           is ArticlesUiEvent.ArticleClicked -> {
-            navigator.goTo(ReaderScreen(event.item.id))
+            navigator.goTo(ReaderScreen(event.item.url))
           }
 
           is ArticlesUiEvent.ArticleBookmarkClicked -> {
@@ -201,7 +201,7 @@ internal class HomeScreenPresenter(
           }
 
           is ArticlesUiEvent.ArticleShareClicked -> {
-            navigator.goTo(ShareScreen(event.item.link.url))
+            navigator.goTo(ShareScreen(event.item.url.url))
           }
 
           is ArticlesUiEvent.ArticlesRefreshClicked -> {

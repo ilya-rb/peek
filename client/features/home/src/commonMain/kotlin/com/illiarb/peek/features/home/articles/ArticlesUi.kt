@@ -96,7 +96,7 @@ internal fun ArticlesContent(
   LazyColumn(modifier, contentPadding = contentPadding) {
     items(
       items = articles,
-      key = { article -> article.id },
+      key = { article -> article.url.url },
       itemContent = { article ->
         ArticleCell(
           modifier = Modifier.animateItem(),

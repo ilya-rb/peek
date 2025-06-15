@@ -1,5 +1,7 @@
 package com.illiarb.peek.api.domain
 
+import com.illiarb.peek.core.types.Url
+
 public data class NewsSource(
   val kind: Kind,
   val imageUrl: Url,

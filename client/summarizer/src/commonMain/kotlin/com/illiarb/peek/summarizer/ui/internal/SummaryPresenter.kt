@@ -2,10 +2,11 @@ package com.illiarb.peek.summarizer.ui.internal
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import com.illiarb.peek.api.PeekApiService
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.core.data.flatMapLatestContent
 import com.illiarb.peek.core.data.mapContent
-import com.illiarb.peek.api.PeekApiService
+import com.illiarb.peek.core.types.Url
 import com.illiarb.peek.summarizer.SummarizerService
 import com.illiarb.peek.summarizer.ui.SummaryScreen
 import com.illiarb.peek.summarizer.ui.SummaryScreen.ArticleWithSummary
@@ -29,7 +30,7 @@ public class SummaryPresenterFactory(
   ): Presenter<*>? {
     return when (screen) {
       is SummaryScreen -> SummaryPresenter(
-        articleId = screen.articleId,
+        url = screen.url,
         peekApiService = peekApiService,
         summarizerService = summarizerService,
         navigator = navigator,
@@ -41,7 +42,7 @@ public class SummaryPresenterFactory(
 }
 
 internal class SummaryPresenter(
-  private val articleId: String,
+  private val url: Url,
   private val peekApiService: PeekApiService,
   private val summarizerService: SummarizerService,
   private val navigator: Navigator,
@@ -50,9 +51,9 @@ internal class SummaryPresenter(
   @Composable
   override fun present(): SummaryScreen.State {
     val articleWithSummary by produceRetainedState<Async<ArticleWithSummary>>(Async.Loading) {
-      peekApiService.collectArticleById(articleId)
+      peekApiService.collectArticleByUrl(url)
         .flatMapLatestContent { article ->
-          summarizerService.summarizeArticle(article.link.url).mapContent { summary ->
+          summarizerService.summarizeArticle(article.url.url).mapContent { summary ->
             ArticleWithSummary(
               article = article,
               summary = summary,
@@ -73,7 +74,7 @@ internal class SummaryPresenter(
           }
 
           is SummaryScreen.Event.OpenInReaderClick -> {
-            navigator.pop(SummaryScreen.Result.OpenInReader(event.article.id))
+            navigator.pop(SummaryScreen.Result.OpenInReader(event.article.url))
           }
         }
       }

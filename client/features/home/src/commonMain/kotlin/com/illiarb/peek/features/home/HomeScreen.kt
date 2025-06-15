@@ -122,7 +122,7 @@ private fun HomeScreen(state: HomeScreen.State) {
       OverlayEffect(Unit) {
         val result = showSummaryOverlay(
           SummaryScreen(
-            state.articleSummaryToShow.id,
+            state.articleSummaryToShow.url,
             context = SummaryScreen.Context.HOME,
           ),
         )

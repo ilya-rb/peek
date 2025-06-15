@@ -38,6 +38,7 @@ kotlin {
       implementation(projects.core.logging)
       implementation(projects.core.data)
       implementation(projects.core.appInfo)
+      implementation(projects.core.types)
       implementation(projects.peekApi)
       implementation(projects.features.reader)
       implementation(projects.features.settings)

@@ -5,6 +5,8 @@ import com.illiarb.peek.core.arch.di.AppScope
 import com.illiarb.peek.core.data.ConcurrentHashMapCache
 import com.illiarb.peek.core.data.DefaultConcurrentHashMapCache
 import com.illiarb.peek.core.network.HttpClient
+import com.illiarb.peek.core.network.NetworkConfig
+import com.illiarb.peek.core.network.TimeoutConfig
 import com.illiarb.peek.summarizer.BuildKonfig
 import com.illiarb.peek.summarizer.Database
 import com.illiarb.peek.summarizer.DefaultSummarizerService
@@ -27,10 +29,23 @@ public interface SummarizerComponent : SummarizerPlatformComponent {
 
   @Provides
   @SummarizerApi
+  public fun provideSummarizerNetworkConfig(): NetworkConfig {
+    return NetworkConfig(
+      apiUrl = BuildKonfig.OPENAI_URL,
+      timeouts = TimeoutConfig.default(),
+    )
+  }
+
+  @Provides
+  @SummarizerApi
   public fun provideSummarizerHttpClient(
+    config: NetworkConfig,
     factory: HttpClient.Factory,
   ): HttpClient {
-    return factory.create(BuildKonfig.OPENAI_URL, plugins = listOf(authPlugin()))
+    return factory.create(
+      config = config,
+      plugins = listOf(authPlugin()),
+    )
   }
 
   @Provides

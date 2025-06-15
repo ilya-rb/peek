@@ -1,5 +1,5 @@
 import com.illiarb.peek.api.domain.NewsSource;
-import com.illiarb.peek.api.domain.Url;
+import com.illiarb.peek.core.types.Url;
 
 CREATE TABLE IF NOT EXISTS `newsSourceEntity`(
    `kind` TEXT AS NewsSource.Kind PRIMARY KEY NOT NULL,

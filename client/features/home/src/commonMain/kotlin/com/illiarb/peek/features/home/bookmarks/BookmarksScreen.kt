@@ -74,7 +74,7 @@ private fun BookmarksScreen(state: BookmarksScreen.State) {
     OverlayEffect(Unit) {
       showSummaryOverlay(
         SummaryScreen(
-          state.articleSummaryToShow.id,
+          state.articleSummaryToShow.url,
           context = SummaryScreen.Context.HOME,
         ),
       )

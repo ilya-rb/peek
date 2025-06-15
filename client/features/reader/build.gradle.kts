@@ -27,6 +27,7 @@ kotlin {
       implementation(projects.core.coroutines)
       implementation(projects.core.logging)
       implementation(projects.core.data)
+      implementation(projects.core.types)
       implementation(projects.peekApi)
       implementation(projects.summarizer)
     }

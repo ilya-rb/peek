@@ -9,18 +9,15 @@ internal class HttpClientFactory(
 ) : HttpClient.Factory {
 
   override fun create(
-    baseUrl: String,
+    config: NetworkConfig,
     plugins: List<HttpClientPlugin<*, *>>,
   ): HttpClient {
     return DefaultHttpClient(
       appDispatchers = appDispatchers,
-      baseUrl = baseUrl,
+      baseUrl = config.apiUrl,
       ktorHttpClient = createKtorClient(
         plugins = this.plugins + plugins,
-        config = NetworkConfig(
-          apiUrl = baseUrl,
-          timeouts = TimeoutConfig.default(),
-        )
+        config = config,
       ),
     )
   }

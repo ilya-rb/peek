@@ -45,7 +45,7 @@ public interface HttpClient {
   public interface Factory {
 
     public fun create(
-      baseUrl: String,
+      config: NetworkConfig,
       plugins: List<HttpClientPlugin<*, *>> = emptyList(),
     ): HttpClient
   }

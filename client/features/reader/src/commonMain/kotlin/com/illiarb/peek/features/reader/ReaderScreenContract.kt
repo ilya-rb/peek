@@ -5,11 +5,12 @@ import com.illiarb.peek.core.arch.CommonParcelable
 import com.illiarb.peek.core.arch.CommonParcelize
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.api.domain.Article
+import com.illiarb.peek.core.types.Url
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.screen.Screen
 
 @CommonParcelize
-public data class ReaderScreen(val articleId: String) : Screen, CommonParcelable {
+public data class ReaderScreen(val url: Url) : Screen, CommonParcelable {
 
   @Stable
   internal data class State(

@@ -3,7 +3,7 @@ package com.illiarb.peek.api.db
 import app.cash.sqldelight.ColumnAdapter
 import com.illiarb.peek.api.domain.NewsSource
 import com.illiarb.peek.api.domain.Tag
-import com.illiarb.peek.api.domain.Url
+import com.illiarb.peek.core.types.Url
 import kotlinx.datetime.Instant
 import kotlin.time.Duration
 import kotlin.time.DurationUnit

@@ -1,13 +1,12 @@
 import com.illiarb.peek.api.domain.NewsSource;
 import com.illiarb.peek.api.domain.Tag;
-import com.illiarb.peek.api.domain.Url;
+import com.illiarb.peek.core.types.Url;
 import kotlin.collections.List;
 import kotlinx.datetime.Instant;
 
 CREATE TABLE IF NOT EXISTS `articleEntity`(
-    `id` TEXT PRIMARY KEY NOT NULL,
+    `url` TEXT AS Url PRIMARY KEY NOT NULL,
     `title` TEXT NOT NULL,
-    `link` TEXT AS Url NOT NULL,
     `tags` TEXT AS List<Tag>,
     `source` TEXT AS NewsSource.Kind NOT NULL,
     `date` INTEGER AS Instant NOT NULL,
@@ -17,32 +16,30 @@ CREATE TABLE IF NOT EXISTS `articleEntity`(
 articlesBySource:
 SELECT * FROM articleEntity WHERE source = :source;
 
-articleById:
-SELECT * FROM articleEntity WHERE id = :id LIMIT 1;
+articleByUrl:
+SELECT * FROM articleEntity WHERE url = :url LIMIT 1;
 
-savedArticlesIds:
-SELECT id FROM articleEntity WHERE saved = 1;
+savedArticlesUrls:
+SELECT url FROM articleEntity WHERE saved = 1;
 
 savedArticles:
 SELECT * FROM articleEntity WHERE saved = 1;
 
 setSaved:
 UPDATE articleEntity SET saved = :saved
-WHERE id = :id;
+WHERE url = :url;
 
 insert:
 INSERT OR REPLACE INTO articleEntity (
-    `id`,
+    `url`,
     `title`,
-    `link`,
     `tags`,
     `source`,
     `date`,
     `saved`
 ) VALUES (
-    :id,
+    :url,
     :title,
-    :link,
     :tags,
     :source,
     :date,
