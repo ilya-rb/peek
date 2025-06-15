@@ -3,7 +3,8 @@ import com.illiarb.peek.core.types.Url;
 
 CREATE TABLE IF NOT EXISTS `newsSourceEntity`(
    `kind` TEXT AS NewsSource.Kind PRIMARY KEY NOT NULL,
-   `image_url` TEXT AS Url NOT NULL
+   `icon` TEXT AS Url NOT NULL,
+   `name` TEXT NOT NULL
 );
 
 all:
@@ -15,8 +16,10 @@ DELETE FROM newsSourceEntity;
 insert:
 INSERT INTO newsSourceEntity(
     `kind`,
-    `image_url`
+    `icon`,
+    `name`
 ) VALUES (
     :key,
-    :image_url
+    :icon,
+    :name
 );

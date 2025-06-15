@@ -293,7 +293,7 @@ private fun NewsSourcesContent(
     keyProvider = { index, source -> source.kind.key },
     itemContent = { index, source ->
       SelectableCircleAvatar(
-        imageUrl = source.imageUrl.url,
+        imageUrl = source.icon.url,
         selected = index == selectedTabIndex,
         fallbackText = source.kind.key.uppercase(),
         onClick = {

@@ -67,7 +67,7 @@ public interface PeekApiComponent : SqlDatabasePlatformComponent {
     ),
     newsSourceEntityAdapter = NewsSourceEntity.Adapter(
       kindAdapter = DatabaseAdapters.sourceAdapter,
-      image_urlAdapter = DatabaseAdapters.urlAdapter,
+      iconAdapter = DatabaseAdapters.urlAdapter,
     )
   )
 }

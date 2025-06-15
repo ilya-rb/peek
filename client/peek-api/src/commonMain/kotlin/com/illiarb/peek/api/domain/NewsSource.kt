@@ -4,7 +4,8 @@ import com.illiarb.peek.core.types.Url
 
 public data class NewsSource(
   val kind: Kind,
-  val imageUrl: Url,
+  val icon: Url,
+  val name: String,
 ) {
 
   public enum class Kind(public val key: String) {
