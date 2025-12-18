@@ -4,6 +4,7 @@ import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.core.data.AsyncDataStore
 import com.illiarb.peek.core.data.ConcurrentHashMapCache
 import com.illiarb.peek.core.network.HttpClient
+import com.illiarb.peek.summarizer.BuildKonfig
 import com.illiarb.peek.summarizer.db.ArticlesSummaryDao
 import com.illiarb.peek.summarizer.di.SummarizerApi
 import com.illiarb.peek.summarizer.domain.ArticleSummary
@@ -24,7 +25,7 @@ public class SummarizerRepository(
   private val summaryStore = AsyncDataStore<String, ArticleSummary>(
     networkFetcher = { url ->
       val response = httpClient.post(
-        path = "v1/chat/completions",
+        url = "${BuildKonfig.OPENAI_URL}/v1/chat/completions",
         requestBody = HttpClient.RequestBody.create(
           SummaryRequest(
             model = ApiConfig.MODEL,

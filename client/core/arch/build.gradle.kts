@@ -3,6 +3,7 @@ plugins {
   id("com.illiarb.peek.kotlin.multiplatform")
 
   alias(libs.plugins.kotlinParcelize)
+  alias(libs.plugins.metro)
 }
 
 android {

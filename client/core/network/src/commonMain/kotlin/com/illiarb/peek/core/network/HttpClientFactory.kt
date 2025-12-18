@@ -14,7 +14,6 @@ internal class HttpClientFactory(
   ): HttpClient {
     return DefaultHttpClient(
       appDispatchers = appDispatchers,
-      baseUrl = config.apiUrl,
       ktorHttpClient = createKtorClient(
         plugins = this.plugins + plugins,
         config = config,

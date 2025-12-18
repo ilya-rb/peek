@@ -1,31 +1,36 @@
 [versions]
-agp = "8.10.1"
+agp = "8.13.2"
 
-android-compileSdk = "35"
+android-compileSdk = "36"
 android-minSdk = "24"
-android-targetSdk = "35"
-androidx-activityCompose = "1.10.1"
-androidx-browser = "1.8.0"
-androidx-webkit = "1.13.0"
-androidx-datastore = "1.1.7"
-android-cacheFixPlugin = "3.0.1"
-circuit = "0.25.0"
-coil = "3.0.4"
-compose-plugin = "1.8.1"
-kotlin = "2.1.0"
+android-targetSdk = "36"
+androidx-activityCompose = "1.12.2"
+androidx-browser = "1.9.0"
+androidx-webkit = "1.15.0"
+androidx-datastore = "1.2.0"
+android-cacheFixPlugin = "3.0.3"
+circuit = "0.31.0"
+coil = "3.3.0"
+compose-plugin = "1.9.3"
+kotlin = "2.3.0"
 kotlin-coroutines = "1.10.2"
 kotlin-inject = "0.8.0"
-kotlinx-datetime = "0.6.1"
-kotlinx-serialization = "1.8.1"
-ksp = "2.1.0-1.0.29"
-ktor = "3.0.3"
-lottie = "1.1.2"
+kotlinx-datetime = "0.7.1"
+kotlinx-serialization = "1.9.0"
+kotlinx-collections = "0.4.0"
+kotlin-atomic = "0.29.0"
+ksp = "2.3.4"
+ktor = "3.3.3"
+lottie = "2.0.2"
 napier = "2.7.1"
-shimmer = "1.3.2"
-sqldelight = "2.0.2"
+shimmer = "1.3.3"
+sqldelight = "2.2.1"
 stately = "2.1.0"
-buildConfig = "0.15.2"
-haze = "1.6.0"
+buildConfig = "0.17.1"
+haze = "1.7.1"
+turbine = "1.2.1"
+rssparser = "6.1.1"
+metro = "0.9.1"
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -37,8 +42,10 @@ kotlinKsp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinParcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlinAtomic = { id = "org.jetbrains.kotlinx.atomicfu", version.ref = "kotlin-atomic" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 buildConfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildConfig" }
+metro = { id = "dev.zacsweers.metro", version.ref = "metro" }
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
@@ -54,10 +61,12 @@ coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" 
 coil-network = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
 kotlin-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlin-coroutines" }
 kotlin-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
+kotlin-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlin-coroutines" }
 kotlin-inject-compiler = { module = "me.tatarka.inject:kotlin-inject-compiler-ksp", version.ref = "kotlin-inject" }
 kotlin-inject-runtime = { module = "me.tatarka.inject:kotlin-inject-runtime-kmp", version.ref = "kotlin-inject" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+kotlinx-collections = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinx-collections" }
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-contentNegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
@@ -73,8 +82,11 @@ sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", 
 sqldelight-native = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
 sqldelight-primitive = { module = "app.cash.sqldelight:primitive-adapters", version.ref = "sqldelight" }
 stately-collections = { module = "co.touchlab:stately-concurrent-collections", version.ref = "stately" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 haze = { module = "dev.chrisbanes.haze:haze", version.ref = "haze" }
 haze-materials = { module = "dev.chrisbanes.haze:haze-materials", version.ref = "haze" }
+rssparser = { module = "com.prof18.rssparser:rssparser", version.ref = "rssparser" }
+
 
 # Build logic dependencies
 gradlePlugin-android = { module = "com.android.tools.build:gradle", version.ref = "agp" }

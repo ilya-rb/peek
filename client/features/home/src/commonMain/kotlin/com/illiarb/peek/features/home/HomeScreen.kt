@@ -7,9 +7,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmarks
 import androidx.compose.material.icons.filled.FilterList
@@ -22,18 +20,17 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
+import com.illiarb.peek.api.domain.NewsSourceKind
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.home.HomeScreen.Event
 import com.illiarb.peek.features.home.articles.ArticlesContent
@@ -41,22 +38,20 @@ import com.illiarb.peek.features.home.articles.ArticlesEmpty
 import com.illiarb.peek.features.home.articles.ArticlesLoading
 import com.illiarb.peek.features.home.overlay.TagFilterContract
 import com.illiarb.peek.features.home.overlay.showTagFilterOverlay
-import com.illiarb.peek.api.domain.NewsSource
 import com.illiarb.peek.summarizer.ui.SummaryScreen
 import com.illiarb.peek.summarizer.ui.showSummaryOverlay
 import com.illiarb.peek.uikit.core.components.HorizontalList
 import com.illiarb.peek.uikit.core.components.TextSwitcher
 import com.illiarb.peek.uikit.core.components.cell.FullscreenErrorState
 import com.illiarb.peek.uikit.core.components.cell.SelectableCircleAvatar
-import com.illiarb.peek.uikit.core.components.cell.SelectableCircleAvatarLoading
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_action_bookmarks
 import com.illiarb.peek.uikit.resources.acsb_action_filter
 import com.illiarb.peek.uikit.resources.acsb_action_settings
 import com.illiarb.peek.uikit.resources.home_screen_title
 import com.illiarb.peek.uikit.resources.service_dou_name
+import com.illiarb.peek.uikit.resources.service_ft_name
 import com.illiarb.peek.uikit.resources.service_hacker_news_name
-import com.illiarb.peek.uikit.resources.service_irish_times_name
 import com.slack.circuit.overlay.OverlayEffect
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.screen.Screen
@@ -143,24 +138,18 @@ private fun HomeScreen(state: HomeScreen.State) {
         ),
         modifier = Modifier.hazeEffect(state = hazeState, style = hazeStyle),
         title = {
-          when (val newsSources = state.newsSources) {
-            is Async.Content -> {
-              val selectedSource = newsSources.content[state.selectedNewsSourceIndex]
-              val name = when (selectedSource.kind) {
-                NewsSource.Kind.Dou -> stringResource(Res.string.service_dou_name)
-                NewsSource.Kind.HackerNews -> stringResource(Res.string.service_hacker_news_name)
-                NewsSource.Kind.IrishTimes -> stringResource(Res.string.service_irish_times_name)
-              }
-              TextSwitcher(
-                first = stringResource(Res.string.home_screen_title),
-                second = name,
-                containerHeightDp = TopAppBarDefaults.TopAppBarExpandedHeight.value.toInt(),
-                switchEvery = 5.seconds,
-              )
-            }
-
-            else -> Text(stringResource(Res.string.home_screen_title))
+          val selectedSource = state.newsSources[state.selectedNewsSourceIndex]
+          val name = when (selectedSource) {
+            NewsSourceKind.Dou -> stringResource(Res.string.service_dou_name)
+            NewsSourceKind.HackerNews -> stringResource(Res.string.service_hacker_news_name)
+            NewsSourceKind.Ft -> stringResource(Res.string.service_ft_name)
           }
+          TextSwitcher(
+            first = stringResource(Res.string.home_screen_title),
+            second = name,
+            containerHeightDp = TopAppBarDefaults.TopAppBarExpandedHeight.value.toInt(),
+            switchEvery = 5.seconds,
+          )
         },
         actions = {
           IconButton(onClick = { eventSink.invoke(Event.BookmarksClicked) }) {
@@ -184,28 +173,14 @@ private fun HomeScreen(state: HomeScreen.State) {
         scrollBehavior = bottomBarBehavior,
         containerColor = Color.Transparent,
         actions = {
-          AnimatedContent(
-            targetState = state.newsSources,
-            transitionSpec = { fadeIn().togetherWith(fadeOut()) },
-            contentKey = { it is Async.Content },
-          ) { targetState ->
-            when (targetState) {
-              is Async.Content -> {
-                NewsSourcesContent(
-                  newsSources = targetState.content,
-                  selectedTabIndex = state.selectedNewsSourceIndex,
-                  onTabClick = { eventSink.invoke(Event.TabClicked(it)) },
-                  modifier = Modifier
-                    .padding(start = 16.dp)
-                    .alpha(bottomBarAlpha)
-                )
-              }
-
-              else -> {
-                NewsSourcesLoading(Modifier.padding(start = 16.dp))
-              }
-            }
-          }
+          NewsSourcesContent(
+            newsSources = state.newsSources,
+            selectedTabIndex = state.selectedNewsSourceIndex,
+            onTabClick = { eventSink.invoke(Event.TabClicked(it)) },
+            modifier = Modifier
+              .padding(start = 16.dp)
+              .alpha(bottomBarAlpha)
+          )
         },
         floatingActionButton = {
           AnimatedVisibility(
@@ -236,18 +211,18 @@ private fun HomeScreen(state: HomeScreen.State) {
       targetState = state.articles,
       transitionSpec = { fadeIn().togetherWith(fadeOut()) },
     ) { targetState ->
-      when {
-        targetState is Async.Error || state.newsSources is Async.Error -> {
+      when (targetState) {
+        is Async.Error -> {
           FullscreenErrorState(Modifier.padding(innerPadding)) {
             eventSink.invoke(Event.ErrorRetryClicked)
           }
         }
 
-        targetState is Async.Loading -> {
+        is Async.Loading -> {
           ArticlesLoading(contentPadding = innerPadding)
         }
 
-        targetState is Async.Content -> {
+        is Async.Content -> {
           if (targetState.content.isEmpty()) {
             ArticlesEmpty(contentPadding = innerPadding, eventSink = articlesEventSink)
           } else {
@@ -265,37 +240,21 @@ private fun HomeScreen(state: HomeScreen.State) {
 }
 
 @Composable
-private fun NewsSourcesLoading(modifier: Modifier = Modifier) {
-  LazyRow(
-    modifier = modifier,
-    horizontalArrangement = Arrangement.spacedBy(8.dp),
-    verticalAlignment = Alignment.CenterVertically,
-  ) {
-    items(
-      count = 3,
-      itemContent = { index ->
-        SelectableCircleAvatarLoading(selected = index == 0)
-      },
-    )
-  }
-}
-
-@Composable
 private fun NewsSourcesContent(
   modifier: Modifier = Modifier,
-  newsSources: ImmutableList<NewsSource>,
+  newsSources: ImmutableList<NewsSourceKind>,
   selectedTabIndex: Int,
-  onTabClick: (NewsSource) -> Unit,
+  onTabClick: (NewsSourceKind) -> Unit,
 ) {
   HorizontalList(
     modifier = modifier,
     items = newsSources,
-    keyProvider = { index, source -> source.kind.key },
+    keyProvider = { _, source -> source.name },
     itemContent = { index, source ->
       SelectableCircleAvatar(
-        imageUrl = source.icon.url,
+        imageUrl = "https://picsum.photos/200/300",
         selected = index == selectedTabIndex,
-        fallbackText = source.kind.key.uppercase(),
+        fallbackText = source.name.uppercase(),
         onClick = {
           onTabClick.invoke(source)
         }

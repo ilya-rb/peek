@@ -44,7 +44,7 @@ public fun LocalLottieAnimation(
       contentDescription = "Error animation",
       painter = rememberLottiePainter(
         composition = composition,
-        progress = progress,
+        progress = { progress },
       ),
     )
   }

@@ -18,12 +18,12 @@ import io.ktor.client.HttpClient as KtorClient
 public interface HttpClient {
 
   public suspend fun get(
-    path: String,
+    url: String,
     parameters: Map<String, String> = emptyMap(),
   ): Result<HttpResponse>
 
   public suspend fun post(
-    path: String,
+    url: String,
     requestBody: RequestBody<*>,
   ): Result<HttpResponse>
 
@@ -52,17 +52,16 @@ public interface HttpClient {
 }
 
 internal class DefaultHttpClient(
-  private val baseUrl: String,
   private val ktorHttpClient: KtorClient,
   private val appDispatchers: AppDispatchers,
 ) : HttpClient {
 
   override suspend fun get(
-    path: String,
+    url: String,
     parameters: Map<String, String>,
   ): Result<HttpResponse> = suspendRunCatching {
     withContext(appDispatchers.io) {
-      ktorHttpClient.get(urlFor(path)) {
+      ktorHttpClient.get(url) {
         contentType(ContentType.Application.Json)
 
         parameters.forEach { entry ->
@@ -73,18 +72,14 @@ internal class DefaultHttpClient(
   }
 
   override suspend fun post(
-    path: String,
+    url: String,
     requestBody: HttpClient.RequestBody<*>
   ): Result<HttpResponse> = suspendRunCatching {
     withContext(appDispatchers.io) {
-      ktorHttpClient.post(urlFor(path)) {
+      ktorHttpClient.post(url) {
         contentType(ContentType.Application.Json)
         setBody(requestBody.body, TypeInfo(requestBody.type))
       }
     }
-  }
-
-  private fun urlFor(path: String): String {
-    return "${baseUrl}/$path"
   }
 }

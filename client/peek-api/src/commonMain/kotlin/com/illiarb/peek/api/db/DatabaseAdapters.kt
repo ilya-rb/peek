@@ -1,12 +1,12 @@
 package com.illiarb.peek.api.db
 
 import app.cash.sqldelight.ColumnAdapter
-import com.illiarb.peek.api.domain.NewsSource
+import com.illiarb.peek.api.domain.NewsSourceKind
 import com.illiarb.peek.api.domain.Tag
 import com.illiarb.peek.core.types.Url
-import kotlinx.datetime.Instant
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
+import kotlin.time.Instant
 import kotlin.time.toDuration
 
 internal object DatabaseAdapters {
@@ -24,14 +24,14 @@ internal object DatabaseAdapters {
       }
     }
 
-  val sourceAdapter: ColumnAdapter<NewsSource.Kind, String>
-    get() = object : ColumnAdapter<NewsSource.Kind, String> {
-      override fun decode(databaseValue: String): NewsSource.Kind {
-        return NewsSource.Kind.fromKey(databaseValue)
+  val kindAdapter: ColumnAdapter<NewsSourceKind, String>
+    get() = object : ColumnAdapter<NewsSourceKind, String> {
+      override fun decode(databaseValue: String): NewsSourceKind {
+        return NewsSourceKind.valueOf(databaseValue)
       }
 
-      override fun encode(value: NewsSource.Kind): String {
-        return value.key
+      override fun encode(value: NewsSourceKind): String {
+        return value.name
       }
     }
 

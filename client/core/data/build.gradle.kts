@@ -3,6 +3,13 @@ plugins {
   id("com.illiarb.peek.kotlin.multiplatform")
 
   alias(libs.plugins.kotlinSerialization)
+  alias(libs.plugins.kotlinAtomic)
+  alias(libs.plugins.kotlinKsp)
+  alias(libs.plugins.metro)
+}
+
+android {
+  namespace = "com.illiarb.peek.core.data"
 }
 
 kotlin {
@@ -19,9 +26,11 @@ kotlin {
       implementation(projects.core.coroutines)
       implementation(projects.core.arch)
     }
-  }
-}
 
-android {
-  namespace = "com.illiarb.peek.core.data"
+    commonTest.dependencies {
+      implementation(kotlin("test"))
+      implementation(libs.kotlin.coroutines.test)
+      implementation(libs.turbine)
+    }
+  }
 }

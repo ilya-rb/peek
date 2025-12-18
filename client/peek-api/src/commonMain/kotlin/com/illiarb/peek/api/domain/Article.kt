@@ -1,13 +1,13 @@
 package com.illiarb.peek.api.domain
 
 import com.illiarb.peek.core.types.Url
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 public data class Article(
   val url: Url,
   val title: String,
   val tags: List<Tag>,
-  val source: NewsSource.Kind,
+  val kind: NewsSourceKind,
   val date: Instant,
   val saved: Boolean,
 )

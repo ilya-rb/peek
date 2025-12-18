@@ -1,56 +1,49 @@
 package com.illiarb.peek.api.repository
 
+import com.illiarb.peek.api.datasource.NewsDataSource
 import com.illiarb.peek.api.db.dao.ArticlesDao
 import com.illiarb.peek.api.domain.Article
-import com.illiarb.peek.api.domain.NewsSource
-import com.illiarb.peek.core.types.Url
-import com.illiarb.peek.api.network.dto.ArticlesDto
+import com.illiarb.peek.api.domain.NewsSourceKind
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.core.data.AsyncDataStore
 import com.illiarb.peek.core.data.ConcurrentHashMapCache
-import com.illiarb.peek.core.network.HttpClient
-import io.ktor.client.call.body
+import com.illiarb.peek.core.types.Url
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 import me.tatarka.inject.annotations.Inject
+import kotlin.jvm.JvmSuppressWildcards
 
 @Inject
 public class ArticlesRepository(
-  private val httpClient: HttpClient,
   private val memoryCache: ConcurrentHashMapCache,
   private val articlesDao: ArticlesDao,
+  private val newsDataSources: Set<@JvmSuppressWildcards NewsDataSource>,
 ) {
 
-  private val articlesStore = AsyncDataStore<NewsSource.Kind, List<Article>>(
+  private val articlesStore = AsyncDataStore<NewsSourceKind, List<Article>>(
     networkFetcher = { kind ->
-      httpClient.get(path = "news", parameters = mapOf("source" to kind.key))
-        .map {
-          val response = it.body<ArticlesDto>()
-          val savedIds = articlesDao.savedArticlesUrls().getOrNull().orEmpty()
-          response.articles.map { dto -> dto.asArticle(savedIds) }
-        }
-        .getOrThrow()
+      dataSourceFor(kind).getArticles()
     },
     fromMemory = { kind ->
-      memoryCache().get(kind.key)
+      memoryCache().get<List<Article>>(kind.name)?.takeIf { it.isNotEmpty() }
     },
     intoMemory = { kind, articles ->
-      memoryCache().put(kind.key, articles)
+      memoryCache().put(kind.name, articles)
     },
     fromStorage = { kind ->
-      articlesDao.articlesBySource(kind).getOrNull()
+      articlesDao.articlesOfKind(kind).getOrNull()?.takeIf { it.isNotEmpty() }
     },
     intoStorage = { _, articles ->
       articlesDao.saveArticles(articles)
     },
     invalidateMemory = { kind ->
-      memoryCache().delete(kind.key)
+      memoryCache().delete(kind.name)
     }
   )
 
-  public fun articlesFrom(kind: NewsSource.Kind): Flow<Async<List<Article>>> {
+  public fun articlesFrom(kind: NewsSourceKind): Flow<Async<List<Article>>> {
     return articlesStore.collect(kind, AsyncDataStore.LoadStrategy.CacheFirst)
   }
 
@@ -94,8 +87,12 @@ public class ArticlesRepository(
 
   public suspend fun saveArticle(article: Article): Result<Unit> {
     return articlesDao.saveArticle(article).onSuccess {
-      articlesStore.invalidateMemory(article.source)
+      articlesStore.invalidateMemory(article.kind)
     }
+  }
+
+  private fun dataSourceFor(kind: NewsSourceKind): NewsDataSource {
+    return newsDataSources.first { it.kind == kind }
   }
 
   public class ArticleNotFoundException : Throwable()

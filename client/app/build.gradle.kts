@@ -6,6 +6,7 @@ plugins {
   id("com.illiarb.peek.compose")
 
   alias(libs.plugins.kotlinKsp)
+  alias(libs.plugins.metro)
 }
 
 kotlin {
@@ -43,6 +44,7 @@ kotlin {
       implementation(libs.napier)
       implementation(libs.coil.compose)
       implementation(libs.kotlin.inject.runtime)
+      implementation(libs.rssparser)
 
       implementation(projects.peekApi)
       implementation(projects.core.appInfo)

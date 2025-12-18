@@ -32,7 +32,7 @@ import com.slack.circuit.overlay.ContentWithOverlays
 import com.slack.circuit.retained.collectAsRetainedState
 import com.slack.circuitx.android.AndroidScreen
 import com.slack.circuitx.android.rememberAndroidScreenAwareNavigator
-import com.slack.circuitx.gesturenavigation.GestureNavigationDecoration
+import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 
@@ -87,7 +87,10 @@ internal class MainActivity : ComponentActivity() {
             NavigableCircuitContent(
               navigator = navigator,
               backStack = backStack,
-              decoration = GestureNavigationDecoration { navigator.pop() },
+              decoratorFactory = GestureNavigationDecorationFactory(
+                activityComponent.circuit.animatedNavDecoratorFactory,
+                navigator::pop,
+              ),
             )
           }
         }

@@ -3,6 +3,7 @@ plugins {
   id("com.illiarb.peek.kotlin.multiplatform")
 
   alias(libs.plugins.kotlinSerialization)
+  alias(libs.plugins.metro)
 }
 
 kotlin {

@@ -1,5 +1,3 @@
-import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
-
 plugins {
   id("com.illiarb.peek.android.library")
   id("com.illiarb.peek.kotlin.multiplatform")
@@ -7,9 +5,12 @@ plugins {
   alias(libs.plugins.kotlinSerialization)
   alias(libs.plugins.sqldelight)
   alias(libs.plugins.buildConfig)
+  alias(libs.plugins.metro)
 }
 
 kotlin {
+  compilerOptions.optIn.add("kotlin.time.ExperimentalTime")
+
   sourceSets {
     androidMain.dependencies {
       implementation(libs.sqldelight.android)
@@ -23,6 +24,7 @@ kotlin {
       implementation(libs.ktor.serialization.json)
       implementation(libs.sqldelight.coroutines)
       implementation(libs.sqldelight.primitive)
+      implementation(libs.rssparser)
 
       implementation(projects.core.network)
       implementation(projects.core.logging)
@@ -55,7 +57,6 @@ buildkonfig {
   packageName = "com.illiarb.peek.core.network"
 
   defaultConfigs {
-    buildConfigField(STRING, "API_URL", "https://peek-server.onrender.com")
   }
 }
 

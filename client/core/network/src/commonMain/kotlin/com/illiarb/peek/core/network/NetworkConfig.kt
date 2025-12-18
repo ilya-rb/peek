@@ -4,7 +4,6 @@ import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpClientPlugin
 
 public data class NetworkConfig(
-  val apiUrl: String,
   val timeouts: TimeoutConfig,
 )
 

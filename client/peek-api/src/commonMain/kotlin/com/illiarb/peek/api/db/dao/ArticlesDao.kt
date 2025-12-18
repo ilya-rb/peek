@@ -3,11 +3,11 @@ package com.illiarb.peek.api.db.dao
 import com.illiarb.peek.api.ArticleEntity
 import com.illiarb.peek.api.Database
 import com.illiarb.peek.api.domain.Article
-import com.illiarb.peek.api.domain.NewsSource
-import com.illiarb.peek.core.types.Url
+import com.illiarb.peek.api.domain.NewsSourceKind
 import com.illiarb.peek.core.coroutines.AppDispatchers
 import com.illiarb.peek.core.coroutines.suspendRunCatching
 import com.illiarb.peek.core.logging.Logger
+import com.illiarb.peek.core.types.Url
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Inject
 
@@ -17,10 +17,10 @@ public class ArticlesDao(
   private val appDispatchers: AppDispatchers,
 ) {
 
-  public suspend fun articlesBySource(sourceKind: NewsSource.Kind): Result<List<Article>?> {
+  public suspend fun articlesOfKind(sourceKind: NewsSourceKind): Result<List<Article>?> {
     return withContext(appDispatchers.io) {
       suspendRunCatching {
-        db.articlesQueries.articlesBySource(source = sourceKind).executeAsList()
+        db.articlesQueries.articlesOfKind(sourceKind).executeAsList()
           .map { entity -> entity.asArticle() }
           .takeIf { it.isNotEmpty() }
       }
@@ -82,7 +82,7 @@ public class ArticlesDao(
       url = article.url,
       title = article.title,
       tags = article.tags,
-      source = article.source,
+      kind = article.kind,
       date = article.date,
       saved = if (article.saved) 1L else 0L,
     )
@@ -93,7 +93,7 @@ public class ArticlesDao(
       url = url,
       title = title,
       tags = tags.orEmpty(),
-      source = source,
+      kind = kind,
       saved = saved == 1L,
       date = date,
     )

@@ -4,6 +4,7 @@ plugins {
   id("com.illiarb.peek.compose")
 
   alias(libs.plugins.kotlinParcelize)
+  alias(libs.plugins.metro)
 }
 
 kotlin {
@@ -26,6 +27,7 @@ kotlin {
 
       implementation(libs.kotlinx.datetime)
       implementation(libs.kotlin.inject.runtime)
+      implementation(libs.kotlinx.collections)
       implementation(libs.haze)
       implementation(libs.haze.materials)
 

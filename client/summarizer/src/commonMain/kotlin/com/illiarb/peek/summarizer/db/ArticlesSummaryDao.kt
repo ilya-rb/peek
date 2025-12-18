@@ -7,8 +7,8 @@ import com.illiarb.peek.summarizer.Summaries
 import com.illiarb.peek.summarizer.di.SummarizerApi
 import com.illiarb.peek.summarizer.domain.ArticleSummary
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.Clock
 import me.tatarka.inject.annotations.Inject
+import kotlin.time.ExperimentalTime
 
 @Inject
 public class ArticlesSummaryDao(
@@ -24,14 +24,16 @@ public class ArticlesSummaryDao(
     }
   }
 
+  @OptIn(ExperimentalTime::class)
   public suspend fun saveSummary(summary: ArticleSummary): Result<Unit> {
     return withContext(appDispatchers.io) {
       suspendRunCatching {
         db.summariesQueries.saveSummary(
           url = summary.url,
           summary = summary.content,
-          createdAt = Clock.System.now(),
+          createdAt = kotlin.time.Clock.System.now(),
         )
+        Unit
       }
     }
   }

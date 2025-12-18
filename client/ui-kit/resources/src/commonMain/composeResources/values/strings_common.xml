@@ -3,6 +3,7 @@
     <string name="common_error_default_action">Try again</string>
     <string name="author_text">By %1$s</string>
     <string name="service_irish_times_name">The Irish Times</string>
+    <string name="service_ft_name">Financial Times</string>
     <string name="service_dou_name">DOU</string>
     <string name="service_hacker_news_name">Hacker News</string>
 

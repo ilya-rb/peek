@@ -6,6 +6,7 @@ plugins {
 
   alias(libs.plugins.kotlinSerialization)
   alias(libs.plugins.buildConfig)
+  alias(libs.plugins.metro)
 }
 
 android {

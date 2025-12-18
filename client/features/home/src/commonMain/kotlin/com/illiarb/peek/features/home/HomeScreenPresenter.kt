@@ -8,7 +8,6 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import com.illiarb.peek.api.PeekApiService
 import com.illiarb.peek.api.domain.Article
-import com.illiarb.peek.api.domain.NewsSource
 import com.illiarb.peek.api.domain.Tag
 import com.illiarb.peek.core.arch.ShareScreen
 import com.illiarb.peek.core.arch.message.MessageDispatcher
@@ -29,7 +28,6 @@ import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.launch
@@ -75,13 +73,7 @@ internal class HomeScreenPresenter(
       mutableStateOf<BookmarkMessage?>(value = null)
     }
 
-    val newsSources by produceRetainedState<Async<ImmutableList<NewsSource>>>(Async.Loading) {
-      peekApiService.collectAvailableSources().mapContent { sources ->
-        sources.toImmutableList()
-      }.collect {
-        value = it
-      }
-    }
+    val newsSources = peekApiService.getAvailableSources().toImmutableList()
 
     var contentTriggers by rememberRetained {
       mutableStateOf(
@@ -95,21 +87,13 @@ internal class HomeScreenPresenter(
 
     val articles by produceRetainedState<Async<SnapshotStateList<Article>>>(
       initialValue = Async.Loading,
-      key1 = newsSources,
-      key2 = contentTriggers,
+      key1 = contentTriggers,
     ) {
-      val source = when (val currentSources = newsSources) {
-        is Async.Content -> currentSources.content.getOrNull(contentTriggers.selectedNewsSourceIndex)
-        else -> null
-      }
+      val source = newsSources[contentTriggers.selectedNewsSourceIndex]
 
-      if (source == null) {
-        value = Async.Loading
-      } else {
-        peekApiService.collectLatestNewsFrom(source.kind)
-          .mapContent { it.toMutableStateList() }
-          .collect { value = it }
-      }
+      peekApiService.collectLatestNewsFrom(source)
+        .mapContent { it.toMutableStateList() }
+        .collect { value = it }
     }
 
     return HomeScreen.State(
@@ -151,11 +135,8 @@ internal class HomeScreenPresenter(
           }
 
           is Event.TabClicked -> {
-            val value = newsSources
-            require(value is Async.Content<ImmutableList<NewsSource>>)
-
             contentTriggers = contentTriggers.copy(
-              selectedNewsSourceIndex = value.content.indexOf(event.source)
+              selectedNewsSourceIndex = newsSources.indexOf(event.source)
             )
           }
 

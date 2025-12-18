@@ -2,6 +2,8 @@ plugins {
   id("com.illiarb.peek.android.library")
   id("com.illiarb.peek.kotlin.multiplatform")
   id("com.illiarb.peek.compose")
+
+  alias(libs.plugins.metro)
 }
 
 kotlin {

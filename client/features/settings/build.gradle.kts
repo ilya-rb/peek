@@ -4,6 +4,7 @@ plugins {
   id("com.illiarb.peek.compose")
 
   alias(libs.plugins.kotlinParcelize)
+  alias(libs.plugins.metro)
 }
 
 kotlin {

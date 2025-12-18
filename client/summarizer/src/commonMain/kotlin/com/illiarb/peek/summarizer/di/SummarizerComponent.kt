@@ -7,7 +7,6 @@ import com.illiarb.peek.core.data.DefaultConcurrentHashMapCache
 import com.illiarb.peek.core.network.HttpClient
 import com.illiarb.peek.core.network.NetworkConfig
 import com.illiarb.peek.core.network.TimeoutConfig
-import com.illiarb.peek.summarizer.BuildKonfig
 import com.illiarb.peek.summarizer.Database
 import com.illiarb.peek.summarizer.DefaultSummarizerService
 import com.illiarb.peek.summarizer.Summaries
@@ -31,7 +30,6 @@ public interface SummarizerComponent : SummarizerPlatformComponent {
   @SummarizerApi
   public fun provideSummarizerNetworkConfig(): NetworkConfig {
     return NetworkConfig(
-      apiUrl = BuildKonfig.OPENAI_URL,
       timeouts = TimeoutConfig.default(),
     )
   }

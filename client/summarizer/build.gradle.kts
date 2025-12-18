@@ -10,9 +10,12 @@ plugins {
   alias(libs.plugins.sqldelight)
   alias(libs.plugins.buildConfig)
   alias(libs.plugins.kotlinParcelize)
+  alias(libs.plugins.metro)
 }
 
 kotlin {
+  compilerOptions.optIn.add("kotlin.time.ExperimentalTime")
+
   sourceSets {
     androidMain.dependencies {
       implementation(libs.sqldelight.android)

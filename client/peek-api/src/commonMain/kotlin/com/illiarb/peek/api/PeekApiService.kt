@@ -1,18 +1,18 @@
 package com.illiarb.peek.api
 
+import com.illiarb.peek.api.datasource.NewsDataSource
 import com.illiarb.peek.api.domain.Article
-import com.illiarb.peek.api.domain.NewsSource
-import com.illiarb.peek.core.types.Url
+import com.illiarb.peek.api.domain.NewsSourceKind
 import com.illiarb.peek.api.repository.ArticlesRepository
-import com.illiarb.peek.api.repository.NewsSourcesRepository
 import com.illiarb.peek.core.data.Async
+import com.illiarb.peek.core.types.Url
 import kotlinx.coroutines.flow.Flow
 
 public interface PeekApiService {
 
-  public fun collectLatestNewsFrom(kind: NewsSource.Kind): Flow<Async<List<Article>>>
+  public fun getAvailableSources(): List<NewsSourceKind>
 
-  public fun collectAvailableSources(): Flow<Async<Set<NewsSource>>>
+  public fun collectLatestNewsFrom(kind: NewsSourceKind): Flow<Async<List<Article>>>
 
   public fun collectArticleByUrl(url: Url): Flow<Async<Article>>
 
@@ -23,15 +23,15 @@ public interface PeekApiService {
 
 internal class DefaultPeekApiService(
   private val articlesRepository: ArticlesRepository,
-  private val newsSourcesRepository: NewsSourcesRepository,
+  private val newsDataSources: Set<NewsDataSource>,
 ) : PeekApiService {
 
-  override fun collectLatestNewsFrom(kind: NewsSource.Kind): Flow<Async<List<Article>>> {
+  override fun collectLatestNewsFrom(kind: NewsSourceKind): Flow<Async<List<Article>>> {
     return articlesRepository.articlesFrom(kind)
   }
 
-  override fun collectAvailableSources(): Flow<Async<Set<NewsSource>>> {
-    return newsSourcesRepository.allSources()
+  override fun getAvailableSources(): List<NewsSourceKind> {
+    return newsDataSources.map { dataSource -> dataSource.kind }
   }
 
   override fun collectArticleByUrl(url: Url): Flow<Async<Article>> {
