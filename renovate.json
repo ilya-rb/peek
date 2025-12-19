@@ -3,21 +3,5 @@
   "extends": [
     "config:recommended"
   ],
-  "schedule": "* 0 * * *",
-  "packageRules": [
-    {
-      "matchPaths": [
-        "client/**"
-      ],
-      "groupName": "client dependencies",
-      "commitMessagePrefix": "[client]"
-    },
-    {
-      "matchPaths": [
-        "server/**"
-      ],
-      "groupName": "server dependencies",
-      "commitMessagePrefix": "[server]"
-    }
-  ]
+  "schedule": "* 0 * * *"
 }

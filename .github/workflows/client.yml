@@ -3,16 +3,10 @@ name: Android Debug Build
 on:
   push:
     branches: [ master ]
-    paths:
-      - 'client/**'
-      - '.github/workflows/client.yml'
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./client
     
     steps:
     - name: Checkout code
