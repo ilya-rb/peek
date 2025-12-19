@@ -12,4 +12,4 @@ public object CoreDataBindings {
 }
 
 @BindingContainer
-public expect object CoreDataPlatformBindings
+public expect abstract class CoreDataPlatformBindings

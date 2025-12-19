@@ -1,11 +1,13 @@
 package com.illiarb.peek.uikit.imageloader
 
-import android.app.Application
+import android.content.Context
 import coil3.PlatformContext
+import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.Provides
 
-public actual interface ImageLoaderPlatformBindings {
+@BindingContainer
+public actual object ImageLoaderPlatformBindings {
 
   @Provides
-  public fun providePlatformContext(application: Application): PlatformContext = application
+  public fun providePlatformContext(context: Context): PlatformContext = context
 }

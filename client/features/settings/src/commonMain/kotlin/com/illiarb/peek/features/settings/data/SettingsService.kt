@@ -1,8 +1,11 @@
 package com.illiarb.peek.features.settings.data
 
+import com.illiarb.peek.core.arch.di.AppScope
 import com.illiarb.peek.core.data.KeyValueStorage
 import com.illiarb.peek.core.data.MemoryField
 import com.illiarb.peek.features.settings.data.SettingsService.SettingType
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
@@ -20,6 +23,8 @@ public interface SettingsService {
   }
 }
 
+@Inject
+@SingleIn(AppScope::class)
 internal class DefaultSettingsService(
   private val keyValueStorage: KeyValueStorage,
   private val cachedSettings: MutableMap<SettingType, MemoryField<Boolean>> = mutableMapOf(),

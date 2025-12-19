@@ -11,10 +11,11 @@ import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
 import com.illiarb.peek.core.logging.Logger as CoreLogger
 
-public expect interface ImageLoaderPlatformBindings
-
 @BindingContainer
-public object ImageLoaderBindings : ImageLoaderPlatformBindings {
+public expect object ImageLoaderPlatformBindings
+
+@BindingContainer(includes = [ImageLoaderPlatformBindings::class])
+public object ImageLoaderBindings {
 
   @Provides
   @SingleIn(AppScope::class)

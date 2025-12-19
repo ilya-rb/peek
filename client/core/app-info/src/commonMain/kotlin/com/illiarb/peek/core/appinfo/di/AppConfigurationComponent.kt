@@ -4,35 +4,29 @@ import com.illiarb.peek.core.appinfo.AppConfiguration
 import com.illiarb.peek.core.appinfo.AppEnvironment
 import com.illiarb.peek.core.appinfo.BuildKonfig
 import com.illiarb.peek.core.appinfo.internal.DefaultAppConfiguration
-import com.illiarb.peek.core.arch.di.AppScope
 import com.illiarb.peek.core.data.KeyValueStorage
 import dev.zacsweers.metro.BindingContainer
+import dev.zacsweers.metro.Binds
 import dev.zacsweers.metro.Provides
-import dev.zacsweers.metro.SingleIn
 
 @BindingContainer
-public object AppConfigurationsBindings {
+public abstract class AppConfigurationsBindings {
 
-  @Provides
-  public fun provideEnvironment(): AppEnvironment {
-    return AppEnvironment.valueOf(BuildKonfig.ENV)
-  }
+  @Binds
+  internal abstract val DefaultAppConfiguration.bind: AppConfiguration
 
-  @Provides
-  public fun provideKeyValueStorage(
-    factory: KeyValueStorage.Factory,
-  ): KeyValueStorage {
-    return factory.create(STORAGE_NAME)
-  }
+  internal companion object {
 
-  @Provides
-  @SingleIn(AppScope::class)
-  public fun provideAppConfiguration(
-    environment: AppEnvironment,
-    storage: KeyValueStorage,
-  ): AppConfiguration {
-    return DefaultAppConfiguration(environment, storage)
+    @Provides
+    fun provideEnvironment(): AppEnvironment {
+      return AppEnvironment.valueOf(BuildKonfig.ENV)
+    }
+
+    @Provides
+    fun provideKeyValueStorage(factory: KeyValueStorage.Factory): KeyValueStorage {
+      return factory.create(STORAGE_NAME)
+    }
+
+    private const val STORAGE_NAME = "app_config.storage"
   }
 }
-
-private const val STORAGE_NAME = "app_config.storage"

@@ -2,10 +2,15 @@ package com.illiarb.peek.core.data.internal
 
 import android.content.Context
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import com.illiarb.peek.core.arch.di.AppScope
 import com.illiarb.peek.core.data.KeyValueStorage
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.serialization.json.Json
 import okio.Path.Companion.toPath
 
+@Inject
+@SingleIn(AppScope::class)
 internal class DefaultKeyValueStorageFactory(
   private val context: Context,
   private val json: Json,
