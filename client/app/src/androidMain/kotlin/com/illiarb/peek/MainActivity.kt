@@ -19,7 +19,6 @@ import coil3.compose.setSingletonImageLoaderFactory
 import com.illiarb.peek.core.arch.OpenUrlScreen
 import com.illiarb.peek.core.arch.ShareScreen
 import com.illiarb.peek.core.arch.message.MessageDispatcher
-import com.illiarb.peek.di.AndroidUiGraph
 import com.illiarb.peek.features.home.HomeScreen
 import com.illiarb.peek.features.settings.data.SettingsService.SettingType
 import com.illiarb.peek.uikit.core.theme.UiKitTheme
@@ -32,7 +31,6 @@ import com.slack.circuit.retained.collectAsRetainedState
 import com.slack.circuitx.android.AndroidScreen
 import com.slack.circuitx.android.rememberAndroidScreenAwareNavigator
 import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
-import dev.zacsweers.metro.asContribution
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 
@@ -55,7 +53,7 @@ internal class MainActivity : ComponentActivity() {
     }
 
     lifecycleScope.launch {
-      uiGraph.toastMessageDispatcher.messages
+      uiGraph.messageProvider.messages
         .filterNotNull()
         .collect { showToast(it) }
     }

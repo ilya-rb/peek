@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.illiarb.peek.core.arch.di.UiScope
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.reader.ReaderScreen.Event
 import com.illiarb.peek.summarizer.ui.SummaryScreen
@@ -44,32 +45,14 @@ import com.illiarb.peek.uikit.core.configuration.getScreenWidth
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_action_more
 import com.illiarb.peek.uikit.resources.acsb_navigation_back
+import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.overlay.OverlayEffect
-import com.slack.circuit.runtime.CircuitContext
-import com.slack.circuit.runtime.screen.Screen
-import com.slack.circuit.runtime.ui.Ui
-import com.slack.circuit.runtime.ui.ui
-import dev.zacsweers.metro.Inject
 import org.jetbrains.compose.resources.stringResource
-
-@Inject
-public class ReaderScreenFactory : Ui.Factory {
-  override fun create(screen: Screen, context: CircuitContext): Ui<*>? {
-    return when (screen) {
-      is ReaderScreen -> {
-        ui<ReaderScreen.State> { state, modifier ->
-          ReaderScreen(modifier, screen, state)
-        }
-      }
-
-      else -> null
-    }
-  }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ReaderScreen(
+@CircuitInject(ReaderScreen::class, UiScope::class)
+internal fun ReaderScreen(
   modifier: Modifier,
   screen: ReaderScreen,
   state: ReaderScreen.State,

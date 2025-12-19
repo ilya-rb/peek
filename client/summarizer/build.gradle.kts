@@ -1,5 +1,6 @@
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
+import com.illiarb.peek.gradle.addKspDependencyForAllTargets
 
 plugins {
   id("com.illiarb.peek.android.library")
@@ -11,6 +12,7 @@ plugins {
   alias(libs.plugins.buildConfig)
   alias(libs.plugins.kotlinParcelize)
   alias(libs.plugins.metro)
+  alias(libs.plugins.kotlinKsp)
 }
 
 kotlin {
@@ -34,6 +36,7 @@ kotlin {
 
       implementation(libs.circuit.core)
       implementation(libs.circuit.overlay)
+      implementation(libs.circuit.codegen.annotations)
       implementation(libs.kotlin.coroutines.core)
       implementation(libs.kotlinx.datetime)
       implementation(libs.ktor.core)
@@ -87,4 +90,10 @@ buildkonfig {
     buildConfigField(STRING, "OPENAI_URL", "https://api.openai.com")
   }
 }
+
+ksp {
+  arg("circuit.codegen.mode", "metro")
+}
+
+addKspDependencyForAllTargets(libs.circuit.codegen)
 

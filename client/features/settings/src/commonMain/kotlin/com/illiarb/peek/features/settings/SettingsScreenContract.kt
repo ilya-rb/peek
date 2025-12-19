@@ -11,17 +11,17 @@ import com.slack.circuit.runtime.screen.Screen
 public data object SettingsScreen : Screen, CommonParcelable {
 
   @Stable
-  internal data class State(
+  public data class State(
     val events: (Event) -> Unit,
     val dynamicColorsEnabled: Boolean,
     val darkThemeEnabled: Boolean,
     val debugSettings: DebugConfig?,
   ) : CircuitUiState
 
-  internal sealed interface Event {
-    data object NavigationIconClick : Event
-    data class MaterialColorsToggleChecked(val checked: Boolean) : Event
-    data class DarkThemeEnabledChecked(val checked: Boolean) : Event
-    data class NetworkDelayChanged(val checked: Boolean) : Event
+  public sealed interface Event {
+    public data object NavigationIconClick : Event
+    public data class MaterialColorsToggleChecked(val checked: Boolean) : Event
+    public data class DarkThemeEnabledChecked(val checked: Boolean) : Event
+    public data class NetworkDelayChanged(val checked: Boolean) : Event
   }
 }

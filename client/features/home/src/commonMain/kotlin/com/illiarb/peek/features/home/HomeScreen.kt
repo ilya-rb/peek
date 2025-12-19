@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import com.illiarb.peek.api.domain.NewsSourceKind
+import com.illiarb.peek.core.arch.di.UiScope
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.home.HomeScreen.Event
 import com.illiarb.peek.features.home.articles.ArticlesContent
@@ -52,39 +53,21 @@ import com.illiarb.peek.uikit.resources.home_screen_title
 import com.illiarb.peek.uikit.resources.service_dou_name
 import com.illiarb.peek.uikit.resources.service_ft_name
 import com.illiarb.peek.uikit.resources.service_hacker_news_name
+import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.overlay.OverlayEffect
-import com.slack.circuit.runtime.CircuitContext
-import com.slack.circuit.runtime.screen.Screen
-import com.slack.circuit.runtime.ui.Ui
-import com.slack.circuit.runtime.ui.ui
 import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import dev.chrisbanes.haze.materials.HazeMaterials
 import dev.chrisbanes.haze.rememberHazeState
-import dev.zacsweers.metro.Inject
 import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Duration.Companion.seconds
 
-@Inject
-public class HomeScreenFactory : Ui.Factory {
-  override fun create(screen: Screen, context: CircuitContext): Ui<*>? {
-    return when (screen) {
-      is HomeScreen -> {
-        ui<HomeScreen.State> { state, _ ->
-          HomeScreen(state)
-        }
-      }
-
-      else -> null
-    }
-  }
-}
-
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalHazeMaterialsApi::class)
 @Composable
-private fun HomeScreen(state: HomeScreen.State) {
+@CircuitInject(HomeScreen::class, UiScope::class)
+internal fun HomeScreen(state: HomeScreen.State, modifier: Modifier = Modifier) {
   val eventSink = state.eventSink
   val articlesEventSink = state.articlesEventSink
 

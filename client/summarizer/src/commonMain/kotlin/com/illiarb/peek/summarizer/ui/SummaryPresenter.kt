@@ -1,57 +1,34 @@
-package com.illiarb.peek.summarizer.ui.internal
+package com.illiarb.peek.summarizer.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import com.illiarb.peek.api.PeekApiService
+import com.illiarb.peek.core.arch.di.UiScope
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.core.data.flatMapLatestContent
 import com.illiarb.peek.core.data.mapContent
-import com.illiarb.peek.core.types.Url
 import com.illiarb.peek.summarizer.SummarizerService
-import com.illiarb.peek.summarizer.ui.SummaryScreen
 import com.illiarb.peek.summarizer.ui.SummaryScreen.ArticleWithSummary
+import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.retained.produceRetainedState
-import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
-import com.slack.circuit.runtime.screen.Screen
-import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
 
-@Inject
-public class SummaryPresenterFactory(
+@AssistedInject
+public class SummaryPresenter(
+  @Assisted private val navigator: Navigator,
+  @Assisted private val screen: SummaryScreen,
   private val peekApiService: PeekApiService,
   private val summarizerService: SummarizerService,
-) : Presenter.Factory {
-
-  override fun create(
-    screen: Screen,
-    navigator: Navigator,
-    context: CircuitContext
-  ): Presenter<*>? {
-    return when (screen) {
-      is SummaryScreen -> SummaryPresenter(
-        url = screen.url,
-        peekApiService = peekApiService,
-        summarizerService = summarizerService,
-        navigator = navigator,
-      )
-
-      else -> null
-    }
-  }
-}
-
-internal class SummaryPresenter(
-  private val url: Url,
-  private val peekApiService: PeekApiService,
-  private val summarizerService: SummarizerService,
-  private val navigator: Navigator,
 ) : Presenter<SummaryScreen.State> {
 
   @Composable
   override fun present(): SummaryScreen.State {
     val articleWithSummary by produceRetainedState<Async<ArticleWithSummary>>(Async.Loading) {
-      peekApiService.collectArticleByUrl(url)
+      peekApiService.collectArticleByUrl(screen.url)
         .flatMapLatestContent { article ->
           summarizerService.summarizeArticle(article.url.url).mapContent { summary ->
             ArticleWithSummary(
@@ -79,5 +56,11 @@ internal class SummaryPresenter(
         }
       }
     )
+  }
+
+  @AssistedFactory
+  @CircuitInject(SummaryScreen::class, UiScope::class)
+  public fun interface Factory {
+    public fun create(navigator: Navigator, screen: SummaryScreen): SummaryPresenter
   }
 }

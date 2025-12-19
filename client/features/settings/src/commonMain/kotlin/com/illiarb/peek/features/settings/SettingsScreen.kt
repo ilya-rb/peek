@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.illiarb.peek.core.appinfo.DebugConfig
+import com.illiarb.peek.core.arch.di.UiScope
 import com.illiarb.peek.features.settings.SettingsScreen.Event
 import com.illiarb.peek.uikit.core.components.cell.RowCell
 import com.illiarb.peek.uikit.core.components.cell.SwitchCell
@@ -31,31 +32,13 @@ import com.illiarb.peek.uikit.resources.settings_dark_theme_title
 import com.illiarb.peek.uikit.resources.settings_dynamic_colors_subtitle
 import com.illiarb.peek.uikit.resources.settings_dynamic_colors_title
 import com.illiarb.peek.uikit.resources.settings_screen_title
-import com.slack.circuit.runtime.CircuitContext
-import com.slack.circuit.runtime.screen.Screen
-import com.slack.circuit.runtime.ui.Ui
-import com.slack.circuit.runtime.ui.ui
-import dev.zacsweers.metro.Inject
+import com.slack.circuit.codegen.annotations.CircuitInject
 import org.jetbrains.compose.resources.stringResource
-
-@Inject
-public class SettingsScreenFactory : Ui.Factory {
-  override fun create(screen: Screen, context: CircuitContext): Ui<*>? {
-    return when (screen) {
-      is SettingsScreen -> {
-        ui<SettingsScreen.State> { state, _ ->
-          SettingsScreen(state)
-        }
-      }
-
-      else -> null
-    }
-  }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SettingsScreen(state: SettingsScreen.State) {
+@CircuitInject(SettingsScreen::class, UiScope::class)
+internal fun SettingsScreen(state: SettingsScreen.State, modifier: Modifier = Modifier) {
   val events = state.events
 
   Scaffold(
@@ -75,7 +58,7 @@ private fun SettingsScreen(state: SettingsScreen.State) {
       )
     }
   ) { innerPadding ->
-    Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
+    Box(modifier = modifier.padding(innerPadding).fillMaxSize()) {
       Column {
         SettingsHeader(
           text = stringResource(Res.string.settings_appearance_title),

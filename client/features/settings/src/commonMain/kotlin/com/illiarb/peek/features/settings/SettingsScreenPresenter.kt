@@ -4,38 +4,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import com.illiarb.peek.core.appinfo.AppConfiguration
+import com.illiarb.peek.core.arch.di.UiScope
 import com.illiarb.peek.features.settings.SettingsScreen.Event
 import com.illiarb.peek.features.settings.data.SettingsService
 import com.illiarb.peek.features.settings.data.SettingsService.SettingType.DARK_THEME
 import com.illiarb.peek.features.settings.data.SettingsService.SettingType.DYNAMIC_COLORS
+import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.retained.collectAsRetainedState
-import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
-import com.slack.circuit.runtime.screen.Screen
-import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
 import kotlinx.coroutines.launch
 
-@Inject
-public class SettingsScreenPresenterFactory(
-  private val settingsService: SettingsService,
-  private val appConfiguration: AppConfiguration,
-) : Presenter.Factory {
-
-  override fun create(
-    screen: Screen,
-    navigator: Navigator,
-    context: CircuitContext
-  ): Presenter<*>? {
-    return when (screen) {
-      is SettingsScreen -> SettingsScreenPresenter(navigator, settingsService, appConfiguration)
-      else -> null
-    }
-  }
-}
-
-internal class SettingsScreenPresenter(
-  private val navigator: Navigator,
+@AssistedInject
+public class SettingsScreenPresenter(
+  @Assisted private val navigator: Navigator,
   private val settingsService: SettingsService,
   private val appConfiguration: AppConfiguration,
 ) : Presenter<SettingsScreen.State> {
@@ -84,5 +69,11 @@ internal class SettingsScreenPresenter(
         }
       }
     )
+  }
+
+  @AssistedFactory
+  @CircuitInject(SettingsScreen::class, UiScope::class)
+  public fun interface Factory {
+    public fun create(navigator: Navigator): SettingsScreenPresenter
   }
 }

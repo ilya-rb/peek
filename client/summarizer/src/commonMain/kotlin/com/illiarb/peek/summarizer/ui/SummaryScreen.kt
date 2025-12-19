@@ -1,4 +1,4 @@
-package com.illiarb.peek.summarizer.ui.internal
+package com.illiarb.peek.summarizer.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -23,8 +23,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.illiarb.peek.core.arch.di.UiScope
 import com.illiarb.peek.core.data.Async
-import com.illiarb.peek.summarizer.ui.SummaryScreen
 import com.illiarb.peek.summarizer.ui.SummaryScreen.Event
 import com.illiarb.peek.uikit.core.components.shimmer.ShimmerBox
 import com.illiarb.peek.uikit.core.components.shimmer.ShimmerColumn
@@ -33,31 +33,16 @@ import com.illiarb.peek.uikit.resources.acsb_action_close
 import com.illiarb.peek.uikit.resources.acsb_action_open_in_browser
 import com.illiarb.peek.uikit.resources.acsb_icon_assistant
 import com.illiarb.peek.uikit.resources.summary_loading_title
-import com.slack.circuit.runtime.CircuitContext
-import com.slack.circuit.runtime.screen.Screen
-import com.slack.circuit.runtime.ui.Ui
-import com.slack.circuit.runtime.ui.ui
-import dev.zacsweers.metro.Inject
+import com.slack.circuit.codegen.annotations.CircuitInject
 import org.jetbrains.compose.resources.stringResource
-
-@Inject
-public class SummaryScreenFactory : Ui.Factory {
-  override fun create(screen: Screen, context: CircuitContext): Ui<*>? {
-    return when (screen) {
-      is SummaryScreen -> ui<SummaryScreen.State> { state, _ ->
-        SummaryScreen(state, screen)
-      }
-
-      else -> null
-    }
-  }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SummaryScreen(
+@CircuitInject(SummaryScreen::class, UiScope::class)
+internal fun SummaryScreen(
   state: SummaryScreen.State,
   screen: SummaryScreen,
+  modifier: Modifier = Modifier,
 ) {
   val eventSink = state.eventSink
   val containerColor = MaterialTheme.colorScheme.surfaceContainerLow

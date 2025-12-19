@@ -31,7 +31,6 @@ import dev.zacsweers.metro.Provides
 internal interface AndroidAppGraph : AppGraph {
 
   val uiGraph: AndroidUiGraph.Factory
-
   val appConfiguration: AppConfiguration
   val settingsService: SettingsService
   val imageLoader: ImageLoader

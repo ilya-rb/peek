@@ -1,10 +1,10 @@
 package com.illiarb.peek.summarizer.ui
 
 import com.illiarb.peek.api.domain.Article
-import com.illiarb.peek.core.types.Url
 import com.illiarb.peek.core.arch.CommonParcelable
 import com.illiarb.peek.core.arch.CommonParcelize
 import com.illiarb.peek.core.data.Async
+import com.illiarb.peek.core.types.Url
 import com.illiarb.peek.summarizer.domain.ArticleSummary
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
@@ -31,18 +31,18 @@ public data class SummaryScreen(
     public data class OpenInReader(val url: Url) : Result
   }
 
-  internal data class State(
+  public data class State(
     val articleWithSummary: Async<ArticleWithSummary>,
     val eventSink: (Event) -> Unit,
   ) : CircuitUiState
 
-  internal data class ArticleWithSummary(
+  public data class ArticleWithSummary(
     val article: Article,
     val summary: ArticleSummary,
   )
 
-  internal sealed interface Event : CircuitUiEvent {
-    data object NavigationIconClick : Event
-    data class OpenInReaderClick(val article: Article) : Event
+  public sealed interface Event : CircuitUiEvent {
+    public data object NavigationIconClick : Event
+    public data class OpenInReaderClick(val article: Article) : Event
   }
 }

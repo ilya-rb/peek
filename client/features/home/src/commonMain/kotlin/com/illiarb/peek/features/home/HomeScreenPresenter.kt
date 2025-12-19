@@ -10,6 +10,7 @@ import com.illiarb.peek.api.PeekApiService
 import com.illiarb.peek.api.domain.Article
 import com.illiarb.peek.api.domain.Tag
 import com.illiarb.peek.core.arch.ShareScreen
+import com.illiarb.peek.core.arch.di.UiScope
 import com.illiarb.peek.core.arch.message.MessageDispatcher
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.core.data.mapContent
@@ -21,38 +22,23 @@ import com.illiarb.peek.features.home.overlay.TagFilterContract
 import com.illiarb.peek.features.reader.ReaderScreen
 import com.illiarb.peek.features.settings.SettingsScreen
 import com.illiarb.peek.summarizer.ui.SummaryScreen
+import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.retained.rememberRetained
-import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import com.slack.circuit.runtime.presenter.Presenter
-import com.slack.circuit.runtime.screen.Screen
-import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.launch
 
-@Inject
-public class HomeScreenPresenterFactory(
+@AssistedInject
+public class HomeScreenPresenter(
+  @Assisted private val navigator: Navigator,
   private val peekApiService: PeekApiService,
-  private val messageDispatcher: MessageDispatcher,
-) : Presenter.Factory {
-  override fun create(
-    screen: Screen,
-    navigator: Navigator,
-    context: CircuitContext
-  ): Presenter<*>? {
-    return when (screen) {
-      is HomeScreen -> HomeScreenPresenter(peekApiService, navigator, messageDispatcher)
-      else -> null
-    }
-  }
-}
-
-internal class HomeScreenPresenter(
-  private val peekApiService: PeekApiService,
-  private val navigator: Navigator,
   private val messageDispatcher: MessageDispatcher,
 ) : Presenter<HomeScreen.State> {
 
@@ -228,4 +214,10 @@ internal class HomeScreenPresenter(
     val articleBookmarked: Boolean,
     val manualReloadTriggered: Boolean,
   )
+
+  @AssistedFactory
+  @CircuitInject(HomeScreen::class, UiScope::class)
+  public fun interface Factory {
+    public fun create(navigator: Navigator): HomeScreenPresenter
+  }
 }

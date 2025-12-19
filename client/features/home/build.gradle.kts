@@ -1,3 +1,5 @@
+import com.illiarb.peek.gradle.addKspDependencyForAllTargets
+
 plugins {
   id("com.illiarb.peek.android.library")
   id("com.illiarb.peek.kotlin.multiplatform")
@@ -5,6 +7,7 @@ plugins {
 
   alias(libs.plugins.kotlinParcelize)
   alias(libs.plugins.metro)
+  alias(libs.plugins.kotlinKsp)
 }
 
 kotlin {
@@ -24,6 +27,7 @@ kotlin {
 
       implementation(libs.circuit.core)
       implementation(libs.circuit.overlay)
+      implementation(libs.circuit.codegen.annotations)
 
       implementation(libs.kotlinx.datetime)
       implementation(libs.kotlinx.collections)
@@ -57,3 +61,9 @@ android {
     debugImplementation(compose.uiTooling)
   }
 }
+
+ksp {
+  arg("circuit.codegen.mode", "metro")
+}
+
+addKspDependencyForAllTargets(libs.circuit.codegen)

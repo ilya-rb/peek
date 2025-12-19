@@ -13,12 +13,7 @@ import com.illiarb.peek.features.home.overlay.TagFilterContract
 import com.illiarb.peek.summarizer.ui.SummaryScreen
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
-import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
-import com.slack.circuit.runtime.ui.Ui
-import dev.zacsweers.metro.BindingContainer
-import dev.zacsweers.metro.IntoSet
-import dev.zacsweers.metro.Provides
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
 
@@ -26,7 +21,7 @@ import kotlinx.collections.immutable.ImmutableSet
 public object HomeScreen : Screen, CommonParcelable {
 
   @Stable
-  internal data class State(
+  public data class State(
     val articles: Async<SnapshotStateList<Article>>,
     val newsSources: ImmutableList<NewsSourceKind>,
     val allTags: Set<Tag>,
@@ -39,7 +34,7 @@ public object HomeScreen : Screen, CommonParcelable {
     val articlesEventSink: (ArticlesUiEvent) -> Unit,
   ) : CircuitUiState {
 
-    fun articlesStateKey(): Any {
+    public fun articlesStateKey(): Any {
       return when (articles) {
         is Async.Content -> articles.content.isEmpty()
         else -> this::class
@@ -47,32 +42,19 @@ public object HomeScreen : Screen, CommonParcelable {
     }
   }
 
-  internal enum class BookmarkMessage {
+  public enum class BookmarkMessage {
     ADDED,
     REMOVED,
   }
 
-  internal sealed interface Event : CircuitUiEvent {
-    data class TagFilterResult(val result: TagFilterContract.Output) : Event
-    data class SummaryResult(val result: SummaryScreen.Result) : Event
-    data class TabClicked(val source: NewsSourceKind) : Event
-    data object ErrorRetryClicked : Event
-    data object FiltersClicked : Event
-    data object SettingsClicked : Event
-    data object BookmarksClicked : Event
-    data object BookmarkToastResult : Event
+  public sealed interface Event : CircuitUiEvent {
+    public data class TagFilterResult(val result: TagFilterContract.Output) : Event
+    public data class SummaryResult(val result: SummaryScreen.Result) : Event
+    public data class TabClicked(val source: NewsSourceKind) : Event
+    public data object ErrorRetryClicked : Event
+    public data object FiltersClicked : Event
+    public data object SettingsClicked : Event
+    public data object BookmarksClicked : Event
+    public data object BookmarkToastResult : Event
   }
-}
-
-@BindingContainer
-public object HomeScreenBindings {
-
-  @Provides
-  @IntoSet
-  public fun bindHomeScreenPresenterFactory(factory: HomeScreenPresenterFactory): Presenter.Factory =
-    factory
-
-  @Provides
-  @IntoSet
-  public fun bindHomeScreenUiFactory(factory: HomeScreenFactory): Ui.Factory = factory
 }

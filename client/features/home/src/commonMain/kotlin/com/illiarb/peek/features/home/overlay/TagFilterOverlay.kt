@@ -39,17 +39,17 @@ import org.jetbrains.compose.resources.stringResource
 
 internal expect suspend fun OverlayHost.showTagFilterOverlay(input: TagFilterContract.Input): TagFilterContract.Output
 
-internal interface TagFilterContract {
+public interface TagFilterContract {
 
-  data class Input(
+  public data class Input(
     val allTags: Set<Tag>,
     val selectedTags: Set<Tag>,
     val containerColor: Color,
   )
 
-  sealed interface Output {
-    data class Saved(val selectedTags: Set<Tag>) : Output
-    data object Cancel : Output
+  public sealed interface Output {
+    public data class Saved(val selectedTags: Set<Tag>) : Output
+    public data object Cancel : Output
   }
 }
 

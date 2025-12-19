@@ -8,25 +8,20 @@ import com.illiarb.peek.core.arch.CommonParcelize
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.home.articles.ArticlesUiEvent
 import com.slack.circuit.runtime.CircuitUiState
-import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
-import com.slack.circuit.runtime.ui.Ui
-import dev.zacsweers.metro.BindingContainer
-import dev.zacsweers.metro.IntoSet
-import dev.zacsweers.metro.Provides
 
 @CommonParcelize
-internal object BookmarksScreen : Screen, CommonParcelable {
+public object BookmarksScreen : Screen, CommonParcelable {
 
   @Stable
-  data class State(
+  public data class State(
     val articles: Async<SnapshotStateList<Article>>,
     val articleSummaryToShow: Article?,
     val articlesEventSink: (ArticlesUiEvent) -> Unit,
     val eventSink: (Event) -> Unit,
   ) : CircuitUiState {
 
-    fun articlesStateKey(): Any {
+    public fun articlesStateKey(): Any {
       return when (articles) {
         is Async.Content -> articles.content.isEmpty()
         else -> this::class
@@ -34,23 +29,9 @@ internal object BookmarksScreen : Screen, CommonParcelable {
     }
   }
 
-  sealed interface Event {
-    data object NavigationButtonClicked : Event
-    data object ErrorRetryClicked : Event
-    data object SummaryCloseClicked : Event
+  public sealed interface Event {
+    public data object NavigationButtonClicked : Event
+    public data object ErrorRetryClicked : Event
+    public data object SummaryCloseClicked : Event
   }
-}
-
-@BindingContainer
-public object BookmarksScreenBindings {
-
-  @Provides
-  @IntoSet
-  public fun bindBookmarksScreenFactory(factory: BookmarksScreenFactory): Ui.Factory = factory
-
-  @Provides
-  @IntoSet
-  public fun bindBookmarksPresenterFactory(
-    factory: BookmarksScreenPresenterFactory
-  ): Presenter.Factory = factory
 }

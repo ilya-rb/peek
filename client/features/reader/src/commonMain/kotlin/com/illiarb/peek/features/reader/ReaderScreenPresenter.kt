@@ -8,49 +8,29 @@ import com.illiarb.peek.api.PeekApiService
 import com.illiarb.peek.api.domain.Article
 import com.illiarb.peek.core.arch.OpenUrlScreen
 import com.illiarb.peek.core.arch.ShareScreen
+import com.illiarb.peek.core.arch.di.UiScope
 import com.illiarb.peek.core.data.Async
-import com.illiarb.peek.core.types.Url
 import com.illiarb.peek.features.reader.ReaderScreen.Event
+import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.retained.rememberRetained
-import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
-import com.slack.circuit.runtime.screen.Screen
-import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
 
-@Inject
-public class ReaderScreenPresenterFactory(
+@AssistedInject
+public class ReaderScreenPresenter(
+  @Assisted private val navigator: Navigator,
+  @Assisted private val screen: ReaderScreen,
   private val peekApiService: PeekApiService,
-) : Presenter.Factory {
-
-  override fun create(
-    screen: Screen,
-    navigator: Navigator,
-    context: CircuitContext
-  ): Presenter<*>? {
-    return when (screen) {
-      is ReaderScreen -> ReaderScreenPresenter(
-        url = screen.url,
-        peekApiService = peekApiService,
-        navigator = navigator,
-      )
-
-      else -> null
-    }
-  }
-}
-
-internal class ReaderScreenPresenter(
-  private val url: Url,
-  private val peekApiService: PeekApiService,
-  private val navigator: Navigator,
 ) : Presenter<ReaderScreen.State> {
 
   @Composable
   override fun present(): ReaderScreen.State {
     val article by produceRetainedState<Async<Article>>(initialValue = Async.Loading) {
-      peekApiService.collectArticleByUrl(url).collect {
+      peekApiService.collectArticleByUrl(screen.url).collect {
         value = it
       }
     }
@@ -102,5 +82,11 @@ internal class ReaderScreenPresenter(
         }
       }
     }
+  }
+
+  @AssistedFactory
+  @CircuitInject(ReaderScreen::class, UiScope::class)
+  public fun interface Factory {
+    public fun create(navigator: Navigator, screen: ReaderScreen): ReaderScreenPresenter
   }
 }
