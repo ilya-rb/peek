@@ -19,8 +19,7 @@ import coil3.compose.setSingletonImageLoaderFactory
 import com.illiarb.peek.core.arch.OpenUrlScreen
 import com.illiarb.peek.core.arch.ShareScreen
 import com.illiarb.peek.core.arch.message.MessageDispatcher
-import com.illiarb.peek.di.AndroidUiComponent
-import com.illiarb.peek.di.create
+import com.illiarb.peek.di.AndroidUiGraph
 import com.illiarb.peek.features.home.HomeScreen
 import com.illiarb.peek.features.settings.data.SettingsService.SettingType
 import com.illiarb.peek.uikit.core.theme.UiKitTheme
@@ -33,6 +32,7 @@ import com.slack.circuit.retained.collectAsRetainedState
 import com.slack.circuitx.android.AndroidScreen
 import com.slack.circuitx.android.rememberAndroidScreenAwareNavigator
 import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
+import dev.zacsweers.metro.asContribution
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 
@@ -43,11 +43,10 @@ internal class MainActivity : ComponentActivity() {
 
     super.onCreate(savedInstanceState)
 
-    val appComponent = applicationContext.appComponent()
-    val activityComponent = AndroidUiComponent.create(appComponent, activity = this)
-    val settingsService = appComponent.settingsService
+    val appGraph = applicationContext.appGraph()
+    val uiGraph = appGraph.uiGraph.create(this)
 
-    if (appComponent.appConfiguration.isAndroidQ && isTaskRoot) {
+    if (appGraph.appConfiguration.isAndroidQ && isTaskRoot) {
       onBackPressedDispatcher.addCallback {
         // https://twitter.com/Piwai/status/1169274622614704129
         // https://issuetracker.google.com/issues/139738913
@@ -56,12 +55,14 @@ internal class MainActivity : ComponentActivity() {
     }
 
     lifecycleScope.launch {
-      activityComponent.toastMessageDispatcher.messages
+      uiGraph.toastMessageDispatcher.messages
         .filterNotNull()
         .collect { showToast(it) }
     }
 
     setContent {
+      val settingsService = appGraph.settingsService
+
       val dynamicColorsEnabled by settingsService
         .observeSettingChange(SettingType.DYNAMIC_COLORS)
         .collectAsRetainedState(initial = false)
@@ -70,7 +71,7 @@ internal class MainActivity : ComponentActivity() {
         .observeSettingChange(SettingType.DARK_THEME)
         .collectAsRetainedState(initial = isSystemInDarkTheme())
 
-      setSingletonImageLoaderFactory { appComponent.imageLoader }
+      setSingletonImageLoaderFactory { appGraph.imageLoader }
 
       UiKitTheme(
         useDynamicColors = dynamicColorsEnabled,
@@ -82,13 +83,13 @@ internal class MainActivity : ComponentActivity() {
           starter = ::navigateTo,
         )
 
-        CircuitCompositionLocals(activityComponent.circuit) {
+        CircuitCompositionLocals(uiGraph.circuit) {
           ContentWithOverlays {
             NavigableCircuitContent(
               navigator = navigator,
               backStack = backStack,
               decoratorFactory = GestureNavigationDecorationFactory(
-                activityComponent.circuit.animatedNavDecoratorFactory,
+                uiGraph.circuit.animatedNavDecoratorFactory,
                 navigator::pop,
               ),
             )

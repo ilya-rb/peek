@@ -16,10 +16,11 @@ import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
+import dev.zacsweers.metro.BindingContainer
+import dev.zacsweers.metro.IntoSet
+import dev.zacsweers.metro.Provides
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
-import me.tatarka.inject.annotations.IntoSet
-import me.tatarka.inject.annotations.Provides
 
 @CommonParcelize
 public object HomeScreen : Screen, CommonParcelable {
@@ -63,7 +64,8 @@ public object HomeScreen : Screen, CommonParcelable {
   }
 }
 
-public interface HomeScreenComponent {
+@BindingContainer
+public object HomeScreenBindings {
 
   @Provides
   @IntoSet

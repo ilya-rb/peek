@@ -1,21 +1,24 @@
 package com.illiarb.peek.api.di
 
-import android.app.Application
+import android.content.Context
 import androidx.sqlite.db.SupportSQLiteDatabase
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
-import com.illiarb.peek.core.arch.di.AppScope
 import com.illiarb.peek.api.Database
-import me.tatarka.inject.annotations.Provides
+import com.illiarb.peek.core.arch.di.AppScope
+import dev.zacsweers.metro.BindingContainer
+import dev.zacsweers.metro.Provides
+import dev.zacsweers.metro.SingleIn
 
-public actual interface SqlDatabasePlatformComponent {
+@BindingContainer
+public actual object SqlDatabasePlatformBindings {
 
-  @AppScope
   @Provides
-  public fun provideSqlDriver(application: Application): SqlDriver =
+  @SingleIn(AppScope::class)
+  public fun provideSqlDriver(context: Context): SqlDriver =
     AndroidSqliteDriver(
       schema = Database.Schema,
-      context = application,
+      context = context,
       name = "peek.db",
       callback = object : AndroidSqliteDriver.Callback(Database.Schema) {
         override fun onConfigure(db: SupportSQLiteDatabase) {

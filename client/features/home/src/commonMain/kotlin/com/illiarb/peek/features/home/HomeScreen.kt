@@ -62,8 +62,8 @@ import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import dev.chrisbanes.haze.materials.HazeMaterials
 import dev.chrisbanes.haze.rememberHazeState
+import dev.zacsweers.metro.Inject
 import kotlinx.collections.immutable.ImmutableList
-import me.tatarka.inject.annotations.Inject
 import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Duration.Companion.seconds
 

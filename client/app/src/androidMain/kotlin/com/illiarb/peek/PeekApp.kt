@@ -2,15 +2,15 @@ package com.illiarb.peek
 
 import android.app.Application
 import android.content.Context
-import com.illiarb.peek.di.AndroidAppComponent
-import com.illiarb.peek.di.create
+import com.illiarb.peek.di.AndroidAppGraph
+import dev.zacsweers.metro.createGraphFactory
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
 
 internal class PeekApp : Application() {
 
-  private val appComponent: AndroidAppComponent by lazy {
-    AndroidAppComponent.create(application = this)
+  private val appGraph: AndroidAppGraph by lazy {
+    createGraphFactory<AndroidAppGraph.Factory>().create(this)
   }
 
   override fun onCreate() {
@@ -19,9 +19,9 @@ internal class PeekApp : Application() {
     Napier.base(DebugAntilog())
   }
 
-  fun appComponent(): AndroidAppComponent = appComponent
+  fun appGraph(): AndroidAppGraph = appGraph
 }
 
-internal fun Context.appComponent(): AndroidAppComponent {
-  return (this as PeekApp).appComponent()
+internal fun Context.appGraph(): AndroidAppGraph {
+  return (this as PeekApp).appGraph()
 }

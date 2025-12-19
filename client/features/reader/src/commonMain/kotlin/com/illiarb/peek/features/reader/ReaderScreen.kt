@@ -49,7 +49,7 @@ import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
-import me.tatarka.inject.annotations.Inject
+import dev.zacsweers.metro.Inject
 import org.jetbrains.compose.resources.stringResource
 
 @Inject

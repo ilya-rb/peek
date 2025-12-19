@@ -6,8 +6,8 @@ import com.illiarb.peek.summarizer.Database
 import com.illiarb.peek.summarizer.Summaries
 import com.illiarb.peek.summarizer.di.SummarizerApi
 import com.illiarb.peek.summarizer.domain.ArticleSummary
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.withContext
-import me.tatarka.inject.annotations.Inject
 import kotlin.time.ExperimentalTime
 
 @Inject

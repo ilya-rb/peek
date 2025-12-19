@@ -3,10 +3,9 @@ package com.illiarb.peek.summarizer.di
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.native.NativeSqliteDriver
 import com.illiarb.peek.summarizer.Database
-import com.illiarb.peek.summarizer.di.SummarizerApi
-import me.tatarka.inject.annotations.Provides
+import dev.zacsweers.metro.Provides
 
-public actual interface SummarizerPlatformComponent {
+public actual interface SummarizerPlatformBindings {
 
   @Provides
   @SummarizerApi

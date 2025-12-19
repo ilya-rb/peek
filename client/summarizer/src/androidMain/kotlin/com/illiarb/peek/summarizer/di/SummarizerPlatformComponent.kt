@@ -1,20 +1,22 @@
 package com.illiarb.peek.summarizer.di
 
-import android.app.Application
+import android.content.Context
 import androidx.sqlite.db.SupportSQLiteDatabase
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import com.illiarb.peek.summarizer.Database
-import me.tatarka.inject.annotations.Provides
+import dev.zacsweers.metro.BindingContainer
+import dev.zacsweers.metro.Provides
 
-public actual interface SummarizerPlatformComponent {
+@BindingContainer
+public actual object SummarizerPlatformBindings {
 
   @Provides
   @SummarizerApi
-  public fun provideSummarizerSqlDriver(application: Application): SqlDriver {
+  public fun provideSummarizerSqlDriver(context: Context): SqlDriver {
     return AndroidSqliteDriver(
       schema = Database.Schema,
-      context = application,
+      context = context,
       name = "summarizer.db",
       callback = object : AndroidSqliteDriver.Callback(Database.Schema) {
         override fun onConfigure(db: SupportSQLiteDatabase) {

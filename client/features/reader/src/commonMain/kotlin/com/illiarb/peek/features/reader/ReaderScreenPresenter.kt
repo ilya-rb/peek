@@ -6,10 +6,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.illiarb.peek.api.PeekApiService
 import com.illiarb.peek.api.domain.Article
-import com.illiarb.peek.core.types.Url
 import com.illiarb.peek.core.arch.OpenUrlScreen
 import com.illiarb.peek.core.arch.ShareScreen
 import com.illiarb.peek.core.data.Async
+import com.illiarb.peek.core.types.Url
 import com.illiarb.peek.features.reader.ReaderScreen.Event
 import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.retained.rememberRetained
@@ -17,7 +17,7 @@ import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
-import me.tatarka.inject.annotations.Inject
+import dev.zacsweers.metro.Inject
 
 @Inject
 public class ReaderScreenPresenterFactory(

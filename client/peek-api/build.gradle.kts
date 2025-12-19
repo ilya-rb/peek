@@ -18,7 +18,6 @@ kotlin {
 
     commonMain.dependencies {
       implementation(libs.kotlin.coroutines.core)
-      implementation(libs.kotlin.inject.runtime)
       implementation(libs.kotlinx.datetime)
       implementation(libs.ktor.core)
       implementation(libs.ktor.serialization.json)

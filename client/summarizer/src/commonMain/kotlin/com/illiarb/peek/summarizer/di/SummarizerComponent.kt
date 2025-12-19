@@ -14,17 +14,16 @@ import com.illiarb.peek.summarizer.SummarizerService
 import com.illiarb.peek.summarizer.db.DatabaseAdapters
 import com.illiarb.peek.summarizer.network.authPlugin
 import com.illiarb.peek.summarizer.repository.SummarizerRepository
-import me.tatarka.inject.annotations.Provides
-import me.tatarka.inject.annotations.Qualifier
+import dev.zacsweers.metro.BindingContainer
+import dev.zacsweers.metro.Provides
+import dev.zacsweers.metro.Qualifier
+import dev.zacsweers.metro.SingleIn
 
-public expect interface SummarizerPlatformComponent
+@BindingContainer
+public expect object SummarizerPlatformBindings
 
-public interface SummarizerComponent : SummarizerPlatformComponent {
-
-  public val summarizerService: SummarizerService
-
-  @SummarizerApi
-  public val summarizerDatabase: Database
+@BindingContainer(includes = [SummarizerPlatformBindings::class])
+public object SummarizerBindings {
 
   @Provides
   @SummarizerApi
@@ -47,21 +46,21 @@ public interface SummarizerComponent : SummarizerPlatformComponent {
   }
 
   @Provides
-  @AppScope
+  @SingleIn(AppScope::class)
   @SummarizerApi
   public fun provideSummarizerMemoryCache(): ConcurrentHashMapCache {
     return ConcurrentHashMapCache(DefaultConcurrentHashMapCache())
   }
 
   @Provides
-  @AppScope
+  @SingleIn(AppScope::class)
   public fun provideSummarizerService(repository: SummarizerRepository): SummarizerService {
     return DefaultSummarizerService(repository)
   }
 
   @Provides
   @SummarizerApi
-  @AppScope
+  @SingleIn(AppScope::class)
   public fun provideSummarizerDatabase(@SummarizerApi driver: SqlDriver): Database {
     return Database(
       driver = driver,

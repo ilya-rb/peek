@@ -18,7 +18,6 @@ kotlin {
       api(libs.kotlinx.serialization)
 
       implementation(libs.kotlin.coroutines.core)
-      implementation(libs.kotlin.inject.runtime)
       implementation(libs.stately.collections)
       implementation(libs.androidx.datastore)
 

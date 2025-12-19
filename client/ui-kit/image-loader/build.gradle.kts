@@ -22,7 +22,6 @@ kotlin {
 
       implementation(libs.coil.network)
       implementation(libs.coil.compose)
-      implementation(libs.kotlin.inject.runtime)
     }
   }
 }

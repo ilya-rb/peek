@@ -1,6 +1,6 @@
 package com.illiarb.peek.di.scope
 
-import me.tatarka.inject.annotations.Scope
+import dev.zacsweers.metro.Scope
 
 @Scope
 internal annotation class ActivityScope

@@ -18,7 +18,6 @@ kotlin {
       implementation(compose.components.resources)
 
       implementation(libs.circuit.core)
-      implementation(libs.kotlin.inject.runtime)
 
       implementation(projects.uiKit.core)
       implementation(projects.uiKit.resources)

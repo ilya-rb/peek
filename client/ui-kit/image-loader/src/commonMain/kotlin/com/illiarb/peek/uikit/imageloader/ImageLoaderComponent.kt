@@ -6,17 +6,18 @@ import coil3.memory.MemoryCache
 import coil3.util.Logger
 import com.illiarb.peek.core.appinfo.AppEnvironment
 import com.illiarb.peek.core.arch.di.AppScope
-import me.tatarka.inject.annotations.Provides
+import dev.zacsweers.metro.BindingContainer
+import dev.zacsweers.metro.Provides
+import dev.zacsweers.metro.SingleIn
 import com.illiarb.peek.core.logging.Logger as CoreLogger
 
-public expect interface ImageLoaderPlatformComponent
+public expect interface ImageLoaderPlatformBindings
 
-public interface ImageLoaderComponent : ImageLoaderPlatformComponent {
-
-  public val imageLoader: ImageLoader
+@BindingContainer
+public object ImageLoaderBindings : ImageLoaderPlatformBindings {
 
   @Provides
-  @AppScope
+  @SingleIn(AppScope::class)
   public fun provideImageLoader(
     environment: AppEnvironment,
     context: PlatformContext,

@@ -19,7 +19,6 @@ kotlin {
 
       implementation(libs.circuit.core)
       implementation(libs.circuit.overlay)
-      implementation(libs.kotlin.inject.runtime)
 
       implementation(projects.uiKit.core)
       implementation(projects.uiKit.resources)

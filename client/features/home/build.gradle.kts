@@ -26,7 +26,6 @@ kotlin {
       implementation(libs.circuit.overlay)
 
       implementation(libs.kotlinx.datetime)
-      implementation(libs.kotlin.inject.runtime)
       implementation(libs.kotlinx.collections)
       implementation(libs.haze)
       implementation(libs.haze.materials)

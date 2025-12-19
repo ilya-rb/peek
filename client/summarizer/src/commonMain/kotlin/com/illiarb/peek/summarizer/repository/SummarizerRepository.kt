@@ -11,9 +11,9 @@ import com.illiarb.peek.summarizer.domain.ArticleSummary
 import com.illiarb.peek.summarizer.network.ApiConfig
 import com.illiarb.peek.summarizer.network.SummaryRequest
 import com.illiarb.peek.summarizer.network.SummaryResponse
+import dev.zacsweers.metro.Inject
 import io.ktor.client.call.body
 import kotlinx.coroutines.flow.Flow
-import me.tatarka.inject.annotations.Inject
 
 @Inject
 public class SummarizerRepository(

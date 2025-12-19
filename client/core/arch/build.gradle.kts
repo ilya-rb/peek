@@ -17,7 +17,6 @@ kotlin {
     }
     commonMain.dependencies {
       implementation(libs.circuit.core)
-      implementation(libs.kotlin.inject.runtime)
     }
   }
 }

@@ -1,9 +1,9 @@
 package com.illiarb.peek.uikit.imageloader
 
 import coil3.PlatformContext
-import me.tatarka.inject.annotations.Provides
+import dev.zacsweers.metro.Provides
 
-public actual interface ImageLoaderPlatformComponent {
+public actual interface ImageLoaderPlatformBindings {
 
   @Provides
   public fun providePlatformContext(): PlatformContext = PlatformContext.INSTANCE

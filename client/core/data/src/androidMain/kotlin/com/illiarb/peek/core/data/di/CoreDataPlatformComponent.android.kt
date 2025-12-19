@@ -1,20 +1,20 @@
 package com.illiarb.peek.core.data.di
 
-import android.app.Application
+import android.content.Context
 import com.illiarb.peek.core.arch.di.AppScope
 import com.illiarb.peek.core.data.KeyValueStorage
 import com.illiarb.peek.core.data.internal.DefaultKeyValueStorageFactory
+import dev.zacsweers.metro.BindingContainer
+import dev.zacsweers.metro.Provides
+import dev.zacsweers.metro.SingleIn
 import kotlinx.serialization.json.Json
-import me.tatarka.inject.annotations.Provides
 
-public actual interface CoreDataPlatformComponent {
+@BindingContainer
+public actual object CoreDataPlatformBindings {
 
   @Provides
-  @AppScope
-  public fun provideKeyStorageFactory(
-    application: Application,
-    json: Json,
-  ): KeyValueStorage.Factory {
-    return DefaultKeyValueStorageFactory(application, json)
+  @SingleIn(AppScope::class)
+  public fun provideKeyStorageFactory(context: Context, json: Json): KeyValueStorage.Factory {
+    return DefaultKeyValueStorageFactory(context, json)
   }
 }

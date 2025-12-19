@@ -6,10 +6,12 @@ import com.illiarb.peek.core.coroutines.AppDispatchers
 import com.illiarb.peek.core.network.HttpClient
 import com.illiarb.peek.core.network.HttpClientFactory
 import com.illiarb.peek.core.network.plugins.debugDelayPlugin
+import dev.zacsweers.metro.BindingContainer
+import dev.zacsweers.metro.Provides
 import io.ktor.client.plugins.HttpClientPlugin
-import me.tatarka.inject.annotations.Provides
 
-public interface NetworkComponent {
+@BindingContainer
+public object NetworkBindings {
 
   @Provides
   public fun providePlugins(

@@ -4,15 +4,18 @@ import com.illiarb.peek.summarizer.ui.internal.SummaryPresenterFactory
 import com.illiarb.peek.summarizer.ui.internal.SummaryScreenFactory
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.ui.Ui
-import me.tatarka.inject.annotations.IntoSet
-import me.tatarka.inject.annotations.Provides
+import dev.zacsweers.metro.BindingContainer
+import dev.zacsweers.metro.IntoSet
+import dev.zacsweers.metro.Provides
 
-public interface SummaryScreenComponent {
+@BindingContainer
+public object SummaryScreenBindings {
 
   @Provides
   @IntoSet
-  public fun bindSummaryScreenPresenterFactory(factory: SummaryPresenterFactory): Presenter.Factory =
-    factory
+  public fun bindSummaryScreenPresenterFactory(
+    factory: SummaryPresenterFactory
+  ): Presenter.Factory = factory
 
   @Provides
   @IntoSet

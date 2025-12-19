@@ -18,20 +18,27 @@ import com.illiarb.peek.core.network.NetworkConfig
 import com.illiarb.peek.core.network.TimeoutConfig
 import com.illiarb.peek.core.types.Url
 import com.prof18.rssparser.RssParser
-import me.tatarka.inject.annotations.IntoSet
-import me.tatarka.inject.annotations.Provides
+import dev.zacsweers.metro.BindingContainer
+import dev.zacsweers.metro.IntoSet
+import dev.zacsweers.metro.Provides
+import dev.zacsweers.metro.SingleIn
 
-public expect interface SqlDatabasePlatformComponent
+@BindingContainer
+public expect object SqlDatabasePlatformBindings
 
-public expect interface RssParserComponent
+@BindingContainer
+public expect object RssParserBindings
 
-public interface PeekApiComponent : SqlDatabasePlatformComponent, RssParserComponent {
+@BindingContainer(
+  includes = [
+    RssParserBindings::class,
+    SqlDatabasePlatformBindings::class,
+  ]
+)
+public object PeekApiBindings {
 
-  public val peekApiService: PeekApiService
-  public val peekDatabase: Database
-
-  @AppScope
   @Provides
+  @SingleIn(AppScope::class)
   public fun provideMemoryCache(): ConcurrentHashMapCache =
     ConcurrentHashMapCache(DefaultConcurrentHashMapCache())
 
@@ -50,15 +57,15 @@ public interface PeekApiComponent : SqlDatabasePlatformComponent, RssParserCompo
     return factory.create(config)
   }
 
-  @AppScope
   @Provides
+  @SingleIn(AppScope::class)
   public fun providePeekApiService(
     articlesRepository: ArticlesRepository,
     newsDataSources: Set<NewsDataSource>,
   ): PeekApiService = DefaultPeekApiService(articlesRepository, newsDataSources)
 
-  @AppScope
   @Provides
+  @SingleIn(AppScope::class)
   public fun provideDatabase(
     sqlDriver: SqlDriver
   ): Database = Database(

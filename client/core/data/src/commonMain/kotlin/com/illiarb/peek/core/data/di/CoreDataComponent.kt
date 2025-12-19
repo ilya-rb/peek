@@ -1,12 +1,15 @@
 package com.illiarb.peek.core.data.di
 
+import dev.zacsweers.metro.BindingContainer
+import dev.zacsweers.metro.Provides
 import kotlinx.serialization.json.Json
-import me.tatarka.inject.annotations.Provides
 
-public interface CoreDataComponent : CoreDataPlatformComponent {
+@BindingContainer(includes = [CoreDataPlatformBindings::class])
+public object CoreDataBindings {
 
   @Provides
   public fun provideJson(): Json = Json
 }
 
-public expect interface CoreDataPlatformComponent
+@BindingContainer
+public expect object CoreDataPlatformBindings

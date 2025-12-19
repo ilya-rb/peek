@@ -43,7 +43,6 @@ kotlin {
       implementation(libs.ktor.core)
       implementation(libs.napier)
       implementation(libs.coil.compose)
-      implementation(libs.kotlin.inject.runtime)
       implementation(libs.rssparser)
 
       implementation(projects.peekApi)
@@ -94,13 +93,6 @@ android {
     debugImplementation(compose.uiTooling)
   }
 }
-
-ksp {
-  arg("me.tatarka.inject.dumpGraph", "true")
-  arg("me.tatarka.inject.generateCompanionExtensions", "true")
-}
-
-addKspDependencyForAllTargets(libs.kotlin.inject.compiler)
 
 
 

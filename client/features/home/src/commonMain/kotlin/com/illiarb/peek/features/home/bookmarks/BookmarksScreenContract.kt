@@ -2,17 +2,18 @@ package com.illiarb.peek.features.home.bookmarks
 
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import com.illiarb.peek.api.domain.Article
 import com.illiarb.peek.core.arch.CommonParcelable
 import com.illiarb.peek.core.arch.CommonParcelize
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.home.articles.ArticlesUiEvent
-import com.illiarb.peek.api.domain.Article
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
-import me.tatarka.inject.annotations.IntoSet
-import me.tatarka.inject.annotations.Provides
+import dev.zacsweers.metro.BindingContainer
+import dev.zacsweers.metro.IntoSet
+import dev.zacsweers.metro.Provides
 
 @CommonParcelize
 internal object BookmarksScreen : Screen, CommonParcelable {
@@ -40,12 +41,16 @@ internal object BookmarksScreen : Screen, CommonParcelable {
   }
 }
 
-public interface BookmarksScreenComponent {
+@BindingContainer
+public object BookmarksScreenBindings {
 
-  @[Provides IntoSet]
+  @Provides
+  @IntoSet
   public fun bindBookmarksScreenFactory(factory: BookmarksScreenFactory): Ui.Factory = factory
 
-  @[Provides IntoSet]
-  public fun bindBookmarksPresenterFactory(factory: BookmarksScreenPresenterFactory): Presenter.Factory =
-    factory
+  @Provides
+  @IntoSet
+  public fun bindBookmarksPresenterFactory(
+    factory: BookmarksScreenPresenterFactory
+  ): Presenter.Factory = factory
 }

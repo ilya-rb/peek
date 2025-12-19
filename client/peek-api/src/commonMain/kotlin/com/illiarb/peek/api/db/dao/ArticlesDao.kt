@@ -8,8 +8,8 @@ import com.illiarb.peek.core.coroutines.AppDispatchers
 import com.illiarb.peek.core.coroutines.suspendRunCatching
 import com.illiarb.peek.core.logging.Logger
 import com.illiarb.peek.core.types.Url
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.withContext
-import me.tatarka.inject.annotations.Inject
 
 @Inject
 public class ArticlesDao(

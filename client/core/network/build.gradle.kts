@@ -10,7 +10,6 @@ kotlin {
   sourceSets {
     commonMain.dependencies {
       implementation(libs.kotlin.coroutines.core)
-      implementation(libs.kotlin.inject.runtime)
       implementation(libs.ktor.core)
       implementation(libs.ktor.logging)
       implementation(libs.ktor.contentNegotiation)

@@ -6,14 +6,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
+import com.illiarb.peek.api.PeekApiService
+import com.illiarb.peek.api.domain.Article
 import com.illiarb.peek.core.arch.ShareScreen
 import com.illiarb.peek.core.arch.message.MessageDispatcher
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.core.data.mapContent
 import com.illiarb.peek.features.home.articles.ArticlesUiEvent
 import com.illiarb.peek.features.reader.ReaderScreen
-import com.illiarb.peek.api.PeekApiService
-import com.illiarb.peek.api.domain.Article
 import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitContext
@@ -21,8 +21,8 @@ import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.launch
-import me.tatarka.inject.annotations.Inject
 
 @Inject
 public class BookmarksScreenPresenterFactory(

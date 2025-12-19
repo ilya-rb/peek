@@ -8,11 +8,11 @@ import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.core.data.AsyncDataStore
 import com.illiarb.peek.core.data.ConcurrentHashMapCache
 import com.illiarb.peek.core.types.Url
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
-import me.tatarka.inject.annotations.Inject
 import kotlin.jvm.JvmSuppressWildcards
 
 @Inject

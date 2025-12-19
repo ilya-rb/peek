@@ -35,7 +35,6 @@ kotlin {
       implementation(libs.circuit.core)
       implementation(libs.circuit.overlay)
       implementation(libs.kotlin.coroutines.core)
-      implementation(libs.kotlin.inject.runtime)
       implementation(libs.kotlinx.datetime)
       implementation(libs.ktor.core)
       implementation(libs.ktor.serialization.json)

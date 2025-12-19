@@ -16,7 +16,6 @@ android {
 kotlin {
   sourceSets {
     commonMain.dependencies {
-      implementation(libs.kotlin.inject.runtime)
       implementation(libs.kotlin.coroutines.core)
 
       implementation(projects.core.data)

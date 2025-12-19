@@ -4,15 +4,18 @@ import com.illiarb.peek.core.arch.di.AppScope
 import com.illiarb.peek.core.logging.Logger
 import com.prof18.rssparser.RssParser
 import com.prof18.rssparser.RssParserBuilder
-import me.tatarka.inject.annotations.Provides
+import dev.zacsweers.metro.BindingContainer
+import dev.zacsweers.metro.Provides
+import dev.zacsweers.metro.SingleIn
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
-public actual interface RssParserComponent {
+@BindingContainer
+public actual object RssParserBindings {
 
   @Provides
-  @AppScope
+  @SingleIn(AppScope::class)
   public fun provideOkHttpClient(): OkHttpClient {
     return OkHttpClient.Builder()
       .addInterceptor(LoggingInterceptor())
@@ -20,7 +23,7 @@ public actual interface RssParserComponent {
   }
 
   @Provides
-  @AppScope
+  @SingleIn(AppScope::class)
   public fun provideRssParser(client: OkHttpClient): RssParser {
     return RssParserBuilder(
       callFactory = { request ->

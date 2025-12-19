@@ -6,12 +6,12 @@ import com.illiarb.peek.core.appinfo.BuildKonfig
 import com.illiarb.peek.core.appinfo.internal.DefaultAppConfiguration
 import com.illiarb.peek.core.arch.di.AppScope
 import com.illiarb.peek.core.data.KeyValueStorage
-import me.tatarka.inject.annotations.Provides
+import dev.zacsweers.metro.BindingContainer
+import dev.zacsweers.metro.Provides
+import dev.zacsweers.metro.SingleIn
 
-public interface AppConfigurationComponent {
-
-  public val keyValueStorage: KeyValueStorage
-  public val appConfiguration: AppConfiguration
+@BindingContainer
+public object AppConfigurationsBindings {
 
   @Provides
   public fun provideEnvironment(): AppEnvironment {
@@ -19,7 +19,6 @@ public interface AppConfigurationComponent {
   }
 
   @Provides
-  @AppScope
   public fun provideKeyValueStorage(
     factory: KeyValueStorage.Factory,
   ): KeyValueStorage {
@@ -27,7 +26,7 @@ public interface AppConfigurationComponent {
   }
 
   @Provides
-  @AppScope
+  @SingleIn(AppScope::class)
   public fun provideAppConfiguration(
     environment: AppEnvironment,
     storage: KeyValueStorage,
