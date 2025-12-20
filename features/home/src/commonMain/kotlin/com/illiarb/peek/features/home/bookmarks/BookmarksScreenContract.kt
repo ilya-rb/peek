@@ -1,7 +1,5 @@
 package com.illiarb.peek.features.home.bookmarks
 
-import androidx.compose.runtime.Stable
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.illiarb.peek.api.PeekApiService
 import com.illiarb.peek.api.domain.Article
 import com.illiarb.peek.core.arch.di.UiScope
@@ -18,12 +16,12 @@ import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import dev.zacsweers.metro.ContributesIntoSet
 import dev.zacsweers.metro.Inject
+import kotlinx.collections.immutable.ImmutableList
 
 internal interface BookmarksScreenContract {
 
-  @Stable
   data class State(
-    val articles: Async<SnapshotStateList<Article>>,
+    val articles: Async<ImmutableList<Article>>,
     val articleSummaryToShow: Article?,
     val articlesEventSink: (ArticlesUiEvent) -> Unit,
     val eventSink: (Event) -> Unit,

@@ -20,6 +20,8 @@ import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import com.slack.circuit.runtime.presenter.Presenter
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 
 internal class BookmarksPresenter(
@@ -45,12 +47,12 @@ internal class BookmarksPresenter(
       )
     }
 
-    val articles by produceRetainedState<Async<SnapshotStateList<Article>>>(
+    val articles by produceRetainedState<Async<ImmutableList<Article>>>(
       initialValue = Async.Loading,
       key1 = contentTriggers,
     ) {
       peekApiService.collectSavedArticles()
-        .mapContent { it.toMutableStateList() }
+        .mapContent { it.toImmutableList() }
         .collect { value = it }
     }
 

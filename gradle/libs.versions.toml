@@ -29,6 +29,7 @@ metro = "0.9.1"
 napier = "2.7.1"
 rssparser = "6.1.1"
 shimmer = "1.3.3"
+stability-analyzer = "0.6.5"
 sqldelight = "2.2.1"
 stately = "2.1.0"
 turbine = "1.2.1"
@@ -49,6 +50,7 @@ peek-android-application = { id = "com.illiarb.peek.android.application" }
 peek-android-library = { id = "com.illiarb.peek.android.library" }
 peek-compose = { id = "com.illiarb.peek.compose" }
 peek-multiplatform = { id = "com.illiarb.peek.kotlin.multiplatform" }
+stabilityAnalyzer = { id = "com.github.skydoves.compose.stability.analyzer", version.ref = "stability-analyzer" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 
 [libraries]

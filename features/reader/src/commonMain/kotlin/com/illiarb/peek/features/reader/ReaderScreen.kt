@@ -68,11 +68,11 @@ internal fun ReaderScreen(
 
   if (state.summaryShowing) {
     OverlayEffect(Unit) {
-      val result = showScreenOverlay<SummaryScreen, SummaryScreen.Result>(
+      showScreenOverlay<SummaryScreen, SummaryScreen.Result>(
         screen = SummaryScreen(url = screen.url, context = SummaryScreen.Context.READER),
         onDismiss = { SummaryScreen.Result.Close }
       )
-      eventSink.invoke(Event.SummarizeResult(result))
+      eventSink.invoke(Event.SummarizeResult)
     }
   }
 

@@ -1,13 +1,13 @@
 package com.illiarb.peek.features.home
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.runtime.toMutableStateList
 import com.illiarb.peek.api.PeekApiService
 import com.illiarb.peek.api.domain.Article
+import com.illiarb.peek.api.domain.NewsSourceKind
 import com.illiarb.peek.api.domain.Tag
 import com.illiarb.peek.core.arch.message.MessageDispatcher
 import com.illiarb.peek.core.data.Async
@@ -26,8 +26,8 @@ import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import com.slack.circuit.runtime.presenter.Presenter
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.launch
 
 internal class HomeScreenPresenter(
@@ -35,6 +35,10 @@ internal class HomeScreenPresenter(
   private val peekApiService: PeekApiService,
   private val messageDispatcher: MessageDispatcher,
 ) : Presenter<HomeScreenContract.State> {
+
+  private val newsSources: ImmutableList<NewsSourceKind> by lazy {
+    peekApiService.getAvailableSources().toImmutableList()
+  }
 
   @Composable
   override fun present(): HomeScreenContract.State {
@@ -52,9 +56,6 @@ internal class HomeScreenPresenter(
     var bookmarkMessage by rememberRetained {
       mutableStateOf<BookmarkMessage?>(value = null)
     }
-
-    val newsSources = peekApiService.getAvailableSources().toImmutableList()
-
     var contentTriggers by rememberRetained {
       mutableStateOf(
         HomeScreenContract.ContentTriggers(
@@ -65,25 +66,28 @@ internal class HomeScreenPresenter(
       )
     }
 
-    val articles by produceRetainedState<Async<SnapshotStateList<Article>>>(
+    val articles by produceRetainedState<Async<ImmutableList<Article>>>(
       initialValue = Async.Loading,
       key1 = contentTriggers,
     ) {
       val source = newsSources[contentTriggers.selectedNewsSourceIndex]
 
       peekApiService.collectLatestNewsFrom(source)
-        .mapContent { it.toMutableStateList() }
+        .mapContent { it.toImmutableList() }
         .collect { value = it }
     }
+
+    val allTags by derivedStateOf { articles.tags().toImmutableList() }
+    val articlesFiltered by derivedStateOf { articles.filteredBy(selectedTags) }
 
     return HomeScreenContract.State(
       newsSources = newsSources,
       selectedNewsSourceIndex = contentTriggers.selectedNewsSourceIndex,
       filtersShowing = filtersShowing,
-      selectedTags = selectedTags.toImmutableSet(),
-      allTags = articles.tags(),
+      selectedTags = selectedTags.toImmutableList(),
+      allTags = allTags,
       articleSummaryToShow = articleSummaryToShow,
-      articles = articles.filteredBy(selectedTags),
+      articles = articlesFiltered,
       bookmarkMessage = bookmarkMessage,
       eventSink = { event ->
         when (event) {
@@ -175,7 +179,7 @@ internal class HomeScreenPresenter(
     )
   }
 
-  private fun Async<SnapshotStateList<Article>>.tags(): Set<Tag> {
+  private fun Async<ImmutableList<Article>>.tags(): Set<Tag> {
     return when (this) {
       is Async.Content -> content.flatMap(Article::tags)
         .filter { it.value.isNotEmpty() }
@@ -185,9 +189,9 @@ internal class HomeScreenPresenter(
     }
   }
 
-  private fun Async<SnapshotStateList<Article>>.filteredBy(
+  private fun Async<ImmutableList<Article>>.filteredBy(
     tags: Set<Tag>
-  ): Async<SnapshotStateList<Article>> {
+  ): Async<ImmutableList<Article>> {
     if (tags.isEmpty()) {
       return this
     }
@@ -196,7 +200,7 @@ internal class HomeScreenPresenter(
       is Async.Content -> copy(
         content = content
           .filter { article -> article.tags.any(tags::contains) }
-          .toMutableStateList()
+          .toImmutableList()
       )
 
       else -> this

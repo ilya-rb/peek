@@ -1,6 +1,5 @@
 package com.illiarb.peek.features.home
 
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.illiarb.peek.api.PeekApiService
 import com.illiarb.peek.api.domain.Article
 import com.illiarb.peek.api.domain.NewsSourceKind
@@ -23,15 +22,14 @@ import com.slack.circuit.runtime.ui.ui
 import dev.zacsweers.metro.ContributesIntoSet
 import dev.zacsweers.metro.Inject
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.ImmutableSet
 
 internal interface HomeScreenContract {
 
   data class State(
-    val articles: Async<SnapshotStateList<Article>>,
+    val articles: Async<ImmutableList<Article>>,
     val newsSources: ImmutableList<NewsSourceKind>,
-    val allTags: Set<Tag>,
-    val selectedTags: ImmutableSet<Tag>,
+    val allTags: ImmutableList<Tag>,
+    val selectedTags: ImmutableList<Tag>,
     val selectedNewsSourceIndex: Int,
     val filtersShowing: Boolean,
     val articleSummaryToShow: Article?,

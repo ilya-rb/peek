@@ -16,15 +16,18 @@ class Compose : Plugin<Project> {
     with(pluginManager) {
       apply("org.jetbrains.compose")
       apply("org.jetbrains.kotlin.plugin.compose")
+      apply("com.github.skydoves.compose.stability.analyzer")
     }
 
     composeCompiler {
       //https://issuetracker.google.com/issues/338842143
       includeSourceInformation.set(true)
 
-      stabilityConfigurationFiles.addAll(
-        project.layout.projectDirectory.file("compose-stability.conf")
-      )
+      val configurationFile = rootProject.layout.projectDirectory.file("compose-stability.conf")
+      if (!configurationFile.asFile.exists()) {
+        throw IllegalArgumentException("Cannot find compose stability configuration file")
+      }
+      stabilityConfigurationFile.set(configurationFile)
     }
 
     val composeDependencies = ComposePlugin.Dependencies(target)

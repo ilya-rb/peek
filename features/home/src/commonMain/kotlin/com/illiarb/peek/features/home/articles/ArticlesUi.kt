@@ -14,7 +14,6 @@ import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,6 +28,7 @@ import com.illiarb.peek.uikit.core.components.text.DateFormats
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.home_articles_empty_action
 import com.illiarb.peek.uikit.resources.home_articles_empty_title
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
 import kotlinx.datetime.toLocalDateTime
@@ -90,7 +90,7 @@ internal fun ArticlesEmpty(
 internal fun ArticlesContent(
   modifier: Modifier = Modifier,
   contentPadding: PaddingValues,
-  articles: SnapshotStateList<Article>,
+  articles: ImmutableList<Article>,
   eventSink: (ArticlesUiEvent) -> Unit,
 ) {
   LazyColumn(modifier, contentPadding = contentPadding) {

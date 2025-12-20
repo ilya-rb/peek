@@ -86,7 +86,7 @@ internal fun HomeScreen(state: HomeScreenContract.State, modifier: Modifier = Mo
         val result = showOverlay<TagFilterContract.Input, TagFilterContract.Output>(
           input = TagFilterContract.Input(
             allTags = state.allTags.take(5).toSet(),
-            selectedTags = state.selectedTags,
+            selectedTags = state.selectedTags.toSet(),
             containerColor = bottomSheetContainerColor,
           ),
           onDismiss = { TagFilterContract.Output.Cancel },

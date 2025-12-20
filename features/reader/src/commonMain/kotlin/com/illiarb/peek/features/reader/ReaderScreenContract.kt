@@ -33,7 +33,7 @@ internal interface ReaderScreenContract {
     data object TopBarMenuClicked : Event
     data object TopBarMenuDismissed : Event
     data object ErrorRetryClicked : Event
-    data class SummarizeResult(val result: SummaryScreen.Result) : Event
+    data object SummarizeResult : Event
 
     data object TopBarOpenInBrowser : Event, TopBarMenuAction
     data object TopBarSummarize : Event, TopBarMenuAction
