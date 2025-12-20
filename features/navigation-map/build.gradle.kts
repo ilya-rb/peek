@@ -13,9 +13,8 @@ kotlin {
     }
 
     commonMain.dependencies {
-      api(libs.circuit.overlay)
-
       implementation(libs.circuit.core)
+      api(libs.circuit.overlay)
 
       implementation(projects.core.arch)
       implementation(projects.core.types)
