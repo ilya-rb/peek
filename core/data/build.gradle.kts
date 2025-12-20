@@ -3,7 +3,6 @@ plugins {
   alias(libs.plugins.peek.multiplatform)
   alias(libs.plugins.kotlinSerialization)
   alias(libs.plugins.kotlinAtomic)
-  alias(libs.plugins.kotlinKsp)
   alias(libs.plugins.metro)
 }
 
