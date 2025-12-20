@@ -43,7 +43,7 @@ kotlin {
       implementation(projects.peekApi)
       implementation(projects.features.reader)
       implementation(projects.features.settings)
-      implementation(projects.summarizer)
+      implementation(projects.features.summarizer)
     }
   }
 }

@@ -29,7 +29,7 @@ kotlin {
       implementation(projects.core.data)
       implementation(projects.core.types)
       implementation(projects.peekApi)
-      implementation(projects.summarizer)
+      implementation(projects.features.summarizer)
     }
   }
 }

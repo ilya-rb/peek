@@ -11,7 +11,7 @@ import com.illiarb.peek.core.data.di.CoreDataBindings
 import com.illiarb.peek.core.network.di.NetworkBindings
 import com.illiarb.peek.features.settings.data.SettingsService
 import com.illiarb.peek.features.settings.di.AppSettingsBindings
-import com.illiarb.peek.summarizer.di.SummarizerBindings
+import com.illiarb.peek.features.summarizer.di.SummarizerBindings
 import com.illiarb.peek.uikit.imageloader.ImageLoaderBindings
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.Provides
@@ -25,7 +25,7 @@ import dev.zacsweers.metro.Provides
     AppConfigurationsBindings::class,
     AppSettingsBindings::class,
     ImageLoaderBindings::class,
-    SummarizerBindings::class,
+    _root_ide_package_.com.illiarb.peek.features.summarizer.di.SummarizerBindings::class,
   ]
 )
 internal interface AndroidAppGraph : AppGraph {

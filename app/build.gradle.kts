@@ -52,9 +52,9 @@ kotlin {
       implementation(projects.features.home)
       implementation(projects.features.reader)
       implementation(projects.features.settings)
+      implementation(projects.features.summarizer)
       implementation(projects.uiKit.core)
       implementation(projects.uiKit.imageLoader)
-      implementation(projects.summarizer)
     }
   }
 }

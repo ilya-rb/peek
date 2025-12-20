@@ -20,7 +20,7 @@ import com.illiarb.peek.features.home.bookmarks.BookmarksScreen
 import com.illiarb.peek.features.home.overlay.TagFilterContract
 import com.illiarb.peek.features.reader.ReaderScreen
 import com.illiarb.peek.features.settings.SettingsScreen
-import com.illiarb.peek.summarizer.ui.SummaryScreen
+import com.illiarb.peek.features.summarizer.ui.SummaryScreen
 import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator

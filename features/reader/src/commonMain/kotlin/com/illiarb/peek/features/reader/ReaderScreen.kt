@@ -31,8 +31,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.reader.ReaderScreen.Event
-import com.illiarb.peek.summarizer.ui.SummaryScreen
-import com.illiarb.peek.summarizer.ui.showSummaryOverlay
+import com.illiarb.peek.features.summarizer.ui.SummaryScreen
+import com.illiarb.peek.features.summarizer.ui.showSummaryOverlay
 import com.illiarb.peek.uikit.core.components.TopAppBarTitleLoading
 import com.illiarb.peek.uikit.core.components.WebView
 import com.illiarb.peek.uikit.core.components.cell.ArticleReaderLoading

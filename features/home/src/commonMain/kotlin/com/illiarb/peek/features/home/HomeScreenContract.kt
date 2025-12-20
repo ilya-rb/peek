@@ -13,7 +13,7 @@ import com.illiarb.peek.core.arch.message.MessageDispatcher
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.home.articles.ArticlesUiEvent
 import com.illiarb.peek.features.home.overlay.TagFilterContract
-import com.illiarb.peek.summarizer.ui.SummaryScreen
+import com.illiarb.peek.features.summarizer.ui.SummaryScreen
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
@@ -59,7 +59,7 @@ public object HomeScreen : Screen, CommonParcelable {
 
   internal sealed interface Event : CircuitUiEvent {
     data class TagFilterResult(val result: TagFilterContract.Output) : Event
-    data class SummaryResult(val result: SummaryScreen.Result) : Event
+    data class SummaryResult(val result: com.illiarb.peek.features.summarizer.ui.SummaryScreen.Result) : Event
     data class TabClicked(val source: NewsSourceKind) : Event
     data object ErrorRetryClicked : Event
     data object FiltersClicked : Event

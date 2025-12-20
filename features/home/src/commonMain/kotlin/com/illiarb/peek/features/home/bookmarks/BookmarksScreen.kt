@@ -31,8 +31,8 @@ import com.illiarb.peek.features.home.articles.ArticlesContent
 import com.illiarb.peek.features.home.articles.ArticlesLoading
 import com.illiarb.peek.features.home.articles.ArticlesUiEvent
 import com.illiarb.peek.features.home.bookmarks.BookmarksScreen.Event
-import com.illiarb.peek.summarizer.ui.SummaryScreen
-import com.illiarb.peek.summarizer.ui.showSummaryOverlay
+import com.illiarb.peek.features.summarizer.ui.SummaryScreen
+import com.illiarb.peek.features.summarizer.ui.showSummaryOverlay
 import com.illiarb.peek.uikit.core.components.LocalLottieAnimation
 import com.illiarb.peek.uikit.core.components.LottieAnimationType
 import com.illiarb.peek.uikit.core.components.cell.EmptyState

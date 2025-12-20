@@ -32,20 +32,20 @@ dependencyResolutionManagement {
 }
 
 include(
-  ":peek-api",
   ":app",
-  ":core:coroutines",
-  ":core:logging",
-  ":core:network",
   ":core:app-info",
   ":core:arch",
+  ":core:coroutines",
   ":core:data",
+  ":core:logging",
+  ":core:network",
   ":core:types",
+  ":peek-api",
+  ":ui-kit:core",
+  ":ui-kit:image-loader",
+  ":ui-kit:resources",
   "features:home",
   "features:reader",
   "features:settings",
-  ":ui-kit:core",
-  ":ui-kit:resources",
-  ":ui-kit:image-loader",
-  ":summarizer",
+  "features:summarizer",
 )

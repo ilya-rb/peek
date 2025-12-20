@@ -9,8 +9,6 @@ plugins {
 }
 
 kotlin {
-  compilerOptions.optIn.add("kotlin.time.ExperimentalTime")
-
   sourceSets {
     androidMain.dependencies {
       implementation(libs.sqldelight.android)

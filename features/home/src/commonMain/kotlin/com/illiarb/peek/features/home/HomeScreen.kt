@@ -38,8 +38,8 @@ import com.illiarb.peek.features.home.articles.ArticlesEmpty
 import com.illiarb.peek.features.home.articles.ArticlesLoading
 import com.illiarb.peek.features.home.overlay.TagFilterContract
 import com.illiarb.peek.features.home.overlay.showTagFilterOverlay
-import com.illiarb.peek.summarizer.ui.SummaryScreen
-import com.illiarb.peek.summarizer.ui.showSummaryOverlay
+import com.illiarb.peek.features.summarizer.ui.SummaryScreen
+import com.illiarb.peek.features.summarizer.ui.showSummaryOverlay
 import com.illiarb.peek.uikit.core.components.HorizontalList
 import com.illiarb.peek.uikit.core.components.TextSwitcher
 import com.illiarb.peek.uikit.core.components.cell.FullscreenErrorState
@@ -96,9 +96,9 @@ internal fun HomeScreen(state: HomeScreen.State, modifier: Modifier = Modifier) 
     state.articleSummaryToShow != null -> {
       OverlayEffect(Unit) {
         val result = showSummaryOverlay(
-          SummaryScreen(
+          _root_ide_package_.com.illiarb.peek.features.summarizer.ui.SummaryScreen(
             state.articleSummaryToShow.url,
-            context = SummaryScreen.Context.HOME,
+            context = _root_ide_package_.com.illiarb.peek.features.summarizer.ui.SummaryScreen.Context.HOME,
           ),
         )
         eventSink.invoke(Event.SummaryResult(result))
