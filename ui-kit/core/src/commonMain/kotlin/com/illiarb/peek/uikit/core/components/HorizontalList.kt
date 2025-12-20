@@ -8,11 +8,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 public fun <T> HorizontalList(
   modifier: Modifier = Modifier,
-  items: List<T>,
+  items: ImmutableList<T>,
   keyProvider: (Int, T) -> Any,
   itemContent: @Composable LazyItemScope.(Int, T) -> Unit,
 ) {

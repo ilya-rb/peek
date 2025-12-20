@@ -17,6 +17,7 @@ kotlin {
       implementation(libs.coil.compose)
       implementation(libs.coil.network)
       implementation(libs.kotlinx.datetime)
+      implementation(libs.kotlinx.collections)
       implementation(libs.lottie.core)
       implementation(libs.shimmer)
 
