@@ -19,7 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.illiarb.peek.core.appinfo.DebugConfig
-import com.illiarb.peek.core.arch.di.UiScope
 import com.illiarb.peek.features.settings.SettingsScreen.Event
 import com.illiarb.peek.uikit.core.components.cell.RowCell
 import com.illiarb.peek.uikit.core.components.cell.SwitchCell
@@ -32,12 +31,10 @@ import com.illiarb.peek.uikit.resources.settings_dark_theme_title
 import com.illiarb.peek.uikit.resources.settings_dynamic_colors_subtitle
 import com.illiarb.peek.uikit.resources.settings_dynamic_colors_title
 import com.illiarb.peek.uikit.resources.settings_screen_title
-import com.slack.circuit.codegen.annotations.CircuitInject
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-@CircuitInject(SettingsScreen::class, UiScope::class)
 internal fun SettingsScreen(state: SettingsScreen.State, modifier: Modifier = Modifier) {
   val events = state.events
 

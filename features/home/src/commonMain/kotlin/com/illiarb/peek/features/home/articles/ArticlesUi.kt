@@ -34,12 +34,12 @@ import kotlinx.datetime.format
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
 
-public sealed interface ArticlesUiEvent {
-  public data class ArticleClicked(val item: Article) : ArticlesUiEvent
-  public data class ArticleBookmarkClicked(val item: Article) : ArticlesUiEvent
-  public data class ArticleSummarizeClicked(val item: Article) : ArticlesUiEvent
-  public data class ArticleShareClicked(val item: Article) : ArticlesUiEvent
-  public data object ArticlesRefreshClicked : ArticlesUiEvent
+internal sealed interface ArticlesUiEvent {
+  data class ArticleClicked(val item: Article) : ArticlesUiEvent
+  data class ArticleBookmarkClicked(val item: Article) : ArticlesUiEvent
+  data class ArticleSummarizeClicked(val item: Article) : ArticlesUiEvent
+  data class ArticleShareClicked(val item: Article) : ArticlesUiEvent
+  data object ArticlesRefreshClicked : ArticlesUiEvent
 }
 
 @Composable

@@ -9,26 +9,20 @@ import androidx.compose.runtime.toMutableStateList
 import com.illiarb.peek.api.PeekApiService
 import com.illiarb.peek.api.domain.Article
 import com.illiarb.peek.core.arch.ShareScreen
-import com.illiarb.peek.core.arch.di.UiScope
 import com.illiarb.peek.core.arch.message.MessageDispatcher
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.core.data.mapContent
 import com.illiarb.peek.features.home.articles.ArticlesUiEvent
 import com.illiarb.peek.features.reader.ReaderScreen
-import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import com.slack.circuit.runtime.presenter.Presenter
-import dev.zacsweers.metro.Assisted
-import dev.zacsweers.metro.AssistedFactory
-import dev.zacsweers.metro.AssistedInject
 import kotlinx.coroutines.launch
 
-@AssistedInject
-public class BookmarksPresenter(
-  @Assisted private val navigator: Navigator,
+internal class BookmarksPresenter(
+  private val navigator: Navigator,
   private val peekApiService: PeekApiService,
   private val messageDispatcher: MessageDispatcher,
 ) : Presenter<BookmarksScreen.State> {
@@ -109,12 +103,6 @@ public class BookmarksPresenter(
         }
       },
     )
-  }
-
-  @AssistedFactory
-  @CircuitInject(BookmarksScreen::class, UiScope::class)
-  public fun interface Factory {
-    public fun create(navigator: Navigator): BookmarksPresenter
   }
 }
 

@@ -9,18 +9,17 @@ import com.illiarb.peek.features.settings.SettingsScreen.Event
 import com.illiarb.peek.features.settings.data.SettingsService
 import com.illiarb.peek.features.settings.data.SettingsService.SettingType.DARK_THEME
 import com.illiarb.peek.features.settings.data.SettingsService.SettingType.DYNAMIC_COLORS
-import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.retained.collectAsRetainedState
+import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
-import dev.zacsweers.metro.Assisted
-import dev.zacsweers.metro.AssistedFactory
-import dev.zacsweers.metro.AssistedInject
+import com.slack.circuit.runtime.screen.Screen
+import dev.zacsweers.metro.ContributesIntoSet
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.launch
 
-@AssistedInject
-public class SettingsScreenPresenter(
-  @Assisted private val navigator: Navigator,
+internal class SettingsScreenPresenter(
+  private val navigator: Navigator,
   private val settingsService: SettingsService,
   private val appConfiguration: AppConfiguration,
 ) : Presenter<SettingsScreen.State> {
@@ -69,11 +68,5 @@ public class SettingsScreenPresenter(
         }
       }
     )
-  }
-
-  @AssistedFactory
-  @CircuitInject(SettingsScreen::class, UiScope::class)
-  public fun interface Factory {
-    public fun create(navigator: Navigator): SettingsScreenPresenter
   }
 }

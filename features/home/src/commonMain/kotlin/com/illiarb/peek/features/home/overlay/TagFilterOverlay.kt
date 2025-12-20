@@ -37,19 +37,21 @@ import com.slack.circuit.overlay.OverlayHost
 import com.slack.circuit.overlay.OverlayNavigator
 import org.jetbrains.compose.resources.stringResource
 
-internal expect suspend fun OverlayHost.showTagFilterOverlay(input: TagFilterContract.Input): TagFilterContract.Output
+internal expect suspend fun OverlayHost.showTagFilterOverlay(
+  input: TagFilterContract.Input
+): TagFilterContract.Output
 
-public interface TagFilterContract {
+internal interface TagFilterContract {
 
-  public data class Input(
+  data class Input(
     val allTags: Set<Tag>,
     val selectedTags: Set<Tag>,
     val containerColor: Color,
   )
 
-  public sealed interface Output {
-    public data class Saved(val selectedTags: Set<Tag>) : Output
-    public data object Cancel : Output
+  sealed interface Output {
+    data class Saved(val selectedTags: Set<Tag>) : Output
+    data object Cancel : Output
   }
 }
 

@@ -23,7 +23,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.illiarb.peek.core.arch.di.UiScope
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.summarizer.ui.SummaryScreen.Event
 import com.illiarb.peek.uikit.core.components.shimmer.ShimmerBox
@@ -33,12 +32,10 @@ import com.illiarb.peek.uikit.resources.acsb_action_close
 import com.illiarb.peek.uikit.resources.acsb_action_open_in_browser
 import com.illiarb.peek.uikit.resources.acsb_icon_assistant
 import com.illiarb.peek.uikit.resources.summary_loading_title
-import com.slack.circuit.codegen.annotations.CircuitInject
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-@CircuitInject(SummaryScreen::class, UiScope::class)
 internal fun SummaryScreen(
   state: SummaryScreen.State,
   screen: SummaryScreen,

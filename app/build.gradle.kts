@@ -1,11 +1,8 @@
-import com.illiarb.peek.gradle.addKspDependencyForAllTargets
-
 plugins {
   id("com.illiarb.peek.android.application")
   id("com.illiarb.peek.kotlin.multiplatform")
   id("com.illiarb.peek.compose")
 
-  alias(libs.plugins.kotlinKsp)
   alias(libs.plugins.metro)
 }
 

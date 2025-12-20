@@ -1,5 +1,3 @@
-import com.illiarb.peek.gradle.addKspDependencyForAllTargets
-
 plugins {
   id("com.illiarb.peek.android.library")
   id("com.illiarb.peek.kotlin.multiplatform")
@@ -7,18 +5,10 @@ plugins {
 
   alias(libs.plugins.kotlinParcelize)
   alias(libs.plugins.metro)
-  alias(libs.plugins.kotlinKsp)
 }
 
 kotlin {
   sourceSets {
-    commonMain {
-      kotlin {
-        // needed so that common sources are picked up
-        //srcDir("build/generated/ksp/metadata/commonMain/kotlin")
-      }
-    }
-
     commonMain.dependencies {
       implementation(compose.runtime)
       implementation(compose.foundation)
@@ -28,7 +18,6 @@ kotlin {
       implementation(compose.components.resources)
 
       implementation(libs.circuit.core)
-      implementation(libs.circuit.codegen.annotations)
 
       implementation(projects.uiKit.core)
       implementation(projects.uiKit.resources)
@@ -51,9 +40,3 @@ android {
     debugImplementation(compose.uiTooling)
   }
 }
-
-ksp {
-  arg("circuit.codegen.mode", "metro")
-}
-
-addKspDependencyForAllTargets(libs.circuit.codegen)

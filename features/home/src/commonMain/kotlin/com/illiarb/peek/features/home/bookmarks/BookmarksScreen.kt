@@ -26,7 +26,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.illiarb.peek.core.arch.di.UiScope
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.home.articles.ArticlesContent
 import com.illiarb.peek.features.home.articles.ArticlesLoading
@@ -42,13 +41,11 @@ import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_navigation_back
 import com.illiarb.peek.uikit.resources.bookmarks_empty
 import com.illiarb.peek.uikit.resources.bookmarks_screen_title
-import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.overlay.OverlayEffect
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-@CircuitInject(BookmarksScreen::class, UiScope::class)
 internal fun BookmarksScreen(state: BookmarksScreen.State, modifier: Modifier = Modifier) {
   val articlesEventSink = state.articlesEventSink
   val eventSink = state.eventSink

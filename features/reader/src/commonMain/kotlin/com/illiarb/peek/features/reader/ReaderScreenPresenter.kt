@@ -8,22 +8,16 @@ import com.illiarb.peek.api.PeekApiService
 import com.illiarb.peek.api.domain.Article
 import com.illiarb.peek.core.arch.OpenUrlScreen
 import com.illiarb.peek.core.arch.ShareScreen
-import com.illiarb.peek.core.arch.di.UiScope
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.reader.ReaderScreen.Event
-import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
-import dev.zacsweers.metro.Assisted
-import dev.zacsweers.metro.AssistedFactory
-import dev.zacsweers.metro.AssistedInject
 
-@AssistedInject
-public class ReaderScreenPresenter(
-  @Assisted private val navigator: Navigator,
-  @Assisted private val screen: ReaderScreen,
+internal class ReaderScreenPresenter(
+  private val navigator: Navigator,
+  private val screen: ReaderScreen,
   private val peekApiService: PeekApiService,
 ) : Presenter<ReaderScreen.State> {
 
@@ -82,11 +76,5 @@ public class ReaderScreenPresenter(
         }
       }
     }
-  }
-
-  @AssistedFactory
-  @CircuitInject(ReaderScreen::class, UiScope::class)
-  public fun interface Factory {
-    public fun create(navigator: Navigator, screen: ReaderScreen): ReaderScreenPresenter
   }
 }

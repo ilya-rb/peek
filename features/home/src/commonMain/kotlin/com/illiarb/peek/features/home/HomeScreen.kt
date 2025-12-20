@@ -31,7 +31,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import com.illiarb.peek.api.domain.NewsSourceKind
-import com.illiarb.peek.core.arch.di.UiScope
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.home.HomeScreen.Event
 import com.illiarb.peek.features.home.articles.ArticlesContent
@@ -53,7 +52,6 @@ import com.illiarb.peek.uikit.resources.home_screen_title
 import com.illiarb.peek.uikit.resources.service_dou_name
 import com.illiarb.peek.uikit.resources.service_ft_name
 import com.illiarb.peek.uikit.resources.service_hacker_news_name
-import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.overlay.OverlayEffect
 import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
@@ -66,7 +64,6 @@ import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalHazeMaterialsApi::class)
 @Composable
-@CircuitInject(HomeScreen::class, UiScope::class)
 internal fun HomeScreen(state: HomeScreen.State, modifier: Modifier = Modifier) {
   val eventSink = state.eventSink
   val articlesEventSink = state.articlesEventSink

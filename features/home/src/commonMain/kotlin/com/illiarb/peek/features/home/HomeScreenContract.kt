@@ -2,18 +2,28 @@ package com.illiarb.peek.features.home
 
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import com.illiarb.peek.api.PeekApiService
 import com.illiarb.peek.api.domain.Article
 import com.illiarb.peek.api.domain.NewsSourceKind
 import com.illiarb.peek.api.domain.Tag
 import com.illiarb.peek.core.arch.CommonParcelable
 import com.illiarb.peek.core.arch.CommonParcelize
+import com.illiarb.peek.core.arch.di.UiScope
+import com.illiarb.peek.core.arch.message.MessageDispatcher
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.home.articles.ArticlesUiEvent
 import com.illiarb.peek.features.home.overlay.TagFilterContract
 import com.illiarb.peek.summarizer.ui.SummaryScreen
+import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
+import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.runtime.ui.Ui
+import com.slack.circuit.runtime.ui.ui
+import dev.zacsweers.metro.ContributesIntoSet
+import dev.zacsweers.metro.Inject
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
 
@@ -21,7 +31,7 @@ import kotlinx.collections.immutable.ImmutableSet
 public object HomeScreen : Screen, CommonParcelable {
 
   @Stable
-  public data class State(
+  internal data class State(
     val articles: Async<SnapshotStateList<Article>>,
     val newsSources: ImmutableList<NewsSourceKind>,
     val allTags: Set<Tag>,
@@ -34,7 +44,7 @@ public object HomeScreen : Screen, CommonParcelable {
     val articlesEventSink: (ArticlesUiEvent) -> Unit,
   ) : CircuitUiState {
 
-    public fun articlesStateKey(): Any {
+    fun articlesStateKey(): Any {
       return when (articles) {
         is Async.Content -> articles.content.isEmpty()
         else -> this::class
@@ -42,19 +52,51 @@ public object HomeScreen : Screen, CommonParcelable {
     }
   }
 
-  public enum class BookmarkMessage {
+  internal enum class BookmarkMessage {
     ADDED,
     REMOVED,
   }
 
-  public sealed interface Event : CircuitUiEvent {
-    public data class TagFilterResult(val result: TagFilterContract.Output) : Event
-    public data class SummaryResult(val result: SummaryScreen.Result) : Event
-    public data class TabClicked(val source: NewsSourceKind) : Event
-    public data object ErrorRetryClicked : Event
-    public data object FiltersClicked : Event
-    public data object SettingsClicked : Event
-    public data object BookmarksClicked : Event
-    public data object BookmarkToastResult : Event
+  internal sealed interface Event : CircuitUiEvent {
+    data class TagFilterResult(val result: TagFilterContract.Output) : Event
+    data class SummaryResult(val result: SummaryScreen.Result) : Event
+    data class TabClicked(val source: NewsSourceKind) : Event
+    data object ErrorRetryClicked : Event
+    data object FiltersClicked : Event
+    data object SettingsClicked : Event
+    data object BookmarksClicked : Event
+    data object BookmarkToastResult : Event
+  }
+
+  @Inject
+  @ContributesIntoSet(UiScope::class)
+  public class ScreenFactory : Ui.Factory {
+    override fun create(screen: Screen, context: CircuitContext): Ui<*>? {
+      return if (screen is HomeScreen) {
+        ui<State> { state, modifier -> HomeScreen(state, modifier) }
+      } else {
+        null
+      }
+    }
+  }
+
+  @Inject
+  @ContributesIntoSet(UiScope::class)
+  public class PresenterFactory(
+    private val peekApiService: PeekApiService,
+    private val messageDispatcher: MessageDispatcher,
+  ) : Presenter.Factory {
+
+    override fun create(
+      screen: Screen,
+      navigator: Navigator,
+      context: CircuitContext
+    ): Presenter<*>? {
+      return if (screen is HomeScreen) {
+        HomeScreenPresenter(navigator, peekApiService, messageDispatcher)
+      } else {
+        null
+      }
+    }
   }
 }

@@ -29,7 +29,6 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.illiarb.peek.core.arch.di.UiScope
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.reader.ReaderScreen.Event
 import com.illiarb.peek.summarizer.ui.SummaryScreen
@@ -45,13 +44,11 @@ import com.illiarb.peek.uikit.core.configuration.getScreenWidth
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_action_more
 import com.illiarb.peek.uikit.resources.acsb_navigation_back
-import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.overlay.OverlayEffect
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-@CircuitInject(ReaderScreen::class, UiScope::class)
 internal fun ReaderScreen(
   modifier: Modifier,
   screen: ReaderScreen,
