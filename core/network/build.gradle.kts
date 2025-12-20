@@ -9,14 +9,14 @@ kotlin {
   sourceSets {
     commonMain.dependencies {
       implementation(libs.kotlin.coroutines.core)
+      implementation(libs.ktor.contentNegotiation)
       implementation(libs.ktor.core)
       implementation(libs.ktor.logging)
-      implementation(libs.ktor.contentNegotiation)
       implementation(libs.ktor.serialization.json)
 
-      implementation(projects.core.logging)
-      implementation(projects.core.coroutines)
       implementation(projects.core.appInfo)
+      implementation(projects.core.coroutines)
+      implementation(projects.core.logging)
     }
     androidMain.dependencies {
       implementation(libs.ktor.client.okhttp)

@@ -17,8 +17,8 @@ kotlin {
     commonMain.dependencies {
       implementation(libs.kotlin.coroutines.core)
 
-      implementation(projects.core.data)
       implementation(projects.core.arch)
+      implementation(projects.core.data)
     }
   }
 }

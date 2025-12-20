@@ -22,28 +22,28 @@ kotlin {
       implementation(libs.androidx.browser)
       implementation(libs.circuit.core)
       implementation(libs.circuit.x.android)
-      implementation(libs.circuit.x.overlay)
       implementation(libs.circuit.x.gestureNavigation)
+      implementation(libs.circuit.x.overlay)
     }
 
     commonMain.dependencies {
       implementation(libs.circuit.core)
+      implementation(libs.coil.compose)
       implementation(libs.ktor.core)
       implementation(libs.napier)
-      implementation(libs.coil.compose)
       implementation(libs.rssparser)
 
-      implementation(projects.peekApi)
       implementation(projects.core.appInfo)
       implementation(projects.core.arch)
       implementation(projects.core.coroutines)
+      implementation(projects.core.data)
       implementation(projects.core.logging)
       implementation(projects.core.network)
-      implementation(projects.core.data)
       implementation(projects.features.home)
       implementation(projects.features.reader)
       implementation(projects.features.settings)
       implementation(projects.features.summarizer)
+      implementation(projects.peekApi)
       implementation(projects.uiKit.core)
       implementation(projects.uiKit.imageLoader)
     }

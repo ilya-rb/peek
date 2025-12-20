@@ -16,24 +16,24 @@ kotlin {
     commonMain.dependencies {
       implementation(libs.circuit.core)
       implementation(libs.circuit.overlay)
-      implementation(libs.kotlinx.datetime)
-      implementation(libs.kotlinx.collections)
       implementation(libs.haze)
       implementation(libs.haze.materials)
+      implementation(libs.kotlinx.collections)
+      implementation(libs.kotlinx.datetime)
 
-      implementation(projects.uiKit.core)
-      implementation(projects.uiKit.imageLoader)
-      implementation(projects.uiKit.resources)
+      implementation(projects.core.appInfo)
       implementation(projects.core.arch)
       implementation(projects.core.coroutines)
-      implementation(projects.core.logging)
       implementation(projects.core.data)
-      implementation(projects.core.appInfo)
+      implementation(projects.core.logging)
       implementation(projects.core.types)
-      implementation(projects.peekApi)
       implementation(projects.features.reader)
       implementation(projects.features.settings)
       implementation(projects.features.summarizer)
+      implementation(projects.peekApi)
+      implementation(projects.uiKit.core)
+      implementation(projects.uiKit.imageLoader)
+      implementation(projects.uiKit.resources)
     }
   }
 }

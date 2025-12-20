@@ -15,9 +15,9 @@ plugins {
 kotlin {
   sourceSets {
     androidMain.dependencies {
-      implementation(libs.sqldelight.android)
       implementation(libs.circuit.x.android)
       implementation(libs.circuit.x.overlay)
+      implementation(libs.sqldelight.android)
     }
 
     commonMain.dependencies {
@@ -30,16 +30,15 @@ kotlin {
       implementation(libs.sqldelight.coroutines)
       implementation(libs.sqldelight.primitive)
 
-      implementation(projects.uiKit.core)
-      implementation(projects.uiKit.resources)
-
-      implementation(projects.core.network)
-      implementation(projects.core.logging)
-      implementation(projects.core.data)
       implementation(projects.core.arch)
       implementation(projects.core.coroutines)
+      implementation(projects.core.data)
+      implementation(projects.core.logging)
+      implementation(projects.core.network)
       implementation(projects.core.types)
       implementation(projects.peekApi)
+      implementation(projects.uiKit.core)
+      implementation(projects.uiKit.resources)
     }
 
     iosMain.dependencies {

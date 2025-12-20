@@ -8,12 +8,12 @@ plugins {
 kotlin {
   sourceSets {
     commonMain.dependencies {
-      implementation(projects.core.appInfo)
-      implementation(projects.core.logging)
-      implementation(projects.core.arch)
-
-      implementation(libs.coil.network)
       implementation(libs.coil.compose)
+      implementation(libs.coil.network)
+
+      implementation(projects.core.appInfo)
+      implementation(projects.core.arch)
+      implementation(projects.core.logging)
     }
   }
 }

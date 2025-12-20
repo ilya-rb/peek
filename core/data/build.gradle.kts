@@ -11,13 +11,13 @@ kotlin {
     commonMain.dependencies {
       api(libs.kotlinx.serialization)
 
+      implementation(libs.androidx.datastore)
       implementation(libs.kotlin.coroutines.core)
       implementation(libs.stately.collections)
-      implementation(libs.androidx.datastore)
 
-      implementation(projects.core.logging)
-      implementation(projects.core.coroutines)
       implementation(projects.core.arch)
+      implementation(projects.core.coroutines)
+      implementation(projects.core.logging)
     }
 
     commonTest.dependencies {

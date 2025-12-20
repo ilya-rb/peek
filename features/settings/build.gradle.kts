@@ -11,13 +11,13 @@ kotlin {
     commonMain.dependencies {
       implementation(libs.circuit.core)
 
-      implementation(projects.uiKit.core)
-      implementation(projects.uiKit.resources)
+      implementation(projects.core.appInfo)
       implementation(projects.core.arch)
       implementation(projects.core.coroutines)
-      implementation(projects.core.logging)
       implementation(projects.core.data)
-      implementation(projects.core.appInfo)
+      implementation(projects.core.logging)
+      implementation(projects.uiKit.core)
+      implementation(projects.uiKit.resources)
     }
   }
 }

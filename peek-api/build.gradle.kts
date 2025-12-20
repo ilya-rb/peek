@@ -18,15 +18,15 @@ kotlin {
       implementation(libs.kotlinx.datetime)
       implementation(libs.ktor.core)
       implementation(libs.ktor.serialization.json)
+      implementation(libs.rssparser)
       implementation(libs.sqldelight.coroutines)
       implementation(libs.sqldelight.primitive)
-      implementation(libs.rssparser)
 
-      implementation(projects.core.network)
-      implementation(projects.core.logging)
-      implementation(projects.core.data)
       implementation(projects.core.arch)
       implementation(projects.core.coroutines)
+      implementation(projects.core.data)
+      implementation(projects.core.logging)
+      implementation(projects.core.network)
       implementation(projects.core.types)
     }
 

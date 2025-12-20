@@ -11,17 +11,17 @@ kotlin {
     }
 
     commonMain.dependencies {
-      implementation(libs.kotlinx.datetime)
       implementation(libs.androidx.webkit)
       implementation(libs.circuit.core)
       implementation(libs.circuit.overlay)
-      implementation(libs.coil.network)
       implementation(libs.coil.compose)
-      implementation(libs.shimmer)
+      implementation(libs.coil.network)
+      implementation(libs.kotlinx.datetime)
       implementation(libs.lottie.core)
+      implementation(libs.shimmer)
 
-      implementation(projects.core.logging)
       implementation(projects.core.appInfo)
+      implementation(projects.core.logging)
       implementation(projects.uiKit.imageLoader)
       implementation(projects.uiKit.resources)
     }
