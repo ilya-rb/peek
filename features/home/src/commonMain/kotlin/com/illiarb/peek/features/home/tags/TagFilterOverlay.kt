@@ -20,6 +20,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.toMutableStateMap
 import androidx.compose.ui.Modifier
@@ -34,18 +35,22 @@ import com.illiarb.peek.uikit.resources.filters_action_reset
 import com.illiarb.peek.uikit.resources.filters_action_save
 import com.illiarb.peek.uikit.resources.filters_header_tags
 import com.slack.circuit.overlay.OverlayNavigator
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import org.jetbrains.compose.resources.stringResource
 
 internal interface TagFilterContract {
 
+  @Immutable
   data class Input(
-    val allTags: Set<Tag>,
-    val selectedTags: Set<Tag>,
+    val allTags: ImmutableList<Tag>,
+    val selectedTags: ImmutableList<Tag>,
     val containerColor: Color,
   )
 
+  @Immutable
   sealed interface Output {
-    data class Saved(val selectedTags: Set<Tag>) : Output
+    data class Saved(val selectedTags: ImmutableList<Tag>) : Output
     data object Cancel : Output
   }
 }
@@ -70,7 +75,9 @@ internal fun TagFilterOverlay(
           Button(
             modifier = Modifier.padding(start = 16.dp),
             content = { Text(stringResource(Res.string.filters_action_save)) },
-            onClick = { navigator.finish(TagFilterContract.Output.Saved(selectedTags.keys)) },
+            onClick = {
+              navigator.finish(TagFilterContract.Output.Saved(selectedTags.keys.toImmutableList()))
+            },
           )
           Button(
             modifier = Modifier.padding(start = 8.dp),

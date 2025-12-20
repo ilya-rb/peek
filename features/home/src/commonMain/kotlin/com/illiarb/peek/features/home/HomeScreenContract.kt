@@ -1,5 +1,6 @@
 package com.illiarb.peek.features.home
 
+import androidx.compose.runtime.Immutable
 import com.illiarb.peek.api.PeekApiService
 import com.illiarb.peek.api.domain.Article
 import com.illiarb.peek.api.domain.NewsSourceKind
@@ -25,6 +26,7 @@ import kotlinx.collections.immutable.ImmutableList
 
 internal interface HomeScreenContract {
 
+  @Immutable
   data class State(
     val articles: Async<ImmutableList<Article>>,
     val newsSources: ImmutableList<NewsSourceKind>,

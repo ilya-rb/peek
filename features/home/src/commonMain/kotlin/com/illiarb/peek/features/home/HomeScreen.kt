@@ -60,6 +60,7 @@ import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import dev.chrisbanes.haze.materials.HazeMaterials
 import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Duration.Companion.seconds
 
@@ -85,8 +86,8 @@ internal fun HomeScreen(state: HomeScreenContract.State, modifier: Modifier = Mo
       OverlayEffect(Unit) {
         val result = showOverlay<TagFilterContract.Input, TagFilterContract.Output>(
           input = TagFilterContract.Input(
-            allTags = state.allTags.take(5).toSet(),
-            selectedTags = state.selectedTags.toSet(),
+            allTags = state.allTags.take(5).toImmutableList(),
+            selectedTags = state.selectedTags,
             containerColor = bottomSheetContainerColor,
           ),
           onDismiss = { TagFilterContract.Output.Cancel },

@@ -1,5 +1,6 @@
 package com.illiarb.peek.features.navigation.map
 
+import androidx.compose.runtime.Immutable
 import com.illiarb.peek.core.arch.CommonParcelable
 import com.illiarb.peek.core.arch.CommonParcelize
 import com.illiarb.peek.core.types.Url
@@ -7,18 +8,23 @@ import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 
 @CommonParcelize
+@Immutable
 public object HomeScreen : Screen, CommonParcelable
 
 @CommonParcelize
+@Immutable
 public object BookmarksScreen : Screen, CommonParcelable
 
 @CommonParcelize
+@Immutable
 public data object SettingsScreen : Screen, CommonParcelable
 
 @CommonParcelize
+@Immutable
 public data class ReaderScreen(val url: Url) : Screen, CommonParcelable
 
 @CommonParcelize
+@Immutable
 public data class SummaryScreen(
   val url: Url,
   val context: Context,

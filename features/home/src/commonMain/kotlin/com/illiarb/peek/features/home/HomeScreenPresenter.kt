@@ -48,7 +48,7 @@ internal class HomeScreenPresenter(
       mutableStateOf(value = false)
     }
     var selectedTags by rememberRetained {
-      mutableStateOf(emptySet<Tag>())
+      mutableStateOf(emptyList<Tag>())
     }
     var articleSummaryToShow by rememberRetained {
       mutableStateOf<Article?>(value = null)
@@ -190,7 +190,7 @@ internal class HomeScreenPresenter(
   }
 
   private fun Async<ImmutableList<Article>>.filteredBy(
-    tags: Set<Tag>
+    tags: List<Tag>
   ): Async<ImmutableList<Article>> {
     if (tags.isEmpty()) {
       return this
