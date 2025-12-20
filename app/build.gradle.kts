@@ -1,8 +1,7 @@
 plugins {
-  id("com.illiarb.peek.android.application")
-  id("com.illiarb.peek.kotlin.multiplatform")
-  id("com.illiarb.peek.compose")
-
+  alias(libs.plugins.peek.android.application)
+  alias(libs.plugins.peek.multiplatform)
+  alias(libs.plugins.peek.compose)
   alias(libs.plugins.metro)
 }
 
@@ -19,7 +18,6 @@ kotlin {
 
   sourceSets {
     androidMain.dependencies {
-      implementation(compose.preview)
       implementation(libs.androidx.activity.compose)
       implementation(libs.androidx.browser)
       implementation(libs.circuit.core)
@@ -29,13 +27,6 @@ kotlin {
     }
 
     commonMain.dependencies {
-      implementation(compose.runtime)
-      implementation(compose.foundation)
-      implementation(compose.material3)
-      implementation(compose.ui)
-      implementation(compose.components.resources)
-      implementation(compose.components.uiToolingPreview)
-
       implementation(libs.circuit.core)
       implementation(libs.ktor.core)
       implementation(libs.napier)
@@ -80,14 +71,6 @@ android {
     getByName("release") {
       isMinifyEnabled = false
     }
-  }
-
-  buildFeatures {
-    compose = true
-  }
-
-  dependencies {
-    debugImplementation(compose.uiTooling)
   }
 }
 

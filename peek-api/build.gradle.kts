@@ -1,7 +1,6 @@
 plugins {
-  id("com.illiarb.peek.android.library")
-  id("com.illiarb.peek.kotlin.multiplatform")
-
+  alias(libs.plugins.peek.android.library)
+  alias(libs.plugins.peek.multiplatform)
   alias(libs.plugins.kotlinSerialization)
   alias(libs.plugins.sqldelight)
   alias(libs.plugins.buildConfig)

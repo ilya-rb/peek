@@ -2,10 +2,9 @@ import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 
 plugins {
-  id("com.illiarb.peek.android.library")
-  id("com.illiarb.peek.kotlin.multiplatform")
-  id("com.illiarb.peek.compose")
-
+  alias(libs.plugins.peek.android.library)
+  alias(libs.plugins.peek.multiplatform)
+  alias(libs.plugins.peek.compose)
   alias(libs.plugins.kotlinSerialization)
   alias(libs.plugins.sqldelight)
   alias(libs.plugins.buildConfig)
@@ -22,14 +21,6 @@ kotlin {
     }
 
     commonMain.dependencies {
-      implementation(compose.runtime)
-      implementation(compose.foundation)
-      implementation(compose.material3)
-      implementation(compose.ui)
-      implementation(compose.components.resources)
-      implementation(compose.materialIconsExtended)
-      implementation(compose.components.uiToolingPreview)
-
       implementation(libs.circuit.core)
       implementation(libs.circuit.overlay)
       implementation(libs.kotlin.coroutines.core)
@@ -59,10 +50,6 @@ kotlin {
 
 android {
   namespace = "com.illiarb.peek.features.summarizer"
-
-  dependencies {
-    debugImplementation(compose.uiTooling)
-  }
 }
 
 sqldelight {

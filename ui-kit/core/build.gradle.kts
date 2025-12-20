@@ -1,7 +1,7 @@
 plugins {
-  id("com.illiarb.peek.android.library")
-  id("com.illiarb.peek.kotlin.multiplatform")
-  id("com.illiarb.peek.compose")
+  alias(libs.plugins.peek.android.library)
+  alias(libs.plugins.peek.multiplatform)
+  alias(libs.plugins.peek.compose)
 }
 
 kotlin {
@@ -11,14 +11,6 @@ kotlin {
     }
 
     commonMain.dependencies {
-      implementation(compose.runtime)
-      implementation(compose.foundation)
-      implementation(compose.material3)
-      implementation(compose.materialIconsExtended)
-      implementation(compose.ui)
-      implementation(compose.components.resources)
-      implementation(compose.components.uiToolingPreview)
-
       implementation(libs.kotlinx.datetime)
       implementation(libs.androidx.webkit)
       implementation(libs.circuit.core)
@@ -38,11 +30,5 @@ kotlin {
 
 android {
   namespace = "com.illiarb.peek.uikit.core"
-
-  buildFeatures.compose = true
-
-  dependencies {
-    debugImplementation(compose.uiTooling)
-  }
 }
 

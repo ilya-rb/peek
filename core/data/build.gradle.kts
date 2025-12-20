@@ -1,15 +1,10 @@
 plugins {
-  id("com.illiarb.peek.android.library")
-  id("com.illiarb.peek.kotlin.multiplatform")
-
+  alias(libs.plugins.peek.android.library)
+  alias(libs.plugins.peek.multiplatform)
   alias(libs.plugins.kotlinSerialization)
   alias(libs.plugins.kotlinAtomic)
   alias(libs.plugins.kotlinKsp)
   alias(libs.plugins.metro)
-}
-
-android {
-  namespace = "com.illiarb.peek.core.data"
 }
 
 kotlin {
@@ -32,4 +27,8 @@ kotlin {
       implementation(libs.turbine)
     }
   }
+}
+
+android {
+  namespace = "com.illiarb.peek.core.data"
 }
