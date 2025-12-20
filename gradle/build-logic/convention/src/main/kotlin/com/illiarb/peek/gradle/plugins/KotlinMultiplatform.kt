@@ -1,11 +1,17 @@
-package com.illiarb.peek.gradle
+package com.illiarb.peek.gradle.plugins
 
+import com.illiarb.peek.gradle.configureKotlin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
+import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerToolOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
+import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinOnlyTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompileCommon
 
 class KotlinMultiplatform : Plugin<Project> {
@@ -34,16 +40,6 @@ class KotlinMultiplatform : Plugin<Project> {
                   "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=com.illiarb.peek.core.arch.CommonParcelize",
                 )
               }
-            }
-          }
-        }
-      }
-
-      targets.configureEach {
-        compilations.configureEach {
-          compileTaskProvider.configure {
-            compilerOptions {
-              freeCompilerArgs.add("-Xexpect-actual-classes")
             }
           }
         }

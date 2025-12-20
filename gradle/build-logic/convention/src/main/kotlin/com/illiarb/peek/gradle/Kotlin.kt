@@ -13,6 +13,9 @@ fun Project.configureKotlin() {
 
     compilerOptions {
       freeCompilerArgs.add("-Xcontext-receivers")
+      freeCompilerArgs.add("-Xexpect-actual-classes")
+
+      optIn.add("kotlin.time.ExperimentalTime")
     }
   }
 }

@@ -1,4 +1,4 @@
-package com.illiarb.peek.gradle
+package com.illiarb.peek.gradle.plugins
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project

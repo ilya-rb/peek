@@ -19,22 +19,22 @@ gradlePlugin {
   plugins {
     register("kotlinMultiplatform") {
       id = "com.illiarb.peek.kotlin.multiplatform"
-      implementationClass = "com.illiarb.peek.gradle.KotlinMultiplatform"
+      implementationClass = "com.illiarb.peek.gradle.plugins.KotlinMultiplatform"
     }
 
     register("androidApplication") {
       id = "com.illiarb.peek.android.application"
-      implementationClass = "com.illiarb.peek.gradle.AndroidApplication"
+      implementationClass = "com.illiarb.peek.gradle.plugins.AndroidApplication"
     }
 
     register("androidLibrary") {
       id = "com.illiarb.peek.android.library"
-      implementationClass = "com.illiarb.peek.gradle.AndroidLibrary"
+      implementationClass = "com.illiarb.peek.gradle.plugins.AndroidLibrary"
     }
 
     register("compose") {
       id = "com.illiarb.peek.compose"
-      implementationClass = "com.illiarb.peek.gradle.Compose"
+      implementationClass = "com.illiarb.peek.gradle.plugins.Compose"
     }
   }
 }
