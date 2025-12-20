@@ -4,11 +4,11 @@ plugins {
     alias(libs.plugins.androidApplication) apply false
     alias(libs.plugins.androidCacheFixPlugin) apply false
     alias(libs.plugins.androidLibrary) apply false
+    alias(libs.plugins.buildConfig) apply false
     alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.jetbrainsCompose) apply false
+    alias(libs.plugins.kotlinAtomic) apply false
     alias(libs.plugins.kotlinMultiplatform) apply false
     alias(libs.plugins.kotlinParcelize) apply false
     alias(libs.plugins.kotlinSerialization) apply false
-    alias(libs.plugins.kotlinAtomic) apply false
-    alias(libs.plugins.buildConfig) apply false
 }
