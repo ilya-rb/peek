@@ -6,10 +6,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.illiarb.peek.api.PeekApiService
 import com.illiarb.peek.api.domain.Article
-import com.illiarb.peek.core.arch.OpenUrlScreen
-import com.illiarb.peek.core.arch.ShareScreen
 import com.illiarb.peek.core.data.Async
-import com.illiarb.peek.features.reader.ReaderScreen.Event
+import com.illiarb.peek.features.navigation.map.OpenUrlScreen
+import com.illiarb.peek.features.navigation.map.ReaderScreen
+import com.illiarb.peek.features.navigation.map.ShareScreen
+import com.illiarb.peek.features.reader.ReaderScreenContract.Event
 import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
@@ -19,10 +20,10 @@ internal class ReaderScreenPresenter(
   private val navigator: Navigator,
   private val screen: ReaderScreen,
   private val peekApiService: PeekApiService,
-) : Presenter<ReaderScreen.State> {
+) : Presenter<ReaderScreenContract.State> {
 
   @Composable
-  override fun present(): ReaderScreen.State {
+  override fun present(): ReaderScreenContract.State {
     val article by produceRetainedState<Async<Article>>(initialValue = Async.Loading) {
       peekApiService.collectArticleByUrl(screen.url).collect {
         value = it
@@ -31,7 +32,7 @@ internal class ReaderScreenPresenter(
     var topBarPopupShowing by rememberRetained { mutableStateOf(false) }
     var summaryShowing by rememberRetained { mutableStateOf(false) }
 
-    return ReaderScreen.State(
+    return ReaderScreenContract.State(
       article = article,
       topBarPopupShowing = topBarPopupShowing,
       summaryShowing = summaryShowing,
@@ -53,14 +54,14 @@ internal class ReaderScreenPresenter(
           topBarPopupShowing = false
         }
 
-        is Event.SummarizeCloseClicked -> {
+        is Event.SummarizeResult -> {
           summaryShowing = false
         }
 
         is Event.ErrorRetryClicked -> Unit
 
         is Event.TopBarShare -> {
-          val url = requireNotNull(article.contentOrNull()).url.url
+          val url = requireNotNull(article.contentOrNull()).url
           navigator.goTo(ShareScreen(url))
         }
 
@@ -72,7 +73,7 @@ internal class ReaderScreenPresenter(
           val content = article
           require(content is Async.Content)
 
-          navigator.goTo(OpenUrlScreen(content.content.url.url))
+          navigator.goTo(OpenUrlScreen(content.content.url))
         }
       }
     }

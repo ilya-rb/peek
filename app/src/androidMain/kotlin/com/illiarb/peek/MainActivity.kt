@@ -16,10 +16,10 @@ import androidx.compose.runtime.getValue
 import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import coil3.compose.setSingletonImageLoaderFactory
-import com.illiarb.peek.core.arch.OpenUrlScreen
-import com.illiarb.peek.core.arch.ShareScreen
 import com.illiarb.peek.core.arch.message.MessageDispatcher
-import com.illiarb.peek.features.home.HomeScreen
+import com.illiarb.peek.features.navigation.map.HomeScreen
+import com.illiarb.peek.features.navigation.map.OpenUrlScreen
+import com.illiarb.peek.features.navigation.map.ShareScreen
 import com.illiarb.peek.features.settings.data.SettingsService.SettingType
 import com.illiarb.peek.uikit.core.theme.UiKitTheme
 import com.slack.circuit.backstack.rememberSaveableBackStack
@@ -99,8 +99,8 @@ internal class MainActivity : ComponentActivity() {
 
   private fun navigateTo(screen: AndroidScreen): Boolean {
     return when (screen) {
-      is OpenUrlScreen -> openChromeCustomTab(screen.url)
-      is ShareScreen -> openShareScreen(screen.url)
+      is OpenUrlScreen -> openChromeCustomTab(screen.url.url)
+      is ShareScreen -> openShareScreen(screen.url.url)
       else -> false
     }
   }

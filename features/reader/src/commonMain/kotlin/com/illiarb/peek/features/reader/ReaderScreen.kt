@@ -30,9 +30,10 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.illiarb.peek.core.data.Async
-import com.illiarb.peek.features.reader.ReaderScreen.Event
-import com.illiarb.peek.features.summarizer.ui.SummaryScreen
-import com.illiarb.peek.features.summarizer.ui.showSummaryOverlay
+import com.illiarb.peek.features.navigation.map.ReaderScreen
+import com.illiarb.peek.features.navigation.map.SummaryScreen
+import com.illiarb.peek.features.navigation.map.showScreenOverlay
+import com.illiarb.peek.features.reader.ReaderScreenContract.Event
 import com.illiarb.peek.uikit.core.components.TopAppBarTitleLoading
 import com.illiarb.peek.uikit.core.components.WebView
 import com.illiarb.peek.uikit.core.components.cell.ArticleReaderLoading
@@ -52,7 +53,7 @@ import org.jetbrains.compose.resources.stringResource
 internal fun ReaderScreen(
   modifier: Modifier,
   screen: ReaderScreen,
-  state: ReaderScreen.State,
+  state: ReaderScreenContract.State,
 ) {
   val eventSink = state.eventSink
 
@@ -67,10 +68,11 @@ internal fun ReaderScreen(
 
   if (state.summaryShowing) {
     OverlayEffect(Unit) {
-      showSummaryOverlay(
-        SummaryScreen(url = screen.url, context = SummaryScreen.Context.READER)
+      val result = showScreenOverlay<SummaryScreen, SummaryScreen.Result>(
+        screen = SummaryScreen(url = screen.url, context = SummaryScreen.Context.READER),
+        onDismiss = { SummaryScreen.Result.Close }
       )
-      eventSink.invoke(Event.SummarizeCloseClicked)
+      eventSink.invoke(Event.SummarizeResult(result))
     }
   }
 

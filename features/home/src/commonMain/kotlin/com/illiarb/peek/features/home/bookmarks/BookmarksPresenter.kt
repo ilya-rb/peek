@@ -8,12 +8,13 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import com.illiarb.peek.api.PeekApiService
 import com.illiarb.peek.api.domain.Article
-import com.illiarb.peek.core.arch.ShareScreen
 import com.illiarb.peek.core.arch.message.MessageDispatcher
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.core.data.mapContent
+import com.illiarb.peek.core.types.Url
 import com.illiarb.peek.features.home.articles.ArticlesUiEvent
-import com.illiarb.peek.features.reader.ReaderScreen
+import com.illiarb.peek.features.navigation.map.ReaderScreen
+import com.illiarb.peek.features.navigation.map.ShareScreen
 import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
@@ -25,10 +26,10 @@ internal class BookmarksPresenter(
   private val navigator: Navigator,
   private val peekApiService: PeekApiService,
   private val messageDispatcher: MessageDispatcher,
-) : Presenter<BookmarksScreen.State> {
+) : Presenter<BookmarksScreenContract.State> {
 
   @Composable
-  override fun present(): BookmarksScreen.State {
+  override fun present(): BookmarksScreenContract.State {
     val coroutineScope = rememberStableCoroutineScope()
 
     var articleSummaryToShow by rememberRetained {
@@ -37,7 +38,7 @@ internal class BookmarksPresenter(
 
     var contentTriggers by rememberRetained {
       mutableStateOf(
-        ContentTriggers(
+        BookmarksScreenContract.ContentTriggers(
           articleBookmarked = false,
           contentForceRefresh = false,
         )
@@ -53,7 +54,7 @@ internal class BookmarksPresenter(
         .collect { value = it }
     }
 
-    return BookmarksScreen.State(
+    return BookmarksScreenContract.State(
       articles = articles,
       articleSummaryToShow = articleSummaryToShow,
       articlesEventSink = { event ->
@@ -81,7 +82,7 @@ internal class BookmarksPresenter(
           }
 
           is ArticlesUiEvent.ArticleShareClicked -> {
-            navigator.goTo(ShareScreen(event.item.url.url))
+            navigator.goTo(ShareScreen(Url(event.item.url.url)))
           }
 
           is ArticlesUiEvent.ArticleSummarizeClicked -> {
@@ -97,16 +98,11 @@ internal class BookmarksPresenter(
       },
       eventSink = { event ->
         when (event) {
-          BookmarksScreen.Event.ErrorRetryClicked -> Unit
-          BookmarksScreen.Event.NavigationButtonClicked -> navigator.pop()
-          BookmarksScreen.Event.SummaryCloseClicked -> articleSummaryToShow = null
+          BookmarksScreenContract.Event.ErrorRetryClicked -> Unit
+          BookmarksScreenContract.Event.NavigationButtonClicked -> navigator.pop()
+          BookmarksScreenContract.Event.SummaryCloseClicked -> articleSummaryToShow = null
         }
       },
     )
   }
 }
-
-private data class ContentTriggers(
-  val articleBookmarked: Boolean,
-  val contentForceRefresh: Boolean,
-)

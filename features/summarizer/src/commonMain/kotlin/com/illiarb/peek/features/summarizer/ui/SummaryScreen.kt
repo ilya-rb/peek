@@ -24,7 +24,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.illiarb.peek.core.data.Async
-import com.illiarb.peek.features.summarizer.ui.SummaryScreen.Event
+import com.illiarb.peek.features.navigation.map.SummaryScreen
+import com.illiarb.peek.features.summarizer.ui.SummaryScreenContract.Event
 import com.illiarb.peek.uikit.core.components.shimmer.ShimmerBox
 import com.illiarb.peek.uikit.core.components.shimmer.ShimmerColumn
 import com.illiarb.peek.uikit.resources.Res
@@ -37,7 +38,7 @@ import org.jetbrains.compose.resources.stringResource
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun SummaryScreen(
-  state: SummaryScreen.State,
+  state: SummaryScreenContract.State,
   screen: SummaryScreen,
   modifier: Modifier = Modifier,
 ) {

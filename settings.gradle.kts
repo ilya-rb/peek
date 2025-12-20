@@ -45,6 +45,7 @@ include(
   ":ui-kit:image-loader",
   ":ui-kit:resources",
   "features:home",
+  "features:navigation-map",
   "features:reader",
   "features:settings",
   "features:summarizer",

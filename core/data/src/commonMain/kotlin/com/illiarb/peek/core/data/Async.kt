@@ -20,6 +20,20 @@ public sealed class Async<out T> {
     }
   }
 
+  public fun stateKey(): Any {
+    return when (this) {
+      is Content<*> -> {
+        if (content is Collection<*>) {
+          content.isEmpty()
+        } else {
+          this::class
+        }
+      }
+
+      else -> this::class
+    }
+  }
+
   public companion object {
 
     public fun <T> fromFlow(value: suspend () -> T): Flow<Async<T>> {

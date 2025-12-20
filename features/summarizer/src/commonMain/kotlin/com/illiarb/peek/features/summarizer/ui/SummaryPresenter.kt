@@ -6,8 +6,9 @@ import com.illiarb.peek.api.PeekApiService
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.core.data.flatMapLatestContent
 import com.illiarb.peek.core.data.mapContent
+import com.illiarb.peek.features.navigation.map.SummaryScreen
 import com.illiarb.peek.features.summarizer.SummarizerService
-import com.illiarb.peek.features.summarizer.ui.SummaryScreen.ArticleWithSummary
+import com.illiarb.peek.features.summarizer.ui.SummaryScreenContract.State.ArticleWithSummary
 import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
@@ -17,10 +18,10 @@ internal class SummaryPresenter(
   private val screen: SummaryScreen,
   private val peekApiService: PeekApiService,
   private val summarizerService: SummarizerService,
-) : Presenter<SummaryScreen.State> {
+) : Presenter<SummaryScreenContract.State> {
 
   @Composable
-  override fun present(): SummaryScreen.State {
+  override fun present(): SummaryScreenContract.State {
     val articleWithSummary by produceRetainedState<Async<ArticleWithSummary>>(Async.Loading) {
       peekApiService.collectArticleByUrl(screen.url)
         .flatMapLatestContent { article ->
@@ -36,15 +37,15 @@ internal class SummaryPresenter(
         }
     }
 
-    return SummaryScreen.State(
+    return SummaryScreenContract.State(
       articleWithSummary = articleWithSummary,
       eventSink = { event ->
         when (event) {
-          is SummaryScreen.Event.NavigationIconClick -> {
+          is SummaryScreenContract.Event.NavigationIconClick -> {
             navigator.pop(SummaryScreen.Result.Close)
           }
 
-          is SummaryScreen.Event.OpenInReaderClick -> {
+          is SummaryScreenContract.Event.OpenInReaderClick -> {
             navigator.pop(SummaryScreen.Result.OpenInReader(event.article.url))
           }
         }

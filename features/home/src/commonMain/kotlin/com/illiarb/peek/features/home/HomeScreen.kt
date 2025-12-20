@@ -32,14 +32,15 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import com.illiarb.peek.api.domain.NewsSourceKind
 import com.illiarb.peek.core.data.Async
-import com.illiarb.peek.features.home.HomeScreen.Event
+import com.illiarb.peek.features.home.HomeScreenContract.Event
 import com.illiarb.peek.features.home.articles.ArticlesContent
 import com.illiarb.peek.features.home.articles.ArticlesEmpty
 import com.illiarb.peek.features.home.articles.ArticlesLoading
-import com.illiarb.peek.features.home.overlay.TagFilterContract
-import com.illiarb.peek.features.home.overlay.showTagFilterOverlay
-import com.illiarb.peek.features.summarizer.ui.SummaryScreen
-import com.illiarb.peek.features.summarizer.ui.showSummaryOverlay
+import com.illiarb.peek.features.home.tags.TagFilterContract
+import com.illiarb.peek.features.home.tags.TagFilterOverlay
+import com.illiarb.peek.features.navigation.map.SummaryScreen
+import com.illiarb.peek.features.navigation.map.showOverlay
+import com.illiarb.peek.features.navigation.map.showScreenOverlay
 import com.illiarb.peek.uikit.core.components.HorizontalList
 import com.illiarb.peek.uikit.core.components.TextSwitcher
 import com.illiarb.peek.uikit.core.components.cell.FullscreenErrorState
@@ -64,7 +65,7 @@ import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalHazeMaterialsApi::class)
 @Composable
-internal fun HomeScreen(state: HomeScreen.State, modifier: Modifier = Modifier) {
+internal fun HomeScreen(state: HomeScreenContract.State, modifier: Modifier = Modifier) {
   val eventSink = state.eventSink
   val articlesEventSink = state.articlesEventSink
 
@@ -82,12 +83,14 @@ internal fun HomeScreen(state: HomeScreen.State, modifier: Modifier = Modifier) 
   when {
     state.filtersShowing -> {
       OverlayEffect(Unit) {
-        val result = showTagFilterOverlay(
-          TagFilterContract.Input(
+        val result = showOverlay<TagFilterContract.Input, TagFilterContract.Output>(
+          input = TagFilterContract.Input(
             allTags = state.allTags.take(5).toSet(),
             selectedTags = state.selectedTags,
             containerColor = bottomSheetContainerColor,
           ),
+          onDismiss = { TagFilterContract.Output.Cancel },
+          content = { input, navigator -> TagFilterOverlay(input, navigator) },
         )
         eventSink.invoke(Event.TagFilterResult(result))
       }
@@ -95,11 +98,14 @@ internal fun HomeScreen(state: HomeScreen.State, modifier: Modifier = Modifier) 
 
     state.articleSummaryToShow != null -> {
       OverlayEffect(Unit) {
-        val result = showSummaryOverlay(
-          _root_ide_package_.com.illiarb.peek.features.summarizer.ui.SummaryScreen(
+        val result = showScreenOverlay(
+          screen = SummaryScreen(
             state.articleSummaryToShow.url,
-            context = _root_ide_package_.com.illiarb.peek.features.summarizer.ui.SummaryScreen.Context.HOME,
+            context = SummaryScreen.Context.HOME,
           ),
+          onDismiss = {
+            SummaryScreen.Result.Close
+          },
         )
         eventSink.invoke(Event.SummaryResult(result))
       }
@@ -187,7 +193,7 @@ internal fun HomeScreen(state: HomeScreen.State, modifier: Modifier = Modifier) 
     },
   ) { innerPadding ->
     AnimatedContent(
-      contentKey = { state.articlesStateKey() },
+      contentKey = { state.articles.stateKey() },
       targetState = state.articles,
       transitionSpec = { fadeIn().togetherWith(fadeOut()) },
     ) { targetState ->

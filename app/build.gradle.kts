@@ -39,13 +39,16 @@ kotlin {
       implementation(projects.core.data)
       implementation(projects.core.logging)
       implementation(projects.core.network)
+      implementation(projects.core.types)
       implementation(projects.features.home)
+      implementation(projects.features.navigationMap)
       implementation(projects.features.reader)
       implementation(projects.features.settings)
       implementation(projects.features.summarizer)
       implementation(projects.peekApi)
       implementation(projects.uiKit.core)
       implementation(projects.uiKit.imageLoader)
+      implementation(projects.uiKit.resources)
     }
   }
 }

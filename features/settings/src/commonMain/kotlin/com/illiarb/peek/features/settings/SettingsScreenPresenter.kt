@@ -4,28 +4,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import com.illiarb.peek.core.appinfo.AppConfiguration
-import com.illiarb.peek.core.arch.di.UiScope
-import com.illiarb.peek.features.settings.SettingsScreen.Event
+import com.illiarb.peek.features.settings.SettingsScreenContract.Event
 import com.illiarb.peek.features.settings.data.SettingsService
 import com.illiarb.peek.features.settings.data.SettingsService.SettingType.DARK_THEME
 import com.illiarb.peek.features.settings.data.SettingsService.SettingType.DYNAMIC_COLORS
 import com.slack.circuit.retained.collectAsRetainedState
-import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
-import com.slack.circuit.runtime.screen.Screen
-import dev.zacsweers.metro.ContributesIntoSet
-import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.launch
 
 internal class SettingsScreenPresenter(
   private val navigator: Navigator,
   private val settingsService: SettingsService,
   private val appConfiguration: AppConfiguration,
-) : Presenter<SettingsScreen.State> {
+) : Presenter<SettingsScreenContract.State> {
 
   @Composable
-  override fun present(): SettingsScreen.State {
+  override fun present(): SettingsScreenContract.State {
     val coroutineScope = rememberCoroutineScope()
 
     val dynamicColorsEnabled by settingsService
@@ -39,7 +34,7 @@ internal class SettingsScreenPresenter(
     val debugSettings by appConfiguration.debugConfig()
       .collectAsRetainedState(initial = null)
 
-    return SettingsScreen.State(
+    return SettingsScreenContract.State(
       dynamicColorsEnabled = dynamicColorsEnabled,
       darkThemeEnabled = darkThemeEnabled,
       debugSettings = debugSettings,

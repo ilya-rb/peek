@@ -8,21 +8,17 @@ plugins {
   alias(libs.plugins.kotlinSerialization)
   alias(libs.plugins.sqldelight)
   alias(libs.plugins.buildConfig)
-  alias(libs.plugins.kotlinParcelize)
   alias(libs.plugins.metro)
 }
 
 kotlin {
   sourceSets {
     androidMain.dependencies {
-      implementation(libs.circuit.x.android)
-      implementation(libs.circuit.x.overlay)
       implementation(libs.sqldelight.android)
     }
 
     commonMain.dependencies {
       implementation(libs.circuit.core)
-      implementation(libs.circuit.overlay)
       implementation(libs.kotlin.coroutines.core)
       implementation(libs.kotlinx.datetime)
       implementation(libs.ktor.core)
@@ -36,6 +32,7 @@ kotlin {
       implementation(projects.core.logging)
       implementation(projects.core.network)
       implementation(projects.core.types)
+      implementation(projects.features.navigationMap)
       implementation(projects.peekApi)
       implementation(projects.uiKit.core)
       implementation(projects.uiKit.resources)

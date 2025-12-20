@@ -9,18 +9,18 @@ import androidx.compose.runtime.toMutableStateList
 import com.illiarb.peek.api.PeekApiService
 import com.illiarb.peek.api.domain.Article
 import com.illiarb.peek.api.domain.Tag
-import com.illiarb.peek.core.arch.ShareScreen
 import com.illiarb.peek.core.arch.message.MessageDispatcher
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.core.data.mapContent
-import com.illiarb.peek.features.home.HomeScreen.BookmarkMessage
-import com.illiarb.peek.features.home.HomeScreen.Event
+import com.illiarb.peek.features.home.HomeScreenContract.Event
+import com.illiarb.peek.features.home.HomeScreenContract.State.BookmarkMessage
 import com.illiarb.peek.features.home.articles.ArticlesUiEvent
-import com.illiarb.peek.features.home.bookmarks.BookmarksScreen
-import com.illiarb.peek.features.home.overlay.TagFilterContract
-import com.illiarb.peek.features.reader.ReaderScreen
-import com.illiarb.peek.features.settings.SettingsScreen
-import com.illiarb.peek.features.summarizer.ui.SummaryScreen
+import com.illiarb.peek.features.home.tags.TagFilterContract
+import com.illiarb.peek.features.navigation.map.BookmarksScreen
+import com.illiarb.peek.features.navigation.map.ReaderScreen
+import com.illiarb.peek.features.navigation.map.SettingsScreen
+import com.illiarb.peek.features.navigation.map.ShareScreen
+import com.illiarb.peek.features.navigation.map.SummaryScreen
 import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
@@ -34,10 +34,10 @@ internal class HomeScreenPresenter(
   private val navigator: Navigator,
   private val peekApiService: PeekApiService,
   private val messageDispatcher: MessageDispatcher,
-) : Presenter<HomeScreen.State> {
+) : Presenter<HomeScreenContract.State> {
 
   @Composable
-  override fun present(): HomeScreen.State {
+  override fun present(): HomeScreenContract.State {
     val coroutineScope = rememberStableCoroutineScope()
 
     var filtersShowing by rememberRetained {
@@ -57,7 +57,7 @@ internal class HomeScreenPresenter(
 
     var contentTriggers by rememberRetained {
       mutableStateOf(
-        ContentTriggers(
+        HomeScreenContract.ContentTriggers(
           selectedNewsSourceIndex = 0,
           articleBookmarked = false,
           manualReloadTriggered = false,
@@ -76,7 +76,7 @@ internal class HomeScreenPresenter(
         .collect { value = it }
     }
 
-    return HomeScreen.State(
+    return HomeScreenContract.State(
       newsSources = newsSources,
       selectedNewsSourceIndex = contentTriggers.selectedNewsSourceIndex,
       filtersShowing = filtersShowing,
@@ -162,7 +162,7 @@ internal class HomeScreenPresenter(
           }
 
           is ArticlesUiEvent.ArticleShareClicked -> {
-            navigator.goTo(ShareScreen(event.item.url.url))
+            navigator.goTo(ShareScreen(event.item.url))
           }
 
           is ArticlesUiEvent.ArticlesRefreshClicked -> {
@@ -202,10 +202,4 @@ internal class HomeScreenPresenter(
       else -> this
     }
   }
-
-  private data class ContentTriggers(
-    val selectedNewsSourceIndex: Int,
-    val articleBookmarked: Boolean,
-    val manualReloadTriggered: Boolean,
-  )
 }

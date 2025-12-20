@@ -30,9 +30,9 @@ import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.home.articles.ArticlesContent
 import com.illiarb.peek.features.home.articles.ArticlesLoading
 import com.illiarb.peek.features.home.articles.ArticlesUiEvent
-import com.illiarb.peek.features.home.bookmarks.BookmarksScreen.Event
-import com.illiarb.peek.features.summarizer.ui.SummaryScreen
-import com.illiarb.peek.features.summarizer.ui.showSummaryOverlay
+import com.illiarb.peek.features.home.bookmarks.BookmarksScreenContract.Event
+import com.illiarb.peek.features.navigation.map.SummaryScreen
+import com.illiarb.peek.features.navigation.map.showScreenOverlay
 import com.illiarb.peek.uikit.core.components.LocalLottieAnimation
 import com.illiarb.peek.uikit.core.components.LottieAnimationType
 import com.illiarb.peek.uikit.core.components.cell.EmptyState
@@ -46,17 +46,20 @@ import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun BookmarksScreen(state: BookmarksScreen.State, modifier: Modifier = Modifier) {
+internal fun BookmarksScreen(state: BookmarksScreenContract.State, modifier: Modifier = Modifier) {
   val articlesEventSink = state.articlesEventSink
   val eventSink = state.eventSink
 
   if (state.articleSummaryToShow != null) {
     OverlayEffect(Unit) {
-      showSummaryOverlay(
-        SummaryScreen(
+      showScreenOverlay(
+        screen = SummaryScreen(
           state.articleSummaryToShow.url,
           context = SummaryScreen.Context.HOME,
         ),
+        onDismiss = {
+          SummaryScreen.Result.Close
+        }
       )
       eventSink.invoke(Event.SummaryCloseClicked)
     }
@@ -80,7 +83,7 @@ internal fun BookmarksScreen(state: BookmarksScreen.State, modifier: Modifier = 
     }
   ) { innerPadding ->
     AnimatedContent(
-      contentKey = { state.articlesStateKey() },
+      contentKey = { state.articles.stateKey() },
       targetState = state.articles,
       transitionSpec = { fadeIn().togetherWith(fadeOut()) },
     ) { targetState ->

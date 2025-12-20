@@ -19,7 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.illiarb.peek.core.appinfo.DebugConfig
-import com.illiarb.peek.features.settings.SettingsScreen.Event
+import com.illiarb.peek.features.settings.SettingsScreenContract.Event
 import com.illiarb.peek.uikit.core.components.cell.RowCell
 import com.illiarb.peek.uikit.core.components.cell.SwitchCell
 import com.illiarb.peek.uikit.core.model.VectorIcon
@@ -35,7 +35,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun SettingsScreen(state: SettingsScreen.State, modifier: Modifier = Modifier) {
+internal fun SettingsScreen(state: SettingsScreenContract.State, modifier: Modifier = Modifier) {
   val events = state.events
 
   Scaffold(
