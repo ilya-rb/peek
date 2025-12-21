@@ -10,7 +10,7 @@ import dev.zacsweers.metro.Provides
 public actual object SummarizerPlatformBindings {
 
   @Provides
-  @SummarizerApi
+  @InternalApi
   public fun provideSummarizerSqlDriver(): SqlDriver {
     return NativeSqliteDriver(
       schema = Database.Schema,

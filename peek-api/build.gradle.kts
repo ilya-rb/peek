@@ -1,3 +1,6 @@
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
+import com.illiarb.peek.gradle.getLocalProperty
+
 plugins {
   alias(libs.plugins.peek.android.library)
   alias(libs.plugins.peek.multiplatform)
@@ -16,7 +19,6 @@ kotlin {
     commonMain.dependencies {
       implementation(libs.kotlin.coroutines.core)
       implementation(libs.kotlinx.datetime)
-      implementation(libs.kotlinx.collections)
       implementation(libs.ktor.core)
       implementation(libs.ktor.serialization.json)
       implementation(libs.rssparser)
@@ -51,9 +53,12 @@ sqldelight {
 }
 
 buildkonfig {
-  packageName = "com.illiarb.peek.core.network"
+  packageName = "com.illiarb.peek.api"
 
   defaultConfigs {
+    buildConfigField(STRING, "SERVICE_FT", getLocalProperty("service.ft"))
+    buildConfigField(STRING, "SERVICE_HN", getLocalProperty("service.hn"))
+    buildConfigField(STRING, "SERVICE_DOU", getLocalProperty("service.dou"))
   }
 }
 

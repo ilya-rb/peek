@@ -1,11 +1,11 @@
-package com.illiarb.peek.features.summarizer.db
+package com.illiarb.peek.core.data.database
 
 import app.cash.sqldelight.ColumnAdapter
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
-internal object DatabaseAdapters {
+public object CommonDatabaseAdapters {
 
-  val instantAdapter: ColumnAdapter<Instant, Long>
+  public val instantAdapter: ColumnAdapter<Instant, Long>
     get() = object : ColumnAdapter<Instant, Long> {
       override fun decode(databaseValue: Long): Instant {
         return Instant.fromEpochMilliseconds(databaseValue)

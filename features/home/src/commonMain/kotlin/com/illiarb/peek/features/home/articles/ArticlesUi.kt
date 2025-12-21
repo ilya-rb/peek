@@ -102,7 +102,6 @@ internal fun ArticlesContent(
           modifier = Modifier.animateItem(),
           title = article.title,
           caption = article.date.toLocalDateTime(TimeZone.UTC).format(DateFormats.default),
-          subtitle = article.tags.firstOrNull()?.value.orEmpty(),
           saved = article.saved,
           onClick = {
             eventSink.invoke(ArticlesUi.ArticleClicked(article))

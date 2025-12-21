@@ -4,6 +4,7 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.kotlin.dsl.getByType
+import java.util.Properties
 
 internal val Project.libs: VersionCatalog
   get() = extensions.getByType<VersionCatalogsExtension>().named("libs")
@@ -16,3 +17,32 @@ internal val Project.getTargetSdk: Int
 
 internal val Project.getMinSdk: Int
   get() = libs.findVersion("android-minSdk").get().displayName.toInt()
+
+fun Project.getLocalProperty(key: String): String? {
+  val propertiesFile = project.rootProject.file("local.properties")
+  val property = if (propertiesFile.exists()) {
+    val properties = Properties()
+    propertiesFile.inputStream().buffered().use { input ->
+      properties.load(input)
+    }
+    properties.getProperty(key)
+  } else {
+    null
+  }
+  return property ?: if (isCI()) "" else null
+}
+
+private fun Project.isCI(): Boolean {
+  val ciEnv = System.getenv("CI")
+  if (ciEnv != null && ciEnv.equals("true", ignoreCase = true)) {
+    return true
+  }
+
+  val ciProperty = findProperty("ci") as? String
+  if (ciProperty != null && ciProperty.equals("true", ignoreCase = true)) {
+    return true
+  }
+
+  val ciLocalProperty = getLocalProperty("ci")
+  return ciLocalProperty != null && ciLocalProperty.equals("true", ignoreCase = true)
+}

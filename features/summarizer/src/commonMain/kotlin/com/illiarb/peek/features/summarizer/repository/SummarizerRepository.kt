@@ -6,7 +6,7 @@ import com.illiarb.peek.core.data.ConcurrentHashMapCache
 import com.illiarb.peek.core.network.HttpClient
 import com.illiarb.peek.features.summarizer.BuildKonfig
 import com.illiarb.peek.features.summarizer.db.ArticlesSummaryDao
-import com.illiarb.peek.features.summarizer.di.SummarizerApi
+import com.illiarb.peek.features.summarizer.di.InternalApi
 import com.illiarb.peek.features.summarizer.domain.ArticleSummary
 import com.illiarb.peek.features.summarizer.network.ApiConfig
 import com.illiarb.peek.features.summarizer.network.SummaryRequest
@@ -17,8 +17,8 @@ import kotlinx.coroutines.flow.Flow
 
 @Inject
 public class SummarizerRepository(
-  @SummarizerApi private val httpClient: HttpClient,
-  @SummarizerApi private val memoryCache: ConcurrentHashMapCache,
+  @InternalApi private val httpClient: HttpClient,
+  @InternalApi private val memoryCache: ConcurrentHashMapCache,
   private val summaryDao: ArticlesSummaryDao,
 ) {
 

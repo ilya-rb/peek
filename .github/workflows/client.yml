@@ -3,6 +3,7 @@ name: Android Debug Build
 on:
   push:
     branches: [ master ]
+  pull_request:
 
 jobs:
   build:
@@ -36,7 +37,7 @@ jobs:
         echo "openai.api_key=${{ secrets.OPEN_AI_KEY }}" >> local.properties
 
     - name: Build
-      run: ./gradlew buildDebug
+      run: ./gradlew buildDebug -Pci=true
 
     - name: Detekt
-      run: ./gradlew detekt
+      run: ./gradlew detekt -Pci=true

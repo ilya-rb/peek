@@ -2,12 +2,10 @@ package com.illiarb.peek.api.datasource
 
 import com.illiarb.peek.api.domain.Article
 import com.illiarb.peek.api.domain.NewsSourceKind
-import com.illiarb.peek.api.domain.Tag
 import com.illiarb.peek.core.logging.Logger
 import com.illiarb.peek.core.types.Url
 import com.prof18.rssparser.RssParser
 import com.prof18.rssparser.model.RssItem
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.format.DateTimeComponents
 import kotlin.time.Clock
 
@@ -46,7 +44,6 @@ internal class RssNewsDataSource(
       Article(
         url = Url(url),
         title = title,
-        tags = emptyList<Tag>().toImmutableList(),
         kind = kind,
         date = date,
         saved = false,

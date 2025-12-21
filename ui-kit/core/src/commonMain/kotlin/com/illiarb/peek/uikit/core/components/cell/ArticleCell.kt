@@ -39,12 +39,12 @@ import kotlinx.coroutines.launch
 public fun ArticleCell(
   modifier: Modifier = Modifier,
   title: String,
-  subtitle: String,
   saved: Boolean,
   onClick: () -> Unit,
   onBookmarkClick: () -> Unit,
   onSummarizeClick: () -> Unit,
   onShareClick: () -> Unit,
+  subtitle: String? = null,
   caption: String? = null,
 ) {
   Row(
@@ -60,11 +60,11 @@ public fun ArticleCell(
 private fun RowScope.ArticleContent(
   modifier: Modifier = Modifier,
   title: String,
-  subtitle: String,
+  subtitle: String?,
   caption: String?,
 ) {
   Column(modifier = modifier.weight(1f)) {
-    val hasSubtitle = subtitle.isNotEmpty()
+    val hasSubtitle = subtitle != null
     val paddingVertical = 12.dp
 
     if (hasSubtitle) {

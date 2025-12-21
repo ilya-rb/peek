@@ -10,6 +10,7 @@ kotlin {
   sourceSets {
     commonMain.dependencies {
       api(libs.kotlinx.serialization)
+      api(libs.sqldelight.primitive)
 
       implementation(libs.androidx.datastore)
       implementation(libs.kotlin.coroutines.core)

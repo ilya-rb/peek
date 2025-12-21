@@ -10,9 +10,6 @@ import com.illiarb.peek.core.data.ConcurrentHashMapCache
 import com.illiarb.peek.core.types.Url
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onStart
 import kotlin.jvm.JvmSuppressWildcards
 
 @Inject
@@ -48,40 +45,15 @@ public class ArticlesRepository(
   }
 
   public fun savedArticles(): Flow<Async<List<Article>>> {
-    return flow {
-      articlesDao.savedArticles().fold(
-        onSuccess = {
-          emit(Async.Content(it))
-        },
-        onFailure = { error ->
-          emit(Async.Error(error))
-        }
-      )
-    }.onStart {
-      emit(Async.Loading)
-    }.catch { error ->
-      emit(Async.Error(error))
+    return Async.fromFlow {
+      articlesDao.savedArticles().getOrThrow()
     }
   }
 
   public fun articleByUrl(url: Url): Flow<Async<Article>> {
-    return flow {
-      articlesDao.articleByUrl(url).fold(
-        onSuccess = {
-          if (it != null) {
-            emit(Async.Content(it))
-          } else {
-            emit(Async.Error(ArticleNotFoundException()))
-          }
-        },
-        onFailure = { error ->
-          emit(Async.Error(error))
-        }
-      )
-    }.onStart {
-      emit(Async.Loading)
-    }.catch { error ->
-      emit(Async.Error(error))
+    return Async.fromFlow {
+      val article = articlesDao.articleByUrl(url).getOrElse { throw it }
+      article ?: throw ArticleNotFoundException()
     }
   }
 

@@ -2,6 +2,7 @@ package com.illiarb.peek.api.di
 
 import app.cash.sqldelight.db.SqlDriver
 import com.illiarb.peek.api.ArticleEntity
+import com.illiarb.peek.api.BuildKonfig
 import com.illiarb.peek.api.Database
 import com.illiarb.peek.api.DefaultPeekApiService
 import com.illiarb.peek.api.PeekApiService
@@ -13,6 +14,7 @@ import com.illiarb.peek.api.repository.ArticlesRepository
 import com.illiarb.peek.core.arch.di.AppScope
 import com.illiarb.peek.core.data.ConcurrentHashMapCache
 import com.illiarb.peek.core.data.DefaultConcurrentHashMapCache
+import com.illiarb.peek.core.data.database.CommonDatabaseAdapters
 import com.illiarb.peek.core.network.HttpClient
 import com.illiarb.peek.core.network.NetworkConfig
 import com.illiarb.peek.core.network.TimeoutConfig
@@ -65,9 +67,8 @@ public object PeekApiBindings {
   ): Database = Database(
     driver = sqlDriver,
     articleEntityAdapter = ArticleEntity.Adapter(
-      tagsAdapter = DatabaseAdapters.tagsAdapter,
       kindAdapter = DatabaseAdapters.kindAdapter,
-      dateAdapter = DatabaseAdapters.instantAdapter,
+      dateAdapter = CommonDatabaseAdapters.instantAdapter,
       urlAdapter = DatabaseAdapters.urlAdapter,
     ),
   )
@@ -77,7 +78,7 @@ public object PeekApiBindings {
   public fun provideHackerNewsDataSource(rssParser: RssParser): NewsDataSource {
     return RssNewsDataSource(
       rssParser,
-      Url("https://hnrss.org/frontpage"),
+      Url(BuildKonfig.SERVICE_HN),
       NewsSourceKind.HackerNews,
     )
   }
@@ -87,7 +88,7 @@ public object PeekApiBindings {
   public fun provideFtNewsDataSource(rssParser: RssParser): NewsDataSource {
     return RssNewsDataSource(
       rssParser,
-      Url("https://www.ft.com/myft/following/f2fb2051-3462-4df1-b761-667021a25113.rss"),
+      Url(BuildKonfig.SERVICE_FT),
       NewsSourceKind.Ft,
     )
   }
@@ -97,7 +98,7 @@ public object PeekApiBindings {
   public fun provideDouNewsDataSource(rssParser: RssParser): NewsDataSource {
     return RssNewsDataSource(
       rssParser,
-      Url("https://dou.ua/forums/feed/tag/tech"),
+      Url(BuildKonfig.SERVICE_DOU),
       NewsSourceKind.Dou,
     )
   }

@@ -4,7 +4,7 @@ import com.illiarb.peek.core.coroutines.AppDispatchers
 import com.illiarb.peek.core.coroutines.suspendRunCatching
 import com.illiarb.peek.features.summarizer.Database
 import com.illiarb.peek.features.summarizer.Summaries
-import com.illiarb.peek.features.summarizer.di.SummarizerApi
+import com.illiarb.peek.features.summarizer.di.InternalApi
 import com.illiarb.peek.features.summarizer.domain.ArticleSummary
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.withContext
@@ -12,7 +12,7 @@ import kotlinx.coroutines.withContext
 @Inject
 public class ArticlesSummaryDao(
   private val appDispatchers: AppDispatchers,
-  @SummarizerApi private val db: Database,
+  @InternalApi private val db: Database,
 ) {
 
   public suspend fun summaryByUrl(url: String): Result<ArticleSummary?> {
@@ -29,7 +29,6 @@ public class ArticlesSummaryDao(
         db.summariesQueries.saveSummary(
           url = summary.url,
           summary = summary.content,
-          createdAt = kotlin.time.Clock.System.now(),
         )
         Unit
       }
