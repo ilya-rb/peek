@@ -1,5 +1,5 @@
-import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
+import com.illiarb.peek.gradle.getLocalProperty
 
 plugins {
   alias(libs.plugins.peek.android.library)
@@ -61,7 +61,7 @@ buildkonfig {
   packageName = "com.illiarb.peek.features.summarizer"
 
   defaultConfigs {
-    val openAIKey = gradleLocalProperties(rootDir, providers)[("openai.api_key")]
+    val openAIKey = getLocalProperty("openai.api_key")
     require(openAIKey is String) { "Cannot find Open AI API key" }
 
     buildConfigField(STRING, "OPENAI_KEY", openAIKey)

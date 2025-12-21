@@ -20,22 +20,16 @@ internal val Project.getMinSdk: Int
 
 fun Project.getLocalProperty(key: String): String? {
   val propertiesFile = project.rootProject.file("local.properties")
-
-  return when {
-    propertiesFile.exists() -> {
-      val properties = Properties()
-      propertiesFile.inputStream().buffered().use { input ->
-        properties.load(input)
-      }
-      properties.getProperty(key)
+  val property = if (propertiesFile.exists()) {
+    val properties = Properties()
+    propertiesFile.inputStream().buffered().use { input ->
+      properties.load(input)
     }
-
-    isCI() -> ""
-
-    else -> null.also {
-      propertiesFile.createNewFile()
-    }
+    properties.getProperty(key)
+  } else {
+    null
   }
+  return property ?: if (isCI()) "" else null
 }
 
 private fun Project.isCI(): Boolean {
