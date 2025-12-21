@@ -4,12 +4,14 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmarks
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.BottomAppBarDefaults
+import androidx.compose.material3.BottomAppBarScrollBehavior
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -42,6 +44,8 @@ import com.illiarb.peek.uikit.resources.service_dou_name
 import com.illiarb.peek.uikit.resources.service_ft_name
 import com.illiarb.peek.uikit.resources.service_hacker_news_name
 import com.slack.circuit.overlay.OverlayEffect
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.materials.HazeMaterials
@@ -51,37 +55,27 @@ import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
-internal fun HomeScreen(state: HomeScreenContract.State, ignored: Modifier = Modifier) {
+internal fun HomeScreen(state: HomeScreenContract.State, modifier: Modifier = Modifier) {
   val eventSink = state.eventSink
-  val articlesEventSink = state.articlesEventSink
 
   val bottomBarBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior()
-  val bottomBarAlpha = 1 - bottomBarBehavior.state.collapsedFraction
-
   val topBarBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
   val hazeState = rememberHazeState()
   val hazeStyle = HazeMaterials.thin(MaterialTheme.colorScheme.surface)
 
-  when {
-    state.articleSummaryToShow != null -> {
-      OverlayEffect(Unit) {
-        val result = showScreenOverlay(
-          screen = SummaryScreen(
-            state.articleSummaryToShow.url,
-            context = SummaryScreen.Context.HOME,
-          ),
-          onDismiss = {
-            SummaryScreen.Result.Close
-          },
-        )
-        eventSink.invoke(Event.SummaryResult(result))
-      }
+  if (state.articleSummaryToShow != null) {
+    OverlayEffect(Unit) {
+      val result = showScreenOverlay(
+        SummaryScreen(state.articleSummaryToShow.url, SummaryScreen.Context.HOME),
+        onDismiss = { SummaryScreen.Result.Close },
+      )
+      eventSink.invoke(Event.SummaryResult(result))
     }
   }
 
   Scaffold(
-    modifier = Modifier
+    modifier = modifier
       .nestedScroll(bottomBarBehavior.nestedScrollConnection)
       .nestedScroll(topBarBehavior.nestedScrollConnection),
     topBar = {
@@ -92,80 +86,116 @@ internal fun HomeScreen(state: HomeScreenContract.State, ignored: Modifier = Mod
         ),
         modifier = Modifier.hazeEffect(state = hazeState, style = hazeStyle),
         title = {
-          val selectedSource = state.newsSources[state.selectedNewsSourceIndex]
-          val name = when (selectedSource) {
-            NewsSourceKind.Dou -> stringResource(Res.string.service_dou_name)
-            NewsSourceKind.HackerNews -> stringResource(Res.string.service_hacker_news_name)
-            NewsSourceKind.Ft -> stringResource(Res.string.service_ft_name)
-          }
-          TextSwitcher(
-            first = stringResource(Res.string.home_screen_title),
-            second = name,
-            containerHeightDp = TopAppBarDefaults.TopAppBarExpandedHeight.value.toInt(),
-            switchEvery = 5.seconds,
-          )
+          TopBarTitle(state)
         },
         actions = {
-          IconButton(onClick = { eventSink.invoke(Event.BookmarksClicked) }) {
-            Icon(
-              imageVector = Icons.Filled.Bookmarks,
-              contentDescription = stringResource(Res.string.acsb_action_bookmarks),
-            )
-          }
-          IconButton(onClick = { eventSink.invoke(Event.SettingsClicked) }) {
-            Icon(
-              imageVector = Icons.Filled.Settings,
-              contentDescription = stringResource(Res.string.acsb_action_settings),
-            )
-          }
+          TopBarActions(eventSink)
         },
       )
     },
     bottomBar = {
-      BottomAppBar(
-        modifier = Modifier.hazeEffect(state = hazeState, style = hazeStyle),
-        scrollBehavior = bottomBarBehavior,
-        containerColor = Color.Transparent,
-        actions = {
-          NewsSourcesContent(
-            newsSources = state.newsSources,
-            selectedTabIndex = state.selectedNewsSourceIndex,
-            onTabClick = { eventSink.invoke(Event.TabClicked(it)) },
-            modifier = Modifier
-              .padding(start = 16.dp)
-              .alpha(bottomBarAlpha)
-          )
-        },
+      BottomBar(state, hazeState, hazeStyle, bottomBarBehavior, eventSink)
+    },
+    content = { innerPadding ->
+      ScreenContent(state, innerPadding, hazeState)
+    }
+  )
+}
+
+@Composable
+private fun TopBarTitle(state: HomeScreenContract.State) {
+  val selectedSource = state.newsSources[state.selectedNewsSourceIndex]
+  val name = when (selectedSource) {
+    NewsSourceKind.Dou -> stringResource(Res.string.service_dou_name)
+    NewsSourceKind.HackerNews -> stringResource(Res.string.service_hacker_news_name)
+    NewsSourceKind.Ft -> stringResource(Res.string.service_ft_name)
+  }
+  TextSwitcher(
+    first = stringResource(Res.string.home_screen_title),
+    second = name,
+    containerHeightDp = TopAppBarDefaults.TopAppBarExpandedHeight.value.toInt(),
+    switchEvery = 5.seconds,
+  )
+}
+
+@Composable
+private fun TopBarActions(eventSink: (Event) -> Unit) {
+  IconButton(onClick = { eventSink.invoke(Event.BookmarksClicked) }) {
+    Icon(
+      imageVector = Icons.Filled.Bookmarks,
+      contentDescription = stringResource(Res.string.acsb_action_bookmarks),
+    )
+  }
+  IconButton(onClick = { eventSink.invoke(Event.SettingsClicked) }) {
+    Icon(
+      imageVector = Icons.Filled.Settings,
+      contentDescription = stringResource(Res.string.acsb_action_settings),
+    )
+  }
+}
+
+@Composable
+private fun BottomBar(
+  state: HomeScreenContract.State,
+  hazeState: HazeState,
+  hazeStyle: HazeStyle,
+  bottomBarBehavior: BottomAppBarScrollBehavior,
+  eventSink: (Event) -> Unit,
+) {
+  val bottomBarAlpha = 1 - bottomBarBehavior.state.collapsedFraction
+
+  BottomAppBar(
+    modifier = Modifier.hazeEffect(state = hazeState, style = hazeStyle),
+    scrollBehavior = bottomBarBehavior,
+    containerColor = Color.Transparent,
+    actions = {
+      NewsSourcesContent(
+        newsSources = state.newsSources,
+        selectedTabIndex = state.selectedNewsSourceIndex,
+        onTabClick = { eventSink.invoke(Event.TabClicked(it)) },
+        modifier = Modifier
+          .padding(start = 16.dp)
+          .alpha(bottomBarAlpha)
       )
     },
-  ) { innerPadding ->
-    AnimatedContent(
-      contentKey = { state.articles.stateKey() },
-      targetState = state.articles,
-      transitionSpec = { fadeIn().togetherWith(fadeOut()) },
-    ) { targetState ->
-      when (targetState) {
-        is Async.Error -> {
-          FullscreenErrorState(Modifier.padding(innerPadding)) {
-            eventSink.invoke(Event.ErrorRetryClicked)
-          }
-        }
+  )
+}
 
-        is Async.Loading -> {
-          ArticlesLoading(contentPadding = innerPadding)
-        }
+@Composable
+private fun ScreenContent(
+  state: HomeScreenContract.State,
+  innerPadding: PaddingValues,
+  hazeState: HazeState,
+) {
+  val eventSink = state.eventSink
+  val articlesEventSink = state.articlesEventSink
 
-        is Async.Content -> {
-          if (targetState.content.isEmpty()) {
-            ArticlesEmpty(contentPadding = innerPadding, eventSink = articlesEventSink)
-          } else {
-            ArticlesContent(
-              modifier = Modifier.hazeSource(state = hazeState),
-              contentPadding = innerPadding,
-              articles = targetState.content,
-              eventSink = articlesEventSink,
-            )
-          }
+  AnimatedContent(
+    contentKey = { state.articles.stateKey() },
+    targetState = state.articles,
+    transitionSpec = { fadeIn().togetherWith(fadeOut()) },
+  ) { targetState ->
+    when (targetState) {
+      is Async.Error -> {
+        FullscreenErrorState(Modifier.padding(innerPadding)) {
+          eventSink.invoke(Event.ErrorRetryClicked)
+        }
+      }
+
+      is Async.Loading -> {
+        ArticlesLoading(contentPadding = innerPadding)
+      }
+
+      is Async.Content -> {
+        if (targetState.content.isEmpty()) {
+          ArticlesEmpty(contentPadding = innerPadding, eventSink = articlesEventSink)
+        } else {
+          ArticlesContent(
+            modifier = Modifier.hazeSource(state = hazeState),
+            contentPadding = innerPadding,
+            articles = targetState.content,
+            eventSink = articlesEventSink,
+          )
         }
       }
     }

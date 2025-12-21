@@ -1,5 +1,6 @@
 package com.illiarb.peek.features.home.bookmarks
 
+import androidx.compose.runtime.Immutable
 import com.illiarb.peek.api.PeekApiService
 import com.illiarb.peek.api.domain.Article
 import com.illiarb.peek.core.arch.di.UiScope
@@ -20,6 +21,7 @@ import kotlinx.collections.immutable.ImmutableList
 
 internal interface BookmarksScreenContract {
 
+  @Immutable
   data class State(
     val articles: Async<ImmutableList<Article>>,
     val articleSummaryToShow: Article?,

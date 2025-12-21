@@ -15,7 +15,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -44,22 +43,15 @@ import com.illiarb.peek.uikit.resources.bookmarks_screen_title
 import com.slack.circuit.overlay.OverlayEffect
 import org.jetbrains.compose.resources.stringResource
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun BookmarksScreen(state: BookmarksScreenContract.State, ignored: Modifier = Modifier) {
-  val articlesEventSink = state.articlesEventSink
   val eventSink = state.eventSink
 
   if (state.articleSummaryToShow != null) {
     OverlayEffect(Unit) {
       showScreenOverlay(
-        screen = SummaryScreen(
-          state.articleSummaryToShow.url,
-          context = SummaryScreen.Context.HOME,
-        ),
-        onDismiss = {
-          SummaryScreen.Result.Close
-        }
+        screen = SummaryScreen(state.articleSummaryToShow.url, SummaryScreen.Context.HOME),
+        onDismiss = { SummaryScreen.Result.Close }
       )
       eventSink.invoke(Event.SummaryCloseClicked)
     }
@@ -80,36 +72,48 @@ internal fun BookmarksScreen(state: BookmarksScreenContract.State, ignored: Modi
           }
         },
       )
+    },
+    content = { innerPadding ->
+      BookmarksContent(state, innerPadding)
     }
-  ) { innerPadding ->
-    AnimatedContent(
-      contentKey = { state.articles.stateKey() },
-      targetState = state.articles,
-      transitionSpec = { fadeIn().togetherWith(fadeOut()) },
-    ) { targetState ->
-      when (targetState) {
-        is Async.Error -> {
-          FullscreenErrorState(Modifier.padding(innerPadding)) {
-            eventSink.invoke(Event.ErrorRetryClicked)
-          }
-        }
+  )
+}
 
-        is Async.Loading -> {
-          ArticlesLoading(contentPadding = innerPadding)
-        }
+@Composable
+private fun BookmarksContent(
+  state: BookmarksScreenContract.State,
+  innerPadding: PaddingValues,
+) {
+  val articlesEventSink = state.articlesEventSink
+  val eventSink = state.eventSink
 
-        is Async.Content -> {
-          if (targetState.content.isEmpty()) {
-            BookmarksEmpty(contentPadding = innerPadding) {
-              articlesEventSink.invoke(ArticlesUi.ArticlesRefreshClicked)
-            }
-          } else {
-            ArticlesContent(
-              contentPadding = innerPadding,
-              articles = targetState.content,
-              eventSink = articlesEventSink,
-            )
+  AnimatedContent(
+    contentKey = { state.articles.stateKey() },
+    targetState = state.articles,
+    transitionSpec = { fadeIn().togetherWith(fadeOut()) },
+  ) { targetState ->
+    when (targetState) {
+      is Async.Error -> {
+        FullscreenErrorState(Modifier.padding(innerPadding)) {
+          eventSink.invoke(Event.ErrorRetryClicked)
+        }
+      }
+
+      is Async.Loading -> {
+        ArticlesLoading(contentPadding = innerPadding)
+      }
+
+      is Async.Content -> {
+        if (targetState.content.isEmpty()) {
+          BookmarksEmpty(contentPadding = innerPadding) {
+            articlesEventSink.invoke(ArticlesUi.ArticlesRefreshClicked)
           }
+        } else {
+          ArticlesContent(
+            contentPadding = innerPadding,
+            articles = targetState.content,
+            eventSink = articlesEventSink,
+          )
         }
       }
     }
