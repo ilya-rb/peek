@@ -23,12 +23,6 @@ import dev.zacsweers.metro.IntoSet
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
 
-@BindingContainer
-public expect object SqlDatabasePlatformBindings
-
-@BindingContainer
-public expect object RssParserBindings
-
 @BindingContainer(
   includes = [
     RssParserBindings::class,
@@ -108,3 +102,9 @@ public object PeekApiBindings {
     )
   }
 }
+
+@BindingContainer
+public expect object SqlDatabasePlatformBindings
+
+@BindingContainer
+public expect object RssParserBindings

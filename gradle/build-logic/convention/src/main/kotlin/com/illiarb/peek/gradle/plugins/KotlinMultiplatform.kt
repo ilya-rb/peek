@@ -4,22 +4,18 @@ import com.illiarb.peek.gradle.configureKotlin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
-import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerToolOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
-import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinOnlyTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompileCommon
 
+@Suppress("unused")
 class KotlinMultiplatform : Plugin<Project> {
 
   override fun apply(target: Project) = with(target) {
     pluginManager.apply("org.jetbrains.kotlin.multiplatform")
 
-    kotlinMultiplatform {
+    multiplatformPlugin {
       applyDefaultHierarchyTemplate()
 
       androidTarget()
@@ -62,7 +58,7 @@ class KotlinMultiplatform : Plugin<Project> {
     }
   }
 
-  private fun Project.kotlinMultiplatform(action: KotlinMultiplatformExtension.() -> Unit) {
+  private fun Project.multiplatformPlugin(action: KotlinMultiplatformExtension.() -> Unit) {
     extensions.configure<KotlinMultiplatformExtension>(action)
   }
 }

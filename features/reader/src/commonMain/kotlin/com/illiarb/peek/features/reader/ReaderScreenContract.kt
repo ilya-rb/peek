@@ -6,7 +6,6 @@ import com.illiarb.peek.api.domain.Article
 import com.illiarb.peek.core.arch.di.UiScope
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.navigation.map.ReaderScreen
-import com.illiarb.peek.features.navigation.map.SummaryScreen
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator

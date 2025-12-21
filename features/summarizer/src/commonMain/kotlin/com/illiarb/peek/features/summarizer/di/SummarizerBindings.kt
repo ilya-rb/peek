@@ -19,9 +19,6 @@ import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.Qualifier
 import dev.zacsweers.metro.SingleIn
 
-@BindingContainer
-public expect object SummarizerPlatformBindings
-
 @BindingContainer(includes = [SummarizerPlatformBindings::class])
 public object SummarizerBindings {
 
@@ -68,6 +65,9 @@ public object SummarizerBindings {
     )
   }
 }
+
+@BindingContainer
+public expect object SummarizerPlatformBindings
 
 @Qualifier
 internal annotation class SummarizerApi

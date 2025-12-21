@@ -25,7 +25,7 @@ import dev.zacsweers.metro.Provides
     AppConfigurationsBindings::class,
     AppSettingsBindings::class,
     ImageLoaderBindings::class,
-    _root_ide_package_.com.illiarb.peek.features.summarizer.di.SummarizerBindings::class,
+    SummarizerBindings::class,
   ]
 )
 internal interface AndroidAppGraph : AppGraph {

@@ -11,9 +11,6 @@ import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
 import com.illiarb.peek.core.logging.Logger as CoreLogger
 
-@BindingContainer
-public expect object ImageLoaderPlatformBindings
-
 @BindingContainer(includes = [ImageLoaderPlatformBindings::class])
 public object ImageLoaderBindings {
 
@@ -56,3 +53,6 @@ public object ImageLoaderBindings {
     }
   }
 }
+
+@BindingContainer
+public expect object ImageLoaderPlatformBindings

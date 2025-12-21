@@ -13,7 +13,7 @@ import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 
-internal class SummaryPresenter(
+internal class SummaryScreenPresenter(
   private val navigator: Navigator,
   private val screen: SummaryScreen,
   private val peekApiService: PeekApiService,

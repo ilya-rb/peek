@@ -61,7 +61,7 @@ internal interface SummaryScreenContract {
       context: CircuitContext
     ): Presenter<*>? {
       return if (screen is SummaryScreen) {
-        SummaryPresenter(navigator, screen, peekApiService, summarizerService)
+        SummaryScreenPresenter(navigator, screen, peekApiService, summarizerService)
       } else {
         null
       }

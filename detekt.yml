@@ -21,3 +21,5 @@ style:
   WildcardImport:
     active: true
     excludeImports:
+  MagicNumber:
+    active: false

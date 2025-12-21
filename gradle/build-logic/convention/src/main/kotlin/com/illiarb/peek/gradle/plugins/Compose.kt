@@ -10,6 +10,7 @@ import org.jetbrains.compose.ComposePlugin
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
+@Suppress("unused")
 class Compose : Plugin<Project> {
 
   override fun apply(target: Project) = with(target) {

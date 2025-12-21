@@ -1,7 +1,7 @@
 <resources>
-    <string name="filters_action_save">Save</string>
-    <string name="filters_action_cancel">Cancel</string>
-    <string name="filters_action_reset">Reset</string>
-    <string name="filters_header_tags">Tags</string>
-    <string name="filters_header_bookmarked_only">Bookmarked only</string>
+  <string name="filters_action_save">Save</string>
+  <string name="filters_action_cancel">Cancel</string>
+  <string name="filters_action_reset">Reset</string>
+  <string name="filters_header_tags">Tags</string>
+  <string name="filters_header_bookmarked_only">Bookmarked only</string>
 </resources>

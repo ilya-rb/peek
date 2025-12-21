@@ -45,6 +45,10 @@ private fun Project.configureDetekt() {
       html.required.set(true)
       html.outputLocation.set(rootProject.file("build/reports/detekt_$projectName.html"))
     }
+
+    include("**/*.kt")
+    include("**/*.kts")
+    exclude("build/")
   }
 }
 

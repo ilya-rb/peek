@@ -4,6 +4,7 @@ import com.illiarb.peek.gradle.configureAndroid
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
+@Suppress("unused")
 class AndroidLibrary : Plugin<Project> {
   
   override fun apply(target: Project) = with(target) {
