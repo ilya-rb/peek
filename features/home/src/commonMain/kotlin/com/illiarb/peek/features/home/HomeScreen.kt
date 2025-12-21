@@ -241,7 +241,6 @@ private fun NewsSourcesContent(
       SelectableCircleAvatar(
         imageUrl = "https://picsum.photos/200/300",
         selected = index == selectedTabIndex,
-        fallbackText = source.name.uppercase(),
         onClick = {
           onTabClick.invoke(source)
         }

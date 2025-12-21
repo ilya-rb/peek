@@ -31,7 +31,6 @@ import com.illiarb.peek.uikit.imageloader.UrlImage
 public fun SelectableCircleAvatar(
   modifier: Modifier = Modifier,
   imageUrl: String,
-  fallbackText: String,
   selected: Boolean,
   onClick: () -> Unit,
 ) {

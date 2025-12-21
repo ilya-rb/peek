@@ -64,8 +64,7 @@ public fun ArticleCell(
           text = subtitle.uppercase(),
           style = MaterialTheme.typography.bodyLarge,
           color = MaterialTheme.colorScheme.primary,
-          modifier = Modifier
-            .fillMaxWidth()
+          modifier = Modifier.fillMaxWidth()
             .padding(top = paddingVertical, start = 16.dp, end = 24.dp),
         )
       }
@@ -102,8 +101,7 @@ public fun ArticleCell(
     }
 
     Column(
-      verticalArrangement = Arrangement.SpaceAround,
-      modifier = Modifier.fillMaxHeight()
+      verticalArrangement = Arrangement.SpaceAround, modifier = Modifier.fillMaxHeight()
     ) {
       IconButton(
         onClick = {
@@ -112,10 +110,8 @@ public fun ArticleCell(
             bookmarkBounce.animateTo(1f, animationSpec = tween(200))
           }
           onBookmarkClick()
-        },
-        modifier = Modifier.graphicsLayer(
-          scaleX = bookmarkBounce.value,
-          scaleY = bookmarkBounce.value
+        }, modifier = Modifier.graphicsLayer(
+          scaleX = bookmarkBounce.value, scaleY = bookmarkBounce.value
         )
       ) {
         Icon(

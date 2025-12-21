@@ -51,4 +51,3 @@ internal fun PopupDropdownActionsPreviewLight() {
 internal fun PopupDropdownActionsPreviewDark() {
   PopupDropdownActionsContent(darkMode = true)
 }
-
