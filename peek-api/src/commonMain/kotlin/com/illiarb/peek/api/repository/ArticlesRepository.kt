@@ -52,7 +52,8 @@ public class ArticlesRepository(
 
   public fun articleByUrl(url: Url): Flow<Async<Article>> {
     return Async.fromFlow {
-      articlesDao.articleByUrl(url).getOrNull() ?: throw ArticleNotFoundException()
+      val article = articlesDao.articleByUrl(url).getOrElse { throw it }
+      article ?: throw ArticleNotFoundException()
     }
   }
 
