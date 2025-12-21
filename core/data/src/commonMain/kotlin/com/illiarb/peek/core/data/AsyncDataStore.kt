@@ -52,12 +52,7 @@ public class AsyncDataStore<Params, Domain>(
 
   private fun createFlowFor(params: Params, strategy: LoadStrategy): Flow<Async<Domain>> {
     return flow {
-      val memCached = suspendRunCatching { fromMemory.invoke(params) }
-        .onFailure { error ->
-          Logger.e(TAG, error) { "Failed to read from memory cache, skipping.." }
-        }
-        .getOrNull()
-
+      val memCached = getFromMemory(params)
       if (memCached != null) {
         emit(Async.Content(memCached))
       }
@@ -66,63 +61,82 @@ public class AsyncDataStore<Params, Domain>(
         null
       } else {
         emit(Async.Loading)
-
-        suspendRunCatching { fromStorage.invoke(params) }
-          .onFailure { error ->
-            Logger.e(TAG, error) { "Failed to read from storage, skipping.." }
-          }
-          .onSuccess { fromStorage ->
-            if (fromStorage != null) {
-              suspendRunCatching { intoMemory.invoke(params, fromStorage) }.onFailure { error ->
-                Logger.e(TAG, error) { "Failed to warmup memory cache" }
-              }
-            }
-          }
-          .getOrNull()
+        getFromStorage(params)
       }
 
       if (storageCached != null) {
         emit(Async.Content(storageCached))
       }
 
-      val fromNetwork = when (strategy) {
-        LoadStrategy.CacheFirst -> suspendRunCatching {
-          networkFetcher.invoke(params)
+      val fromNetwork = getFromNetwork(params, strategy, memCached, storageCached)
+
+      fromNetwork?.onSuccess { content ->
+        suspendRunCatching { intoStorage.invoke(params, content) }.onFailure { error ->
+          Logger.e(TAG, error) { "Failed to update storage, params $params" }
         }
 
-        LoadStrategy.CacheOnly -> {
-          if (memCached == null && storageCached == null) {
-            suspendRunCatching {
-              networkFetcher.invoke(params)
-            }
-          } else {
-            null
+        suspendRunCatching { intoMemory.invoke(params, content) }.onFailure { error ->
+          Logger.e(TAG, error) { "Failed to update memory cache, params $params" }
+        }
+
+        emit(Async.Content(content))
+      }
+
+      fromNetwork?.onFailure { error ->
+        Logger.e(TAG, error) { "Failed to fetch from network, params $params" }
+
+        if (memCached == null && storageCached == null) {
+          emit(Async.Error(error))
+        }
+      }
+    }.catch { error ->
+      emit(Async.Error(error))
+    }
+  }
+
+  private suspend fun getFromMemory(params: Params): Domain? {
+    return suspendRunCatching { fromMemory.invoke(params) }
+      .onFailure { error ->
+        Logger.e(TAG, error) { "Failed to read from memory cache, skipping.." }
+      }
+      .getOrNull()
+  }
+
+  private suspend fun getFromStorage(params: Params): Domain? {
+    return suspendRunCatching { fromStorage.invoke(params) }
+      .onFailure { error ->
+        Logger.e(TAG, error) { "Failed to read from storage, skipping.." }
+      }
+      .onSuccess { fromStorage ->
+        if (fromStorage != null) {
+          suspendRunCatching { intoMemory.invoke(params, fromStorage) }.onFailure { error ->
+            Logger.e(TAG, error) { "Failed to warmup memory cache" }
           }
         }
       }
+      .getOrNull()
+  }
 
-      fromNetwork?.fold(
-        onSuccess = { content ->
-          suspendRunCatching { intoStorage.invoke(params, content) }.onFailure { error ->
-            Logger.e(TAG, error) { "Failed to update storage, params $params" }
+  private suspend fun getFromNetwork(
+    params: Params,
+    strategy: LoadStrategy,
+    fromMemory: Domain?,
+    fromStorage: Domain?,
+  ): Result<Domain>? {
+    return when (strategy) {
+      LoadStrategy.CacheFirst -> suspendRunCatching {
+        networkFetcher.invoke(params)
+      }
+
+      LoadStrategy.CacheOnly -> {
+        if (fromMemory == null && fromStorage == null) {
+          suspendRunCatching {
+            networkFetcher.invoke(params)
           }
-
-          suspendRunCatching { intoMemory.invoke(params, content) }.onFailure { error ->
-            Logger.e(TAG, error) { "Failed to update memory cache, params $params" }
-          }
-
-          emit(Async.Content(content))
-        },
-        onFailure = { error ->
-          Logger.e(TAG, error) { "Failed to fetch from network, params $params" }
-
-          if (memCached == null && storageCached == null) {
-            emit(Async.Error(error))
-          }
-        },
-      )
-    }.catch { error ->
-      emit(Async.Error(error))
+        } else {
+          null
+        }
+      }
     }
   }
 
