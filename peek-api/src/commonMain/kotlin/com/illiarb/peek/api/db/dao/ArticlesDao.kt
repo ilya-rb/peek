@@ -9,7 +9,6 @@ import com.illiarb.peek.core.coroutines.suspendRunCatching
 import com.illiarb.peek.core.logging.Logger
 import com.illiarb.peek.core.types.Url
 import dev.zacsweers.metro.Inject
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.withContext
 
 @Inject
@@ -82,7 +81,6 @@ public class ArticlesDao(
     db.articlesQueries.insert(
       url = article.url,
       title = article.title,
-      tags = article.tags,
       kind = article.kind,
       date = article.date,
       saved = if (article.saved) 1L else 0L,
@@ -93,7 +91,6 @@ public class ArticlesDao(
     return Article(
       url = url,
       title = title,
-      tags = tags.orEmpty().toImmutableList(),
       kind = kind,
       saved = saved == 1L,
       date = date,

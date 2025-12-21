@@ -12,7 +12,7 @@ import dev.zacsweers.metro.Provides
 public actual object SummarizerPlatformBindings {
 
   @Provides
-  @SummarizerApi
+  @InternalApi
   public fun provideSummarizerSqlDriver(context: Context): SqlDriver {
     return AndroidSqliteDriver(
       schema = Database.Schema,

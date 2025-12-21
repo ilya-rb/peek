@@ -1,9 +1,6 @@
-import kotlinx.datetime.Instant;
-
 CREATE TABLE IF NOT EXISTS summaries (
     `url` TEXT PRIMARY KEY NOT NULL,
-    `summary` TEXT NOT NULL,
-    `created_at` INTEGER AS Instant NOT NULL
+    `summary` TEXT NOT NULL
 );
 
 summaryByUrl:
@@ -12,12 +9,10 @@ SELECT * FROM summaries WHERE url = :url;
 saveSummary:
 INSERT OR REPLACE INTO summaries (
     `url`,
-    `summary`,
-    `created_at`
+    `summary`
 ) VALUES (
 :url,
-:summary,
-:createdAt
+:summary
 );
 
 deleteSummary:

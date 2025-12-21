@@ -9,9 +9,7 @@ import com.illiarb.peek.core.network.NetworkConfig
 import com.illiarb.peek.core.network.TimeoutConfig
 import com.illiarb.peek.features.summarizer.Database
 import com.illiarb.peek.features.summarizer.DefaultSummarizerService
-import com.illiarb.peek.features.summarizer.Summaries
 import com.illiarb.peek.features.summarizer.SummarizerService
-import com.illiarb.peek.features.summarizer.db.DatabaseAdapters
 import com.illiarb.peek.features.summarizer.network.authPlugin
 import com.illiarb.peek.features.summarizer.repository.SummarizerRepository
 import dev.zacsweers.metro.BindingContainer
@@ -23,7 +21,7 @@ import dev.zacsweers.metro.SingleIn
 public object SummarizerBindings {
 
   @Provides
-  @SummarizerApi
+  @InternalApi
   public fun provideSummarizerNetworkConfig(): NetworkConfig {
     return NetworkConfig(
       timeouts = TimeoutConfig.default(),
@@ -31,7 +29,7 @@ public object SummarizerBindings {
   }
 
   @Provides
-  @SummarizerApi
+  @InternalApi
   public fun provideSummarizerHttpClient(
     config: NetworkConfig,
     factory: HttpClient.Factory,
@@ -44,7 +42,7 @@ public object SummarizerBindings {
 
   @Provides
   @SingleIn(AppScope::class)
-  @SummarizerApi
+  @InternalApi
   public fun provideSummarizerMemoryCache(): ConcurrentHashMapCache {
     return ConcurrentHashMapCache(DefaultConcurrentHashMapCache())
   }
@@ -56,13 +54,10 @@ public object SummarizerBindings {
   }
 
   @Provides
-  @SummarizerApi
+  @InternalApi
   @SingleIn(AppScope::class)
-  public fun provideSummarizerDatabase(@SummarizerApi driver: SqlDriver): Database {
-    return Database(
-      driver = driver,
-      summariesAdapter = Summaries.Adapter(created_atAdapter = DatabaseAdapters.instantAdapter),
-    )
+  public fun provideSummarizerDatabase(@InternalApi driver: SqlDriver): Database {
+    return Database(driver)
   }
 }
 
@@ -70,4 +65,4 @@ public object SummarizerBindings {
 public expect object SummarizerPlatformBindings
 
 @Qualifier
-internal annotation class SummarizerApi
+internal annotation class InternalApi
