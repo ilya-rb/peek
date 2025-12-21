@@ -1,29 +1,22 @@
 package com.illiarb.peek.features.home
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmarks
-import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
@@ -35,9 +28,7 @@ import com.illiarb.peek.features.home.HomeScreenContract.Event
 import com.illiarb.peek.features.home.articles.ArticlesContent
 import com.illiarb.peek.features.home.articles.ArticlesEmpty
 import com.illiarb.peek.features.home.articles.ArticlesLoading
-import com.illiarb.peek.features.home.tags.TagFilterOverlay
 import com.illiarb.peek.features.navigation.map.SummaryScreen
-import com.illiarb.peek.features.navigation.map.showOverlay
 import com.illiarb.peek.features.navigation.map.showScreenOverlay
 import com.illiarb.peek.uikit.core.components.HorizontalList
 import com.illiarb.peek.uikit.core.components.TextSwitcher
@@ -45,7 +36,6 @@ import com.illiarb.peek.uikit.core.components.cell.FullscreenErrorState
 import com.illiarb.peek.uikit.core.components.cell.SelectableCircleAvatar
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_action_bookmarks
-import com.illiarb.peek.uikit.resources.acsb_action_filter
 import com.illiarb.peek.uikit.resources.acsb_action_settings
 import com.illiarb.peek.uikit.resources.home_screen_title
 import com.illiarb.peek.uikit.resources.service_dou_name
@@ -57,7 +47,6 @@ import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.materials.HazeMaterials
 import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
 import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Duration.Companion.seconds
 
@@ -66,7 +55,6 @@ internal fun HomeScreen(state: HomeScreenContract.State, ignored: Modifier = Mod
   val eventSink = state.eventSink
   val articlesEventSink = state.articlesEventSink
 
-  val bottomSheetContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh
   val bottomBarBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior()
   val bottomBarAlpha = 1 - bottomBarBehavior.state.collapsedFraction
 
@@ -75,24 +63,7 @@ internal fun HomeScreen(state: HomeScreenContract.State, ignored: Modifier = Mod
   val hazeState = rememberHazeState()
   val hazeStyle = HazeMaterials.thin(MaterialTheme.colorScheme.surface)
 
-  val articleFilterVisible by derivedStateOf { state.allTags.isNotEmpty() }
-
   when {
-    state.filtersShowing -> {
-      OverlayEffect(Unit) {
-        val result = showOverlay<TagFilterOverlay.Input, TagFilterOverlay.Output>(
-          input = TagFilterOverlay.Input(
-            allTags = state.allTags.take(5).toImmutableList(),
-            selectedTags = state.selectedTags,
-            containerColor = bottomSheetContainerColor,
-          ),
-          onDismiss = { TagFilterOverlay.Output.Cancel },
-          content = { input, navigator -> TagFilterOverlay(input, navigator) },
-        )
-        eventSink.invoke(Event.TagFilterResult(result))
-      }
-    }
-
     state.articleSummaryToShow != null -> {
       OverlayEffect(Unit) {
         val result = showScreenOverlay(
@@ -165,27 +136,6 @@ internal fun HomeScreen(state: HomeScreenContract.State, ignored: Modifier = Mod
               .alpha(bottomBarAlpha)
           )
         },
-        floatingActionButton = {
-          AnimatedVisibility(
-            visible = articleFilterVisible,
-            enter = scaleIn(),
-            exit = scaleOut(),
-          ) {
-            IconButton(
-              colors = IconButtonDefaults.iconButtonColors().copy(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-              ),
-              onClick = { eventSink.invoke(Event.FiltersClicked) },
-              modifier = Modifier.alpha(bottomBarAlpha),
-            ) {
-              Icon(
-                imageVector = Icons.Filled.FilterList,
-                contentDescription = stringResource(Res.string.acsb_action_filter),
-              )
-            }
-          }
-        }
       )
     },
   ) { innerPadding ->

@@ -29,6 +29,7 @@ internal class BookmarksPresenter(
 ) : Presenter<BookmarksScreenContract.State> {
 
   @Composable
+  @Suppress("LongMethod")
   override fun present(): BookmarksScreenContract.State {
     val coroutineScope = rememberStableCoroutineScope()
 

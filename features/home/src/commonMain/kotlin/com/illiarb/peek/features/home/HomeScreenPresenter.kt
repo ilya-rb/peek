@@ -1,21 +1,18 @@
 package com.illiarb.peek.features.home
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.illiarb.peek.api.PeekApiService
 import com.illiarb.peek.api.domain.Article
 import com.illiarb.peek.api.domain.NewsSourceKind
-import com.illiarb.peek.api.domain.Tag
 import com.illiarb.peek.core.arch.message.MessageDispatcher
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.core.data.mapContent
 import com.illiarb.peek.features.home.HomeScreenContract.Event
 import com.illiarb.peek.features.home.HomeScreenContract.State.BookmarkMessage
 import com.illiarb.peek.features.home.articles.ArticlesUi
-import com.illiarb.peek.features.home.tags.TagFilterOverlay
 import com.illiarb.peek.features.navigation.map.BookmarksScreen
 import com.illiarb.peek.features.navigation.map.ReaderScreen
 import com.illiarb.peek.features.navigation.map.SettingsScreen
@@ -41,15 +38,10 @@ internal class HomeScreenPresenter(
   }
 
   @Composable
+  @Suppress("CyclomaticComplexMethod", "LongMethod")
   override fun present(): HomeScreenContract.State {
     val coroutineScope = rememberStableCoroutineScope()
 
-    var filtersShowing by rememberRetained {
-      mutableStateOf(value = false)
-    }
-    var selectedTags by rememberRetained {
-      mutableStateOf(emptyList<Tag>())
-    }
     var articleSummaryToShow by rememberRetained {
       mutableStateOf<Article?>(value = null)
     }
@@ -77,17 +69,11 @@ internal class HomeScreenPresenter(
         .collect { value = it }
     }
 
-    val allTags by derivedStateOf { articles.tags().toImmutableList() }
-    val articlesFiltered by derivedStateOf { articles.filteredBy(selectedTags) }
-
     return HomeScreenContract.State(
       newsSources = newsSources,
       selectedNewsSourceIndex = contentTriggers.selectedNewsSourceIndex,
-      filtersShowing = filtersShowing,
-      selectedTags = selectedTags.toImmutableList(),
-      allTags = allTags,
       articleSummaryToShow = articleSummaryToShow,
-      articles = articlesFiltered,
+      articles = articles,
       bookmarkMessage = bookmarkMessage,
       eventSink = { event ->
         when (event) {
@@ -98,8 +84,6 @@ internal class HomeScreenPresenter(
             )
           }
 
-          is Event.FiltersClicked -> filtersShowing = true
-
           is Event.SummaryResult -> {
             articleSummaryToShow = null
 
@@ -109,13 +93,6 @@ internal class HomeScreenPresenter(
                 navigator.goTo(ReaderScreen(event.result.url))
               }
             }
-          }
-
-          is Event.TagFilterResult -> {
-            if (event.result is TagFilterOverlay.Output.Saved) {
-              selectedTags = event.result.selectedTags
-            }
-            filtersShowing = false
           }
 
           is Event.TabClicked -> {
@@ -176,33 +153,5 @@ internal class HomeScreenPresenter(
         }
       }
     )
-  }
-
-  private fun Async<ImmutableList<Article>>.tags(): Set<Tag> {
-    return when (this) {
-      is Async.Content -> content.flatMap(Article::tags)
-        .filter { it.value.isNotEmpty() }
-        .toSet()
-
-      else -> emptySet()
-    }
-  }
-
-  private fun Async<ImmutableList<Article>>.filteredBy(
-    tags: List<Tag>
-  ): Async<ImmutableList<Article>> {
-    if (tags.isEmpty()) {
-      return this
-    }
-
-    return when (this) {
-      is Async.Content -> copy(
-        content = content
-          .filter { article -> article.tags.any(tags::contains) }
-          .toImmutableList()
-      )
-
-      else -> this
-    }
   }
 }

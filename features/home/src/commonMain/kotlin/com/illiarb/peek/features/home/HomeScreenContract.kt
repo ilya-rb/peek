@@ -4,12 +4,10 @@ import androidx.compose.runtime.Immutable
 import com.illiarb.peek.api.PeekApiService
 import com.illiarb.peek.api.domain.Article
 import com.illiarb.peek.api.domain.NewsSourceKind
-import com.illiarb.peek.api.domain.Tag
 import com.illiarb.peek.core.arch.di.UiScope
 import com.illiarb.peek.core.arch.message.MessageDispatcher
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.home.articles.ArticlesUi
-import com.illiarb.peek.features.home.tags.TagFilterOverlay
 import com.illiarb.peek.features.navigation.map.HomeScreen
 import com.illiarb.peek.features.navigation.map.SummaryScreen
 import com.slack.circuit.runtime.CircuitContext
@@ -30,10 +28,7 @@ internal interface HomeScreenContract {
   data class State(
     val articles: Async<ImmutableList<Article>>,
     val newsSources: ImmutableList<NewsSourceKind>,
-    val allTags: ImmutableList<Tag>,
-    val selectedTags: ImmutableList<Tag>,
     val selectedNewsSourceIndex: Int,
-    val filtersShowing: Boolean,
     val articleSummaryToShow: Article?,
     val bookmarkMessage: BookmarkMessage?,
     val eventSink: (Event) -> Unit,
@@ -53,11 +48,9 @@ internal interface HomeScreenContract {
   )
 
   sealed interface Event : CircuitUiEvent {
-    data class TagFilterResult(val result: TagFilterOverlay.Output) : Event
     data class SummaryResult(val result: SummaryScreen.Result) : Event
     data class TabClicked(val source: NewsSourceKind) : Event
     data object ErrorRetryClicked : Event
-    data object FiltersClicked : Event
     data object SettingsClicked : Event
     data object BookmarksClicked : Event
     data object BookmarkToastResult : Event
