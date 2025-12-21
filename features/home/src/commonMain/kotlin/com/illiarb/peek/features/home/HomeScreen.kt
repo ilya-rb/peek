@@ -14,7 +14,6 @@ import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.BottomAppBarDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -36,7 +35,6 @@ import com.illiarb.peek.features.home.HomeScreenContract.Event
 import com.illiarb.peek.features.home.articles.ArticlesContent
 import com.illiarb.peek.features.home.articles.ArticlesEmpty
 import com.illiarb.peek.features.home.articles.ArticlesLoading
-import com.illiarb.peek.features.home.tags.TagFilterContract
 import com.illiarb.peek.features.home.tags.TagFilterOverlay
 import com.illiarb.peek.features.navigation.map.SummaryScreen
 import com.illiarb.peek.features.navigation.map.showOverlay
@@ -56,7 +54,6 @@ import com.illiarb.peek.uikit.resources.service_hacker_news_name
 import com.slack.circuit.overlay.OverlayEffect
 import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
-import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import dev.chrisbanes.haze.materials.HazeMaterials
 import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.collections.immutable.ImmutableList
@@ -64,9 +61,8 @@ import kotlinx.collections.immutable.toImmutableList
 import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Duration.Companion.seconds
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalHazeMaterialsApi::class)
 @Composable
-internal fun HomeScreen(state: HomeScreenContract.State, modifier: Modifier = Modifier) {
+internal fun HomeScreen(state: HomeScreenContract.State, ignored: Modifier = Modifier) {
   val eventSink = state.eventSink
   val articlesEventSink = state.articlesEventSink
 
@@ -84,13 +80,13 @@ internal fun HomeScreen(state: HomeScreenContract.State, modifier: Modifier = Mo
   when {
     state.filtersShowing -> {
       OverlayEffect(Unit) {
-        val result = showOverlay<TagFilterContract.Input, TagFilterContract.Output>(
-          input = TagFilterContract.Input(
+        val result = showOverlay<TagFilterOverlay.Input, TagFilterOverlay.Output>(
+          input = TagFilterOverlay.Input(
             allTags = state.allTags.take(5).toImmutableList(),
             selectedTags = state.selectedTags,
             containerColor = bottomSheetContainerColor,
           ),
-          onDismiss = { TagFilterContract.Output.Cancel },
+          onDismiss = { TagFilterOverlay.Output.Cancel },
           content = { input, navigator -> TagFilterOverlay(input, navigator) },
         )
         eventSink.invoke(Event.TagFilterResult(result))
@@ -248,3 +244,4 @@ private fun NewsSourcesContent(
     },
   )
 }
+

@@ -14,8 +14,8 @@ import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.core.data.mapContent
 import com.illiarb.peek.features.home.HomeScreenContract.Event
 import com.illiarb.peek.features.home.HomeScreenContract.State.BookmarkMessage
-import com.illiarb.peek.features.home.articles.ArticlesUiEvent
-import com.illiarb.peek.features.home.tags.TagFilterContract
+import com.illiarb.peek.features.home.articles.ArticlesUi
+import com.illiarb.peek.features.home.tags.TagFilterOverlay
 import com.illiarb.peek.features.navigation.map.BookmarksScreen
 import com.illiarb.peek.features.navigation.map.ReaderScreen
 import com.illiarb.peek.features.navigation.map.SettingsScreen
@@ -112,7 +112,7 @@ internal class HomeScreenPresenter(
           }
 
           is Event.TagFilterResult -> {
-            if (event.result is TagFilterContract.Output.Saved) {
+            if (event.result is TagFilterOverlay.Output.Saved) {
               selectedTags = event.result.selectedTags
             }
             filtersShowing = false
@@ -135,11 +135,11 @@ internal class HomeScreenPresenter(
       },
       articlesEventSink = { event ->
         when (event) {
-          is ArticlesUiEvent.ArticleClicked -> {
+          is ArticlesUi.ArticleClicked -> {
             navigator.goTo(ReaderScreen(event.item.url))
           }
 
-          is ArticlesUiEvent.ArticleBookmarkClicked -> {
+          is ArticlesUi.ArticleBookmarkClicked -> {
             coroutineScope.launch {
               val saved = !event.item.saved
 
@@ -148,7 +148,6 @@ internal class HomeScreenPresenter(
                   contentTriggers = contentTriggers.copy(
                     articleBookmarked = !contentTriggers.articleBookmarked
                   )
-                  // TODO: move to resources
                   val message = if (saved) "Added to bookmarks" else "Removed from bookmarks"
 
                   messageDispatcher.sendMessage(
@@ -161,15 +160,15 @@ internal class HomeScreenPresenter(
             }
           }
 
-          is ArticlesUiEvent.ArticleSummarizeClicked -> {
+          is ArticlesUi.ArticleSummarizeClicked -> {
             articleSummaryToShow = event.item
           }
 
-          is ArticlesUiEvent.ArticleShareClicked -> {
+          is ArticlesUi.ArticleShareClicked -> {
             navigator.goTo(ShareScreen(event.item.url))
           }
 
-          is ArticlesUiEvent.ArticlesRefreshClicked -> {
+          is ArticlesUi.ArticlesRefreshClicked -> {
             contentTriggers = contentTriggers.copy(
               manualReloadTriggered = !contentTriggers.manualReloadTriggered
             )

@@ -10,7 +10,7 @@ import com.illiarb.peek.core.arch.message.MessageDispatcher
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.core.data.mapContent
 import com.illiarb.peek.core.types.Url
-import com.illiarb.peek.features.home.articles.ArticlesUiEvent
+import com.illiarb.peek.features.home.articles.ArticlesUi
 import com.illiarb.peek.features.navigation.map.ReaderScreen
 import com.illiarb.peek.features.navigation.map.ShareScreen
 import com.slack.circuit.retained.produceRetainedState
@@ -59,7 +59,7 @@ internal class BookmarksPresenter(
       articleSummaryToShow = articleSummaryToShow,
       articlesEventSink = { event ->
         when (event) {
-          is ArticlesUiEvent.ArticleBookmarkClicked -> {
+          is ArticlesUi.ArticleBookmarkClicked -> {
             coroutineScope.launch {
               val article = event.item.copy(saved = false)
 
@@ -77,19 +77,19 @@ internal class BookmarksPresenter(
             }
           }
 
-          is ArticlesUiEvent.ArticleClicked -> {
+          is ArticlesUi.ArticleClicked -> {
             navigator.goTo(ReaderScreen(event.item.url))
           }
 
-          is ArticlesUiEvent.ArticleShareClicked -> {
+          is ArticlesUi.ArticleShareClicked -> {
             navigator.goTo(ShareScreen(Url(event.item.url.url)))
           }
 
-          is ArticlesUiEvent.ArticleSummarizeClicked -> {
+          is ArticlesUi.ArticleSummarizeClicked -> {
             articleSummaryToShow = event.item
           }
 
-          is ArticlesUiEvent.ArticlesRefreshClicked -> {
+          is ArticlesUi.ArticlesRefreshClicked -> {
             contentTriggers = contentTriggers.copy(
               contentForceRefresh = !contentTriggers.contentForceRefresh
             )

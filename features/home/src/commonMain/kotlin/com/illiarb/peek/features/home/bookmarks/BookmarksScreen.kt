@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.home.articles.ArticlesContent
 import com.illiarb.peek.features.home.articles.ArticlesLoading
-import com.illiarb.peek.features.home.articles.ArticlesUiEvent
+import com.illiarb.peek.features.home.articles.ArticlesUi
 import com.illiarb.peek.features.home.bookmarks.BookmarksScreenContract.Event
 import com.illiarb.peek.features.navigation.map.SummaryScreen
 import com.illiarb.peek.features.navigation.map.showScreenOverlay
@@ -46,7 +46,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun BookmarksScreen(state: BookmarksScreenContract.State, modifier: Modifier = Modifier) {
+internal fun BookmarksScreen(state: BookmarksScreenContract.State, ignored: Modifier = Modifier) {
   val articlesEventSink = state.articlesEventSink
   val eventSink = state.eventSink
 
@@ -101,7 +101,7 @@ internal fun BookmarksScreen(state: BookmarksScreenContract.State, modifier: Mod
         is Async.Content -> {
           if (targetState.content.isEmpty()) {
             BookmarksEmpty(contentPadding = innerPadding) {
-              articlesEventSink.invoke(ArticlesUiEvent.ArticlesRefreshClicked)
+              articlesEventSink.invoke(ArticlesUi.ArticlesRefreshClicked)
             }
           } else {
             ArticlesContent(
@@ -129,6 +129,7 @@ private fun BookmarksEmpty(
     EmptyState(
       title = stringResource(Res.string.bookmarks_empty),
       buttonText = null,
+      onButtonClick = onActionClick,
       modifier = Modifier
         .fillMaxWidth()
         .padding(16.dp)

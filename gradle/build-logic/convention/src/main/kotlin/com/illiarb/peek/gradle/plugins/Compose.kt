@@ -37,6 +37,7 @@ class Compose : Plugin<Project> {
     kotlin {
       compilerOptions {
         optIn.add("androidx.compose.material3.ExperimentalMaterial3Api")
+        optIn.add("dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi")
       }
 
       sourceSets {

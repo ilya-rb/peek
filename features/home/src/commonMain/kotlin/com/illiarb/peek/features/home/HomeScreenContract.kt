@@ -8,8 +8,8 @@ import com.illiarb.peek.api.domain.Tag
 import com.illiarb.peek.core.arch.di.UiScope
 import com.illiarb.peek.core.arch.message.MessageDispatcher
 import com.illiarb.peek.core.data.Async
-import com.illiarb.peek.features.home.articles.ArticlesUiEvent
-import com.illiarb.peek.features.home.tags.TagFilterContract
+import com.illiarb.peek.features.home.articles.ArticlesUi
+import com.illiarb.peek.features.home.tags.TagFilterOverlay
 import com.illiarb.peek.features.navigation.map.HomeScreen
 import com.illiarb.peek.features.navigation.map.SummaryScreen
 import com.slack.circuit.runtime.CircuitContext
@@ -37,7 +37,7 @@ internal interface HomeScreenContract {
     val articleSummaryToShow: Article?,
     val bookmarkMessage: BookmarkMessage?,
     val eventSink: (Event) -> Unit,
-    val articlesEventSink: (ArticlesUiEvent) -> Unit,
+    val articlesEventSink: (ArticlesUi) -> Unit,
   ) : CircuitUiState {
 
     enum class BookmarkMessage {
@@ -53,7 +53,7 @@ internal interface HomeScreenContract {
   )
 
   sealed interface Event : CircuitUiEvent {
-    data class TagFilterResult(val result: TagFilterContract.Output) : Event
+    data class TagFilterResult(val result: TagFilterOverlay.Output) : Event
     data class SummaryResult(val result: SummaryScreen.Result) : Event
     data class TabClicked(val source: NewsSourceKind) : Event
     data object ErrorRetryClicked : Event

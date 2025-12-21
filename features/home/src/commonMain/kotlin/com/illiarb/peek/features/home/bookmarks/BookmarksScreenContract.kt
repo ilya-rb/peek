@@ -5,7 +5,7 @@ import com.illiarb.peek.api.domain.Article
 import com.illiarb.peek.core.arch.di.UiScope
 import com.illiarb.peek.core.arch.message.MessageDispatcher
 import com.illiarb.peek.core.data.Async
-import com.illiarb.peek.features.home.articles.ArticlesUiEvent
+import com.illiarb.peek.features.home.articles.ArticlesUi
 import com.illiarb.peek.features.navigation.map.BookmarksScreen
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiState
@@ -23,7 +23,7 @@ internal interface BookmarksScreenContract {
   data class State(
     val articles: Async<ImmutableList<Article>>,
     val articleSummaryToShow: Article?,
-    val articlesEventSink: (ArticlesUiEvent) -> Unit,
+    val articlesEventSink: (ArticlesUi) -> Unit,
     val eventSink: (Event) -> Unit,
   ) : CircuitUiState
 

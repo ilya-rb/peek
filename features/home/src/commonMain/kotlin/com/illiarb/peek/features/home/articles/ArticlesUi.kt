@@ -34,12 +34,12 @@ import kotlinx.datetime.format
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
 
-internal sealed interface ArticlesUiEvent {
-  data class ArticleClicked(val item: Article) : ArticlesUiEvent
-  data class ArticleBookmarkClicked(val item: Article) : ArticlesUiEvent
-  data class ArticleSummarizeClicked(val item: Article) : ArticlesUiEvent
-  data class ArticleShareClicked(val item: Article) : ArticlesUiEvent
-  data object ArticlesRefreshClicked : ArticlesUiEvent
+internal sealed interface ArticlesUi {
+  data class ArticleClicked(val item: Article) : ArticlesUi
+  data class ArticleBookmarkClicked(val item: Article) : ArticlesUi
+  data class ArticleSummarizeClicked(val item: Article) : ArticlesUi
+  data class ArticleShareClicked(val item: Article) : ArticlesUi
+  data object ArticlesRefreshClicked : ArticlesUi
 }
 
 @Composable
@@ -62,7 +62,7 @@ internal fun ArticlesLoading(modifier: Modifier = Modifier, contentPadding: Padd
 internal fun ArticlesEmpty(
   modifier: Modifier = Modifier,
   contentPadding: PaddingValues,
-  eventSink: (ArticlesUiEvent) -> Unit,
+  eventSink: (ArticlesUi) -> Unit,
 ) {
   Column(
     modifier = modifier.fillMaxSize().padding(contentPadding),
@@ -71,7 +71,7 @@ internal fun ArticlesEmpty(
     EmptyState(
       title = stringResource(Res.string.home_articles_empty_title),
       buttonText = stringResource(Res.string.home_articles_empty_action),
-      onButtonClick = { eventSink.invoke(ArticlesUiEvent.ArticlesRefreshClicked) },
+      onButtonClick = { eventSink.invoke(ArticlesUi.ArticlesRefreshClicked) },
       modifier = Modifier
         .fillMaxWidth()
         .padding(16.dp)
@@ -91,7 +91,7 @@ internal fun ArticlesContent(
   modifier: Modifier = Modifier,
   contentPadding: PaddingValues,
   articles: ImmutableList<Article>,
-  eventSink: (ArticlesUiEvent) -> Unit,
+  eventSink: (ArticlesUi) -> Unit,
 ) {
   LazyColumn(modifier, contentPadding = contentPadding) {
     items(
@@ -105,16 +105,16 @@ internal fun ArticlesContent(
           subtitle = article.tags.firstOrNull()?.value.orEmpty(),
           saved = article.saved,
           onClick = {
-            eventSink.invoke(ArticlesUiEvent.ArticleClicked(article))
+            eventSink.invoke(ArticlesUi.ArticleClicked(article))
           },
           onBookmarkClick = {
-            eventSink.invoke(ArticlesUiEvent.ArticleBookmarkClicked(article))
+            eventSink.invoke(ArticlesUi.ArticleBookmarkClicked(article))
           },
           onSummarizeClick = {
-            eventSink.invoke(ArticlesUiEvent.ArticleSummarizeClicked(article))
+            eventSink.invoke(ArticlesUi.ArticleSummarizeClicked(article))
           },
           onShareClick = {
-            eventSink.invoke(ArticlesUiEvent.ArticleShareClicked(article))
+            eventSink.invoke(ArticlesUi.ArticleShareClicked(article))
           },
         )
         HorizontalDivider(

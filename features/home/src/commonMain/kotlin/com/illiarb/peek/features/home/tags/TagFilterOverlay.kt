@@ -39,7 +39,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import org.jetbrains.compose.resources.stringResource
 
-internal interface TagFilterContract {
+internal interface TagFilterOverlay {
 
   @Immutable
   data class Input(
@@ -57,8 +57,8 @@ internal interface TagFilterContract {
 
 @Composable
 internal fun TagFilterOverlay(
-  input: TagFilterContract.Input,
-  navigator: OverlayNavigator<TagFilterContract.Output>,
+  input: TagFilterOverlay.Input,
+  navigator: OverlayNavigator<TagFilterOverlay.Output>,
 ) {
   val selectedTags = remember {
     input.selectedTags
@@ -76,14 +76,14 @@ internal fun TagFilterOverlay(
             modifier = Modifier.padding(start = 16.dp),
             content = { Text(stringResource(Res.string.filters_action_save)) },
             onClick = {
-              navigator.finish(TagFilterContract.Output.Saved(selectedTags.keys.toImmutableList()))
+              navigator.finish(TagFilterOverlay.Output.Saved(selectedTags.keys.toImmutableList()))
             },
           )
           Button(
             modifier = Modifier.padding(start = 8.dp),
             colors = ButtonDefaults.outlinedButtonColors(),
             content = { Text(stringResource(Res.string.filters_action_cancel)) },
-            onClick = { navigator.finish(TagFilterContract.Output.Cancel) },
+            onClick = { navigator.finish(TagFilterOverlay.Output.Cancel) },
           )
         }
       )
