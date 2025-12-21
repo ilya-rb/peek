@@ -16,6 +16,8 @@ buildConfig = "0.17.1"
 circuit = "0.31.0"
 coil = "3.3.0"
 compose-plugin = "1.9.3"
+detekt = "1.23.8"
+doctor = "0.12.0"
 haze = "1.7.1"
 kotlin = "2.3.0"
 kotlin-atomic = "0.29.0"
@@ -40,6 +42,8 @@ androidCacheFixPlugin = { id = "org.gradle.android.cache-fix", version.ref = "an
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
 buildConfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildConfig" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+doctor = { id = "com.osacky.doctor", version.ref = "doctor" }
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 kotlinAtomic = { id = "org.jetbrains.kotlinx.atomicfu", version.ref = "kotlin-atomic" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
@@ -72,6 +76,7 @@ gradlePlugin-android = { module = "com.android.tools.build:gradle", version.ref 
 gradlePlugin-compose = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "compose-plugin" }
 gradlePlugin-composeCompiler = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
 gradlePlugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+gradlePlugin-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 
 haze = { module = "dev.chrisbanes.haze:haze", version.ref = "haze" }
 haze-materials = { module = "dev.chrisbanes.haze:haze-materials", version.ref = "haze" }

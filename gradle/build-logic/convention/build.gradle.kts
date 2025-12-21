@@ -13,6 +13,7 @@ dependencies {
   compileOnly(libs.gradlePlugin.kotlin)
   compileOnly(libs.gradlePlugin.compose)
   compileOnly(libs.gradlePlugin.composeCompiler)
+  compileOnly(libs.gradlePlugin.detekt)
 }
 
 gradlePlugin {

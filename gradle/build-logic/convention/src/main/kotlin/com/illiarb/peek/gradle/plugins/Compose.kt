@@ -20,6 +20,7 @@ class Compose : Plugin<Project> {
     }
 
     composeCompiler {
+      enableStrongSkippingMode.set(true)
       //https://issuetracker.google.com/issues/338842143
       includeSourceInformation.set(true)
 

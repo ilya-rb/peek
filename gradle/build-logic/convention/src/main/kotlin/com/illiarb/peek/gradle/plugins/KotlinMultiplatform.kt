@@ -17,9 +17,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompileCommon
 class KotlinMultiplatform : Plugin<Project> {
 
   override fun apply(target: Project) = with(target) {
-    with(pluginManager) {
-      apply("org.jetbrains.kotlin.multiplatform")
-    }
+    pluginManager.apply("org.jetbrains.kotlin.multiplatform")
 
     kotlinMultiplatform {
       applyDefaultHierarchyTemplate()
