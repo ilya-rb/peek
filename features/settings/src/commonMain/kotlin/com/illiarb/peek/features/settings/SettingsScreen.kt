@@ -9,7 +9,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,9 +32,11 @@ import com.illiarb.peek.uikit.resources.settings_dynamic_colors_title
 import com.illiarb.peek.uikit.resources.settings_screen_title
 import org.jetbrains.compose.resources.stringResource
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun SettingsScreen(state: SettingsScreenContract.State, modifier: Modifier = Modifier) {
+internal fun SettingsScreen(
+  state: SettingsScreenContract.State,
+  modifier: Modifier = Modifier,
+) {
   val events = state.events
 
   Scaffold(
@@ -57,45 +58,54 @@ internal fun SettingsScreen(state: SettingsScreenContract.State, modifier: Modif
   ) { innerPadding ->
     Box(modifier = modifier.padding(innerPadding).fillMaxSize()) {
       Column {
-        SettingsHeader(
-          text = stringResource(Res.string.settings_appearance_title),
-          icon = VectorIcon(
-            imageVector = Icons.Filled.Palette,
-            contentDescription = stringResource(Res.string.acsb_icon_appearance),
-          ),
-        )
-        SwitchCell(
-          switchChecked = state.dynamicColorsEnabled,
-          text = stringResource(Res.string.settings_dynamic_colors_title),
-          subtitle = stringResource(Res.string.settings_dynamic_colors_subtitle),
-          onChecked = { checked ->
-            events.invoke(Event.MaterialColorsToggleChecked(checked))
-          }
-        )
-        SwitchCell(
-          switchChecked = state.darkThemeEnabled,
-          text = stringResource(Res.string.settings_dark_theme_title),
-          subtitle = null,
-          onChecked = { checked ->
-            events.invoke(Event.DarkThemeEnabledChecked(checked))
-          }
-        )
-        if (state.debugSettings != null) {
-          SettingsHeader(
-            modifier = Modifier.padding(top = 16.dp),
-            text = "Debug",
-            icon = VectorIcon(
-              imageVector = Icons.Filled.BugReport,
-              contentDescription = "Debug",
-            )
-          )
-          DebugSettings(
-            settings = state.debugSettings,
-            onNetworkDelayChanged = { events.invoke(Event.NetworkDelayChanged(it)) }
-          )
-        }
+        SettingsContent(state)
       }
     }
+  }
+}
+
+@Composable
+private fun SettingsContent(
+  state: SettingsScreenContract.State,
+) {
+  val events = state.events
+
+  SettingsHeader(
+    text = stringResource(Res.string.settings_appearance_title),
+    icon = VectorIcon(
+      imageVector = Icons.Filled.Palette,
+      contentDescription = stringResource(Res.string.acsb_icon_appearance),
+    ),
+  )
+  SwitchCell(
+    switchChecked = state.dynamicColorsEnabled,
+    text = stringResource(Res.string.settings_dynamic_colors_title),
+    subtitle = stringResource(Res.string.settings_dynamic_colors_subtitle),
+    onChecked = { checked ->
+      events.invoke(Event.MaterialColorsToggleChecked(checked))
+    }
+  )
+  SwitchCell(
+    switchChecked = state.darkThemeEnabled,
+    text = stringResource(Res.string.settings_dark_theme_title),
+    subtitle = null,
+    onChecked = { checked ->
+      events.invoke(Event.DarkThemeEnabledChecked(checked))
+    }
+  )
+  if (state.debugSettings != null) {
+    SettingsHeader(
+      modifier = Modifier.padding(top = 16.dp),
+      text = "Debug",
+      icon = VectorIcon(
+        imageVector = Icons.Filled.BugReport,
+        contentDescription = "Debug",
+      )
+    )
+    DebugSettings(
+      settings = state.debugSettings,
+      onNetworkDelayChanged = { events.invoke(Event.NetworkDelayChanged(it)) }
+    )
   }
 }
 

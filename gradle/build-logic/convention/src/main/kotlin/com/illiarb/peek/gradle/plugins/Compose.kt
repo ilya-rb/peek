@@ -35,6 +35,10 @@ class Compose : Plugin<Project> {
     val composeDependencies = ComposePlugin.Dependencies(target)
 
     kotlin {
+      compilerOptions {
+        optIn.add("androidx.compose.material3.ExperimentalMaterial3Api")
+      }
+
       sourceSets {
         androidMain.dependencies {
           implementation(composeDependencies.preview)
