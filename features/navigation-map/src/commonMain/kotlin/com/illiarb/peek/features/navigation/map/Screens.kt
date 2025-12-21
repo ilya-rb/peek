@@ -44,4 +44,3 @@ public data class SummaryScreen(
     public data class OpenInReader(val url: Url) : Result
   }
 }
-
