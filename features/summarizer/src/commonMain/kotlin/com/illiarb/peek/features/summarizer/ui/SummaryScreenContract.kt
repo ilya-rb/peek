@@ -1,5 +1,6 @@
 package com.illiarb.peek.features.summarizer.ui
 
+import androidx.compose.runtime.Immutable
 import com.illiarb.peek.api.PeekApiService
 import com.illiarb.peek.api.domain.Article
 import com.illiarb.peek.core.arch.di.UiScope
@@ -20,6 +21,7 @@ import dev.zacsweers.metro.Inject
 
 internal interface SummaryScreenContract {
 
+  @Immutable
   data class State(
     val articleWithSummary: Async<ArticleWithSummary>,
     val eventSink: (Event) -> Unit,

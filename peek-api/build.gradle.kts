@@ -16,6 +16,7 @@ kotlin {
     commonMain.dependencies {
       implementation(libs.kotlin.coroutines.core)
       implementation(libs.kotlinx.datetime)
+      implementation(libs.kotlinx.collections)
       implementation(libs.ktor.core)
       implementation(libs.ktor.serialization.json)
       implementation(libs.rssparser)
