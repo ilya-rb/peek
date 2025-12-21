@@ -7,7 +7,8 @@ import kotlinx.coroutines.CancellationException
  */
 public suspend fun <T> suspendRunCatching(block: suspend () -> T): Result<T> {
   return try {
-    Result.success(block())
+    val result = block()
+    Result.success(result)
   } catch (e: Throwable) {
     if (e is CancellationException) {
       throw e

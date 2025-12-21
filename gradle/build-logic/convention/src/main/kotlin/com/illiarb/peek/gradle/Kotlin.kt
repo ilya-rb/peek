@@ -29,22 +29,21 @@ private fun Project.configureDetekt() {
 
   detekt {
     toolVersion = libs.findVersion("detekt").get().displayName
-    ignoredBuildTypes = listOf("release")
+    config.setFrom(rootProject.file("detekt.yml"))
+    buildUponDefaultConfig = true
     source.setFrom(
       "src/commonMain/kotlin",
       "src/androidMain/kotlin",
-      // "src/iosMain/kotlin",
     )
   }
 
   tasks.withType(Detekt::class.java) {
     reports {
-      html.required.set(false)
       xml.required.set(false)
 
       val projectName = this@configureDetekt.name.lowercase()
-      md.required.set(true)
-      md.outputLocation.set(rootProject.file("build/reports/detekt_$projectName.md"))
+      html.required.set(true)
+      html.outputLocation.set(rootProject.file("build/reports/detekt_$projectName.html"))
     }
   }
 }
