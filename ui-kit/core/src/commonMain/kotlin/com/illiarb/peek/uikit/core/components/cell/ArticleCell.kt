@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -46,107 +47,142 @@ public fun ArticleCell(
   onShareClick: () -> Unit,
   caption: String? = null,
 ) {
-  var moreMenuExpanded by remember { mutableStateOf(false) }
-
-  val bookmarkBounce = remember { Animatable(1f) }
-  val coroutineScope = rememberCoroutineScope()
-
   Row(
     verticalAlignment = Alignment.CenterVertically,
     modifier = modifier.clickable(onClick = onClick),
   ) {
-    Column(modifier = Modifier.weight(1f)) {
-      val hasSubtitle = subtitle.isNotEmpty()
-      val paddingVertical = 12.dp
+    ArticleContent(title = title, subtitle = subtitle, caption = caption)
+    ArticleActions(saved, onBookmarkClick, onSummarizeClick, onShareClick)
+  }
+}
 
-      if (hasSubtitle) {
-        Text(
-          text = subtitle.uppercase(),
-          style = MaterialTheme.typography.bodyLarge,
-          color = MaterialTheme.colorScheme.primary,
-          modifier = Modifier.fillMaxWidth()
-            .padding(top = paddingVertical, start = 16.dp, end = 24.dp),
-        )
-      }
+@Composable
+private fun RowScope.ArticleContent(
+  modifier: Modifier = Modifier,
+  title: String,
+  subtitle: String,
+  caption: String?,
+) {
+  Column(modifier = modifier.weight(1f)) {
+    val hasSubtitle = subtitle.isNotEmpty()
+    val paddingVertical = 12.dp
 
+    if (hasSubtitle) {
       Text(
-        text = title,
+        text = subtitle.uppercase(),
         style = MaterialTheme.typography.bodyLarge,
-        color = MaterialTheme.colorScheme.onSurface,
-        overflow = TextOverflow.Ellipsis,
-        maxLines = 4,
-        modifier = Modifier.fillMaxWidth().padding(
-          start = 16.dp,
-          end = 16.dp,
-          top = if (hasSubtitle) 8.dp else paddingVertical,
-          bottom = if (caption == null) paddingVertical else 0.dp,
-        ),
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.fillMaxWidth()
+          .padding(top = paddingVertical, start = 16.dp, end = 24.dp),
       )
-
-      Row(verticalAlignment = Alignment.CenterVertically) {
-        if (caption != null) {
-          Text(
-            modifier = Modifier.padding(
-              start = 16.dp,
-              end = 16.dp,
-              top = 8.dp,
-              bottom = paddingVertical,
-            ),
-            text = caption,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-          )
-        }
-      }
     }
 
-    Column(
-      verticalArrangement = Arrangement.SpaceAround, modifier = Modifier.fillMaxHeight()
-    ) {
-      IconButton(
-        onClick = {
-          coroutineScope.launch {
-            bookmarkBounce.animateTo(1.2f, animationSpec = tween(100))
-            bookmarkBounce.animateTo(1f, animationSpec = tween(200))
-          }
-          onBookmarkClick()
-        }, modifier = Modifier.graphicsLayer(
-          scaleX = bookmarkBounce.value, scaleY = bookmarkBounce.value
-        )
-      ) {
-        Icon(
-          imageVector = if (saved) {
-            Icons.Filled.Bookmark
-          } else {
-            Icons.Filled.BookmarkBorder
-          },
-          tint = MaterialTheme.colorScheme.primary,
-          contentDescription = null,
-        )
-      }
+    Text(
+      text = title,
+      style = MaterialTheme.typography.bodyLarge,
+      color = MaterialTheme.colorScheme.onSurface,
+      overflow = TextOverflow.Ellipsis,
+      maxLines = 4,
+      modifier = Modifier.fillMaxWidth().padding(
+        start = 16.dp,
+        end = 16.dp,
+        top = if (hasSubtitle) 8.dp else paddingVertical,
+        bottom = if (caption == null) paddingVertical else 0.dp,
+      ),
+    )
 
-      Box {
-        IconButton(onClick = { moreMenuExpanded = true }) {
-          Icon(
-            imageVector = Icons.Filled.MoreHoriz,
-            tint = MaterialTheme.colorScheme.primary,
-            contentDescription = null,
-          )
-        }
-        DropdownMenu(
-          expanded = moreMenuExpanded,
-          onDismissRequest = { moreMenuExpanded = false },
-        ) {
-          SummarizeAction {
-            moreMenuExpanded = false
-            onSummarizeClick()
-          }
-          ShareAction {
-            moreMenuExpanded = false
-            onShareClick()
-          }
-        }
+    Row(verticalAlignment = Alignment.CenterVertically) {
+      if (caption != null) {
+        Text(
+          modifier = Modifier.padding(
+            start = 16.dp,
+            end = 16.dp,
+            top = 8.dp,
+            bottom = paddingVertical,
+          ),
+          text = caption,
+          style = MaterialTheme.typography.bodyMedium,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
       }
+    }
+  }
+}
+
+@Composable
+private fun ArticleActions(
+  articleSaved: Boolean,
+  onBookmarkClick: () -> Unit,
+  onSummarizeClick: () -> Unit,
+  onShareClick: () -> Unit,
+) {
+  var moreMenuExpanded by remember { mutableStateOf(false) }
+  val bookmarkBounce = remember { Animatable(1f) }
+  val coroutineScope = rememberCoroutineScope()
+
+  Column(
+    verticalArrangement = Arrangement.SpaceAround, modifier = Modifier.fillMaxHeight()
+  ) {
+    IconButton(
+      onClick = {
+        coroutineScope.launch {
+          bookmarkBounce.animateTo(1.2f, animationSpec = tween(100))
+          bookmarkBounce.animateTo(1f, animationSpec = tween(200))
+        }
+        onBookmarkClick()
+      }, modifier = Modifier.graphicsLayer(
+        scaleX = bookmarkBounce.value, scaleY = bookmarkBounce.value
+      )
+    ) {
+      Icon(
+        imageVector = if (articleSaved) {
+          Icons.Filled.Bookmark
+        } else {
+          Icons.Filled.BookmarkBorder
+        },
+        tint = MaterialTheme.colorScheme.primary,
+        contentDescription = null,
+      )
+    }
+
+    ArticlePopupMenu(
+      expanded = moreMenuExpanded,
+      onMenuClick = { moreMenuExpanded = true },
+      onDismiss = { moreMenuExpanded = false },
+      onSummarizeClick = {
+        moreMenuExpanded = false
+        onSummarizeClick()
+      },
+      onShareClick = {
+        moreMenuExpanded = false
+        onShareClick()
+      }
+    )
+  }
+}
+
+@Composable
+private fun ArticlePopupMenu(
+  onMenuClick: () -> Unit,
+  onDismiss: () -> Unit,
+  expanded: Boolean,
+  onSummarizeClick: () -> Unit,
+  onShareClick: () -> Unit,
+) {
+  Box {
+    IconButton(onMenuClick) {
+      Icon(
+        imageVector = Icons.Filled.MoreHoriz,
+        tint = MaterialTheme.colorScheme.primary,
+        contentDescription = null,
+      )
+    }
+    DropdownMenu(
+      expanded = expanded,
+      onDismissRequest = onDismiss,
+    ) {
+      SummarizeAction(onClick = onSummarizeClick)
+      ShareAction(onClick = onShareClick)
     }
   }
 }
