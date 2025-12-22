@@ -39,3 +39,6 @@ jobs:
 
     - name: Detekt
       run: ./gradlew detekt -Pci=true
+
+    - name: Unit Tests
+      run: ./gradlew testDebugUnitTest -Pci=true

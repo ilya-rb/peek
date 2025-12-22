@@ -85,9 +85,13 @@ public class AsyncDataStore<Params, Domain>(
       fromNetwork?.onFailure { error ->
         Logger.e(TAG, error) { "Failed to fetch from network, params $params" }
 
-        if (memCached == null && storageCached == null) {
-          emit(Async.Error(error))
-        }
+        emit(
+          when {
+            memCached != null -> Async.Content(memCached, suppressedError = error)
+            storageCached != null -> Async.Content(storageCached, suppressedError = error)
+            else -> Async.Error(error)
+          }
+        )
       }
     }.catch { error ->
       emit(Async.Error(error))
