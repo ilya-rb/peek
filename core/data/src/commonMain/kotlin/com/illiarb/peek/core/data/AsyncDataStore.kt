@@ -12,6 +12,9 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.shareIn
+import kotlin.time.Clock
+import kotlin.time.Duration
+import kotlin.time.Instant
 
 public class AsyncDataStore<Params, Domain>(
   private val networkFetcher: suspend (Params) -> Domain,
@@ -26,7 +29,7 @@ public class AsyncDataStore<Params, Domain>(
   private val coroutineScope: CoroutineScope
     get() = AsyncDataStoreGlobal.coroutineScope
 
-  public fun collect(params: Params, strategy: LoadStrategy): Flow<Async<Domain>> {
+  public fun collect(params: Params, strategy: LoadStrategy<Params>): Flow<Async<Domain>> {
     return sharedFlows.getOrPut(params) {
       createFlowFor(params, strategy).shareIn(
         scope = coroutineScope,
@@ -50,7 +53,7 @@ public class AsyncDataStore<Params, Domain>(
     invalidateMemory.invoke(params)
   }
 
-  private fun createFlowFor(params: Params, strategy: LoadStrategy): Flow<Async<Domain>> {
+  private fun createFlowFor(params: Params, strategy: LoadStrategy<Params>): Flow<Async<Domain>> {
     return flow {
       val memCached = getFromMemory(params)
       if (memCached != null) {
@@ -123,16 +126,16 @@ public class AsyncDataStore<Params, Domain>(
 
   private suspend fun getFromNetwork(
     params: Params,
-    strategy: LoadStrategy,
+    strategy: LoadStrategy<Params>,
     fromMemory: Domain?,
     fromStorage: Domain?,
   ): Result<Domain>? {
     return when (strategy) {
-      LoadStrategy.CacheFirst -> suspendRunCatching {
+      is LoadStrategy.CacheFirst -> suspendRunCatching {
         networkFetcher.invoke(params)
       }
 
-      LoadStrategy.CacheOnly -> {
+      is LoadStrategy.CacheOnly -> {
         if (fromMemory == null && fromStorage == null) {
           suspendRunCatching {
             networkFetcher.invoke(params)
@@ -141,12 +144,44 @@ public class AsyncDataStore<Params, Domain>(
           null
         }
       }
+
+      is LoadStrategy.TimeBased -> {
+        val current = strategy.invalidator.getCacheTimestamp(params)
+          .onFailure { error ->
+            Logger.e(TAG, error) { "Failed to read cached timestamp for $params" }
+          }
+          .getOrNull()
+
+        val cacheExpired = current == null || (Clock.System.now() - current) > strategy.duration
+        if (cacheExpired) {
+          suspendRunCatching { networkFetcher.invoke(params) }.onSuccess {
+            strategy.invalidator.setCacheTimestamp(params, Clock.System.now()).onFailure { error ->
+              Logger.e(TAG, error) { "Failed to save cached timestamp for $params" }
+            }
+          }
+        } else {
+          null
+        }
+      }
     }
   }
 
-  public sealed interface LoadStrategy {
-    public data object CacheFirst : LoadStrategy
-    public data object CacheOnly : LoadStrategy
+  public sealed interface LoadStrategy<out P> {
+
+    public data object CacheFirst : LoadStrategy<Nothing>
+
+    public data object CacheOnly : LoadStrategy<Nothing>
+
+    public data class TimeBased<P>(
+      val duration: Duration,
+      val invalidator: CacheInvalidator<P>,
+    ) : LoadStrategy<P> {
+
+      public interface CacheInvalidator<P> {
+        public suspend fun getCacheTimestamp(params: P): Result<Instant?>
+        public suspend fun setCacheTimestamp(params: P, time: Instant): Result<Unit>
+      }
+    }
   }
 
   internal companion object {

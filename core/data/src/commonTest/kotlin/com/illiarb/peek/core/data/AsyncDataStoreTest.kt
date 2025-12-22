@@ -1,12 +1,18 @@
 package com.illiarb.peek.core.data
 
 import app.cash.turbine.test
+import com.illiarb.peek.core.data.AsyncDataStore.LoadStrategy.TimeBased
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Instant
 
 internal class AsyncDataStoreTest {
 
@@ -391,9 +397,252 @@ internal class AsyncDataStoreTest {
     assertEquals(2, networkCallCount)
   }
 
+  @Test
+  fun `TimeBased should fetch from network when no cache timestamp exists`() = runTest {
+    val params = TestParams("timebased1")
+    val networkContent = TestDomain("network-timebased1")
+    var networkCallCount = 0
+    val invalidator = TestCacheInvalidator()
+
+    val dataStore = createDataStore(
+      networkFetcher = {
+        ++networkCallCount
+        networkContent
+      }
+    )
+
+    val strategy = TimeBased(
+      duration = 5.minutes,
+      invalidator = invalidator
+    )
+
+    dataStore.collect(params, strategy).test {
+      assertIs<Async.Loading>(awaitItem())
+      val contentItem = awaitItem()
+      assertIs<Async.Content<TestDomain>>(contentItem)
+      assertEquals(networkContent, contentItem.content)
+      cancelAndIgnoreRemainingEvents()
+    }
+
+    assertEquals(1, networkCallCount)
+    assertNotNull(invalidator.timestamps[params])
+  }
+
+  @Test
+  fun `TimeBased should not fetch from network when cache is still valid`() = runTest {
+    val params = TestParams("timebased2")
+    val memoryContent = TestDomain("memory-timebased2")
+    var networkCallCount = 0
+    val invalidator = TestCacheInvalidator()
+
+    // Set a recent cache timestamp (within the duration)
+    invalidator.timestamps[params] = Clock.System.now()
+
+    val dataStore = createDataStore(
+      networkFetcher = {
+        ++networkCallCount
+        TestDomain("network-${it.id}")
+      },
+      fromMemory = { memoryContent }
+    )
+
+    val strategy = TimeBased(
+      duration = 5.minutes,
+      invalidator = invalidator
+    )
+
+    dataStore.collect(params, strategy).test {
+      val contentItem = awaitItem()
+      assertIs<Async.Content<TestDomain>>(contentItem)
+      assertEquals(memoryContent, contentItem.content)
+      cancelAndIgnoreRemainingEvents()
+    }
+
+    assertEquals(0, networkCallCount)
+  }
+
+  @Test
+  fun `TimeBased should fetch from network when cache has expired`() = runTest {
+    val params = TestParams("timebased3")
+    val memoryContent = TestDomain("memory-timebased3")
+    val networkContent = TestDomain("network-timebased3")
+    var networkCallCount = 0
+    val invalidator = TestCacheInvalidator()
+
+    // Set an old cache timestamp (expired)
+    invalidator.timestamps[params] = Clock.System.now() - 10.minutes
+
+    val dataStore = createDataStore(
+      networkFetcher = {
+        ++networkCallCount
+        networkContent
+      },
+      fromMemory = { memoryContent }
+    )
+
+    val strategy = TimeBased(
+      duration = 5.minutes,
+      invalidator = invalidator
+    )
+
+    dataStore.collect(params, strategy).test {
+      val memoryItem = awaitItem()
+      assertIs<Async.Content<TestDomain>>(memoryItem)
+      assertEquals(memoryContent, memoryItem.content)
+
+      val networkItem = awaitItem()
+      assertIs<Async.Content<TestDomain>>(networkItem)
+      assertEquals(networkContent, networkItem.content)
+
+      cancelAndIgnoreRemainingEvents()
+    }
+
+    assertEquals(1, networkCallCount)
+  }
+
+  @Test
+  fun `TimeBased should update cache timestamp after successful network fetch`() = runTest {
+    val params = TestParams("timebased4")
+    val networkContent = TestDomain("network-timebased4")
+    val invalidator = TestCacheInvalidator()
+
+    // Set an old cache timestamp (expired)
+    val oldTimestamp = Clock.System.now() - 10.minutes
+    invalidator.timestamps[params] = oldTimestamp
+
+    val dataStore = createDataStore(
+      networkFetcher = { networkContent }
+    )
+
+    val strategy = TimeBased(
+      duration = 5.minutes,
+      invalidator = invalidator
+    )
+
+    dataStore.collect(params, strategy).test {
+      assertIs<Async.Loading>(awaitItem())
+      assertIs<Async.Content<TestDomain>>(awaitItem())
+      cancelAndIgnoreRemainingEvents()
+    }
+
+    val newTimestamp = invalidator.timestamps[params]
+    assertNotNull(newTimestamp)
+    assertTrue(newTimestamp > oldTimestamp, "Cache timestamp should be updated after network fetch")
+  }
+
+  @Test
+  fun `TimeBased should not update cache timestamp when network fetch fails`() = runTest {
+    val params = TestParams("timebased5")
+    val networkError = RuntimeException("Network error")
+    val invalidator = TestCacheInvalidator()
+
+    // Set an old cache timestamp (expired)
+    val oldTimestamp = Clock.System.now() - 10.minutes
+    invalidator.timestamps[params] = oldTimestamp
+
+    val dataStore = createDataStore(
+      networkFetcher = { throw networkError }
+    )
+
+    val strategy = TimeBased(
+      duration = 5.minutes,
+      invalidator = invalidator
+    )
+
+    dataStore.collect(params, strategy).test {
+      assertIs<Async.Loading>(awaitItem())
+      assertIs<Async.Error>(awaitItem())
+      cancelAndIgnoreRemainingEvents()
+    }
+
+    assertEquals(oldTimestamp, invalidator.timestamps[params])
+  }
+
+  @Test
+  fun `TimeBased should use storage cache when network is not needed`() = runTest {
+    val params = TestParams("timebased6")
+    val storageContent = TestDomain("storage-timebased6")
+    var networkCallCount = 0
+    val invalidator = TestCacheInvalidator()
+
+    // Set a recent cache timestamp (within the duration)
+    invalidator.timestamps[params] = Clock.System.now()
+
+    val dataStore = createDataStore(
+      networkFetcher = {
+        ++networkCallCount
+        TestDomain("network-${it.id}")
+      },
+      fromStorage = { storageContent }
+    )
+
+    val strategy = TimeBased(
+      duration = 5.minutes,
+      invalidator = invalidator
+    )
+
+    dataStore.collect(params, strategy).test {
+      assertIs<Async.Loading>(awaitItem())
+      val contentItem = awaitItem()
+      assertIs<Async.Content<TestDomain>>(contentItem)
+      assertEquals(storageContent, contentItem.content)
+      cancelAndIgnoreRemainingEvents()
+    }
+
+    assertEquals(0, networkCallCount)
+  }
+
+  @Test
+  fun `TimeBased should return cached content with suppressed error when network fails`() =
+    runTest {
+      val params = TestParams("timebased7")
+      val memoryContent = TestDomain("memory-timebased7")
+      val networkError = RuntimeException("Network error")
+      val invalidator = TestCacheInvalidator()
+
+      // Set an old cache timestamp (expired)
+      invalidator.timestamps[params] = Clock.System.now() - 10.minutes
+
+      val dataStore = createDataStore(
+        networkFetcher = { throw networkError },
+        fromMemory = { memoryContent }
+      )
+
+      val strategy = TimeBased(
+        duration = 5.minutes,
+        invalidator = invalidator
+      )
+
+      dataStore.collect(params, strategy).test {
+        val memoryItem = awaitItem()
+        assertIs<Async.Content<TestDomain>>(memoryItem)
+        assertEquals(memoryContent, memoryItem.content)
+
+        val contentWithError = awaitItem()
+        assertIs<Async.Content<TestDomain>>(contentWithError)
+        assertEquals(memoryContent, contentWithError.content)
+        assertEquals(networkError, contentWithError.suppressedError)
+
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+
   data class TestParams(val id: String)
 
   data class TestDomain(val value: String)
+
+  private class TestCacheInvalidator : TimeBased.CacheInvalidator<TestParams> {
+    val timestamps = mutableMapOf<TestParams, Instant>()
+
+    override suspend fun getCacheTimestamp(params: TestParams): Result<Instant?> {
+      return Result.success(timestamps[params])
+    }
+
+    override suspend fun setCacheTimestamp(params: TestParams, time: Instant): Result<Unit> {
+      timestamps[params] = time
+      return Result.success(Unit)
+    }
+  }
 
   private fun createDataStore(
     networkFetcher: suspend (TestParams) -> TestDomain = { TestDomain("network-${it.id}") },

@@ -9,6 +9,8 @@ import com.illiarb.peek.api.error.ArticleNotFoundException
 import com.illiarb.peek.core.arch.di.AppScope
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.core.data.AsyncDataStore
+import com.illiarb.peek.core.data.AsyncDataStore.LoadStrategy.TimeBased
+import com.illiarb.peek.core.data.KeyValueStorage
 import com.illiarb.peek.core.data.MemoryCache
 import com.illiarb.peek.core.data.mapContent
 import com.illiarb.peek.core.logging.Logger
@@ -16,19 +18,38 @@ import com.illiarb.peek.core.types.Url
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.Flow
+import kotlinx.serialization.builtins.serializer
 import kotlin.jvm.JvmSuppressWildcards
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Instant
 
 @Inject
 @SingleIn(AppScope::class)
 internal class ArticlesRepository(
   @InternalApi private val memoryCache: MemoryCache<String>,
+  @InternalApi private val storage: KeyValueStorage,
   private val articlesDao: ArticlesDao,
   private val newsDataSources: Set<@JvmSuppressWildcards NewsDataSource>,
 ) {
 
+  private val articlesLoadingStrategy = TimeBased(
+    duration = 3.hours,
+    invalidator = object : TimeBased.CacheInvalidator<NewsSourceKind> {
+      override suspend fun getCacheTimestamp(params: NewsSourceKind): Result<Instant?> {
+        return storage.get(params.storageKey(), Long.serializer()).map { stamp ->
+          stamp?.let { Instant.fromEpochMilliseconds(it) }
+        }
+      }
+
+      override suspend fun setCacheTimestamp(params: NewsSourceKind, time: Instant): Result<Unit> {
+        return storage.put(params.storageKey(), time.toEpochMilliseconds(), Long.serializer())
+      }
+    }
+  )
+
   private val articlesStore = AsyncDataStore<NewsSourceKind, List<Article>>(
     networkFetcher = { kind ->
-      val newArticles = dataSourceFor(kind).getArticles()
+      val newArticles = kind.dataSource().getArticles()
       val cached = articlesDao.savedArticlesUrls().getOrElse { error ->
         Logger.e(throwable = error) { "Error reading cached articles" }
         emptyList()
@@ -55,7 +76,7 @@ internal class ArticlesRepository(
   )
 
   fun articlesFrom(kind: NewsSourceKind): Flow<Async<List<Article>>> {
-    return articlesStore.collect(kind, AsyncDataStore.LoadStrategy.CacheOnly)
+    return articlesStore.collect(kind, articlesLoadingStrategy)
       .mapContent { articles ->
         articles.sortedByDescending {
           it.date
@@ -84,7 +105,15 @@ internal class ArticlesRepository(
     }
   }
 
-  private fun dataSourceFor(kind: NewsSourceKind): NewsDataSource {
-    return newsDataSources.first { it.kind == kind }
+  private fun NewsSourceKind.dataSource(): NewsDataSource {
+    return newsDataSources.first { it.kind == this }
+  }
+
+  private fun NewsSourceKind.storageKey(): String {
+    return "${KEY_ARTICLES_LAST_FETCHED_PREFIX}_${name}"
+  }
+
+  companion object {
+    const val KEY_ARTICLES_LAST_FETCHED_PREFIX = "KEY_ARTICLES_LAST_FETCHED_PREFIX"
   }
 }
