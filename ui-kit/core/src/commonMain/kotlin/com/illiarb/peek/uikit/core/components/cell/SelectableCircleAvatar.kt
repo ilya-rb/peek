@@ -6,6 +6,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -25,12 +26,13 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.illiarb.peek.uikit.imageloader.UrlImage
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 public fun SelectableCircleAvatar(
   modifier: Modifier = Modifier,
-  imageUrl: String,
+  image: DrawableResource,
   selected: Boolean,
   onClick: () -> Unit,
 ) {
@@ -40,7 +42,6 @@ public fun SelectableCircleAvatar(
     MaterialTheme.colorScheme.onPrimary,
     MaterialTheme.colorScheme.primary,
   )
-
   val alpha: Float by animateFloatAsState(if (selected) 1f else 0.5f)
   val scale: Float by animateFloatAsState(if (selected) 1f else 0.8f)
   val borderWidth = 2.dp
@@ -54,9 +55,10 @@ public fun SelectableCircleAvatar(
     ),
   )
 
-  UrlImage(
-    url = imageUrl,
-    contentScale = ContentScale.Inside,
+  Image(
+    imageVector = vectorResource(image),
+    contentDescription = null,
+    contentScale = ContentScale.Fit,
     modifier = modifier
       .size(48.dp)
       .padding(borderWidth)
