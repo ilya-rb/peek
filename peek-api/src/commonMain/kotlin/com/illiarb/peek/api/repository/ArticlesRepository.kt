@@ -36,23 +36,20 @@ internal class ArticlesRepository(
     duration = 3.hours,
     invalidator = object : TimeBased.CacheInvalidator<NewsSourceKind> {
       override suspend fun getCacheTimestamp(params: NewsSourceKind): Result<Instant?> {
-        val key = "${KEY_ARTICLES_LAST_FETCHED_PREFIX}_${params.name}"
-
-        return storage.get(key, Long.serializer()).map { stamp ->
+        return storage.get(params.storageKey(), Long.serializer()).map { stamp ->
           stamp?.let { Instant.fromEpochMilliseconds(it) }
         }
       }
 
       override suspend fun setCacheTimestamp(params: NewsSourceKind, time: Instant): Result<Unit> {
-        val key = "${KEY_ARTICLES_LAST_FETCHED_PREFIX}_${params.name}"
-        return storage.put(key, time.toEpochMilliseconds(), Long.serializer())
+        return storage.put(params.storageKey(), time.toEpochMilliseconds(), Long.serializer())
       }
     }
   )
 
   private val articlesStore = AsyncDataStore<NewsSourceKind, List<Article>>(
     networkFetcher = { kind ->
-      val newArticles = dataSourceFor(kind).getArticles()
+      val newArticles = kind.dataSource().getArticles()
       val cached = articlesDao.savedArticlesUrls().getOrElse { error ->
         Logger.e(throwable = error) { "Error reading cached articles" }
         emptyList()
@@ -108,8 +105,12 @@ internal class ArticlesRepository(
     }
   }
 
-  private fun dataSourceFor(kind: NewsSourceKind): NewsDataSource {
-    return newsDataSources.first { it.kind == kind }
+  private fun NewsSourceKind.dataSource(): NewsDataSource {
+    return newsDataSources.first { it.kind == this }
+  }
+
+  private fun NewsSourceKind.storageKey(): String {
+    return "${KEY_ARTICLES_LAST_FETCHED_PREFIX}_${name}"
   }
 
   companion object {
