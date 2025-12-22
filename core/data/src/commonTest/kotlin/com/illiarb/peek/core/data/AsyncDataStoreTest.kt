@@ -2,7 +2,6 @@ package com.illiarb.peek.core.data
 
 import app.cash.turbine.test
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -12,197 +11,189 @@ import kotlin.test.assertIs
 internal class AsyncDataStoreTest {
 
   @Test
-  fun `GIVEN empty cache WHEN collect with CacheFirst THEN emits loading and content from network`() =
-    runTest {
-      // GIVEN
-      val params = TestParams("test1")
-      val expectedContent = TestDomain("network-test1")
-      val dataStore = createDataStore()
+  fun `it should emit loading and content from network when cache is empty`() = runTest {
+    val params = TestParams("test1")
+    val expectedContent = TestDomain("network-test1")
+    val dataStore = createDataStore()
 
-      // WHEN & THEN
-      dataStore.collect(params, AsyncDataStore.LoadStrategy.CacheFirst).test {
-        assertIs<Async.Loading>(awaitItem())
-        val contentItem = awaitItem()
-        assertIs<Async.Content<TestDomain>>(contentItem)
-        assertEquals(expectedContent, contentItem.content)
-        awaitComplete()
-      }
+    dataStore.collect(params, AsyncDataStore.LoadStrategy.CacheFirst).test {
+      assertIs<Async.Loading>(awaitItem())
+      val contentItem = awaitItem()
+      assertIs<Async.Content<TestDomain>>(contentItem)
+      assertEquals(expectedContent, contentItem.content)
+      cancelAndIgnoreRemainingEvents()
     }
+  }
 
   @Test
-  fun `GIVEN memory cache hit WHEN collect with CacheFirst THEN emits content from memory only`() =
-    runTest {
-      // GIVEN
-      val params = TestParams("test2")
-      val memoryContent = TestDomain("memory-test2")
-      var networkCallCount = 0
+  fun `it should emit memory cache first then fetch from network with CacheFirst`() = runTest {
+    val params = TestParams("test2")
+    val memoryContent = TestDomain("memory-test2")
+    val networkContent = TestDomain("network-test2")
+    var networkCallCount = 0
 
-      val dataStore = createDataStore(
-        networkFetcher = {
-          ++networkCallCount
-          TestDomain("network-${it.id}")
-        },
-        fromMemory = { memoryContent }
-      )
+    val dataStore = createDataStore(
+      networkFetcher = {
+        ++networkCallCount
+        TestDomain("network-${it.id}")
+      },
+      fromMemory = { memoryContent }
+    )
 
-      // WHEN & THEN
-      dataStore.collect(params, AsyncDataStore.LoadStrategy.CacheFirst).test {
-        val contentItem = awaitItem()
-        assertIs<Async.Content<TestDomain>>(contentItem)
-        assertEquals(memoryContent, contentItem.content)
-        awaitComplete()
-      }
+    dataStore.collect(params, AsyncDataStore.LoadStrategy.CacheFirst).test {
+      val memoryItem = awaitItem()
+      assertIs<Async.Content<TestDomain>>(memoryItem)
+      assertEquals(memoryContent, memoryItem.content)
 
-      assertEquals(0, networkCallCount)
+      val networkItem = awaitItem()
+      assertIs<Async.Content<TestDomain>>(networkItem)
+      assertEquals(networkContent, networkItem.content)
+
+      cancelAndIgnoreRemainingEvents()
     }
 
+    assertEquals(1, networkCallCount)
+  }
+
   @Test
-  fun `GIVEN storage cache hit WHEN collect with CacheFirst THEN emits loading, content from storage, and warms memory`() =
-    runTest {
-      // GIVEN
-      val params = TestParams("test3")
-      val storageContent = TestDomain("storage-test3")
-      val memoryWarmupCalls = mutableListOf<TestDomain>()
+  fun `it should emit storage cache and warm memory before fetching from network`() = runTest {
+    val params = TestParams("test3")
+    val storageContent = TestDomain("storage-test3")
+    val networkContent = TestDomain("network-test3")
+    val memoryWarmupCalls = mutableListOf<TestDomain>()
 
-      val dataStore = createDataStore(
-        fromStorage = { storageContent },
-        intoMemory = { _, domain -> memoryWarmupCalls.add(domain) }
-      )
+    val dataStore = createDataStore(
+      fromStorage = { storageContent },
+      intoMemory = { _, domain -> memoryWarmupCalls.add(domain) }
+    )
 
-      // WHEN & THEN
-      dataStore.collect(params, AsyncDataStore.LoadStrategy.CacheFirst).test {
-        assertIs<Async.Loading>(awaitItem())
-        val contentItem = awaitItem()
-        assertIs<Async.Content<TestDomain>>(contentItem)
-        assertEquals(storageContent, contentItem.content)
-        awaitComplete()
-      }
+    dataStore.collect(params, AsyncDataStore.LoadStrategy.CacheFirst).test {
+      assertIs<Async.Loading>(awaitItem())
+      val storageItem = awaitItem()
+      assertIs<Async.Content<TestDomain>>(storageItem)
+      assertEquals(storageContent, storageItem.content)
 
-      assertEquals(listOf(storageContent), memoryWarmupCalls)
+      val networkItem = awaitItem()
+      assertIs<Async.Content<TestDomain>>(networkItem)
+      assertEquals(networkContent, networkItem.content)
+
+      cancelAndIgnoreRemainingEvents()
     }
 
+    assertEquals(listOf(storageContent, networkContent), memoryWarmupCalls)
+  }
+
   @Test
-  fun `GIVEN successful network fetch WHEN collect THEN updates both storage and memory`() =
-    runTest {
-      // GIVEN
-      val params = TestParams("test8")
-      val networkContent = TestDomain("network-test8")
-      val storageUpdates = mutableListOf<TestDomain>()
-      val memoryUpdates = mutableListOf<TestDomain>()
+  fun `it should update both storage and memory after successful network fetch`() = runTest {
+    val params = TestParams("test8")
+    val networkContent = TestDomain("network-test8")
+    val storageUpdates = mutableListOf<TestDomain>()
+    val memoryUpdates = mutableListOf<TestDomain>()
 
-      val dataStore = createDataStore(
-        networkFetcher = { networkContent },
-        intoStorage = { _, domain -> storageUpdates.add(domain) },
-        intoMemory = { _, domain -> memoryUpdates.add(domain) }
-      )
+    val dataStore = createDataStore(
+      networkFetcher = { networkContent },
+      intoStorage = { _, domain -> storageUpdates.add(domain) },
+      intoMemory = { _, domain -> memoryUpdates.add(domain) }
+    )
 
-      // WHEN
-      dataStore.collect(params, AsyncDataStore.LoadStrategy.CacheFirst).test {
-        awaitItem() // Loading
-        awaitItem() // Content
-        awaitComplete()
-      }
-
-      // THEN
-      assertEquals(listOf(networkContent), storageUpdates)
-      assertEquals(listOf(networkContent), memoryUpdates)
+    dataStore.collect(params, AsyncDataStore.LoadStrategy.CacheFirst).test {
+      awaitItem() // Loading
+      awaitItem() // Content
+      cancelAndIgnoreRemainingEvents()
     }
 
+    assertEquals(listOf(networkContent), storageUpdates)
+    assertEquals(listOf(networkContent), memoryUpdates)
+  }
+
   @Test
-  fun `GIVEN network error and no cache WHEN collect THEN emits loading and error`() =
-    runTest {
-      // GIVEN
-      val params = TestParams("test4")
-      val networkError = RuntimeException("Network error")
+  fun `it should emit error when network fails and cache is empty`() = runTest {
+    val params = TestParams("test4")
+    val networkError = RuntimeException("Network error")
 
-      val dataStore = createDataStore(
-        networkFetcher = { throw networkError }
-      )
+    val dataStore = createDataStore(
+      networkFetcher = { throw networkError }
+    )
 
-      // WHEN & THEN
-      dataStore.collect(params, AsyncDataStore.LoadStrategy.CacheFirst).test {
-        assertIs<Async.Loading>(awaitItem())
-        val errorItem = awaitItem()
-        assertIs<Async.Error>(errorItem)
-        assertEquals(networkError, errorItem.error)
-        awaitComplete()
-      }
+    dataStore.collect(params, AsyncDataStore.LoadStrategy.CacheFirst).test {
+      assertIs<Async.Loading>(awaitItem())
+      val errorItem = awaitItem()
+      assertIs<Async.Error>(errorItem)
+      assertEquals(networkError, errorItem.error)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `it should emit cache with suppressed error when network fails but cache exists`() = runTest {
+    val params = TestParams("test5")
+    val memoryContent = TestDomain("memory-test5")
+    val networkError = RuntimeException("Network error")
+
+    val dataStore = createDataStore(
+      networkFetcher = { throw networkError },
+      fromMemory = { memoryContent }
+    )
+
+    dataStore.collect(params, AsyncDataStore.LoadStrategy.CacheFirst).test {
+      val contentItem = awaitItem()
+      assertIs<Async.Content<TestDomain>>(contentItem)
+      assertEquals(memoryContent, contentItem.content)
+
+      val contentWithError = awaitItem()
+      assertIs<Async.Content<TestDomain>>(contentWithError)
+      assertEquals(memoryContent, contentWithError.content)
+      assertEquals(networkError, contentWithError.suppressedError)
+
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `it should fetch from network with CacheOnly when cache is empty`() = runTest {
+    val params = TestParams("test6")
+    val networkContent = TestDomain("network-test6")
+
+    val dataStore = createDataStore(
+      networkFetcher = { networkContent }
+    )
+
+    dataStore.collect(params, AsyncDataStore.LoadStrategy.CacheOnly).test {
+      assertIs<Async.Loading>(awaitItem())
+      val contentItem = awaitItem()
+      assertIs<Async.Content<TestDomain>>(contentItem)
+      assertEquals(networkContent, contentItem.content)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `it should return cache without network call with CacheOnly strategy`() = runTest {
+    val params = TestParams("test7")
+    val memoryContent = TestDomain("memory-test7")
+    var networkCallCount = 0
+
+    val dataStore = createDataStore(
+      networkFetcher = {
+        ++networkCallCount
+        TestDomain("network-${it.id}")
+      },
+      fromMemory = { memoryContent }
+    )
+
+    dataStore.collect(params, AsyncDataStore.LoadStrategy.CacheOnly).test {
+      val contentItem = awaitItem()
+      assertIs<Async.Content<TestDomain>>(contentItem)
+      assertEquals(memoryContent, contentItem.content)
+      cancelAndIgnoreRemainingEvents()
     }
 
-  @Test
-  fun `GIVEN network error with cache WHEN collect THEN emits cache content and ignores error`() =
-    runTest {
-      // GIVEN
-      val params = TestParams("test5")
-      val memoryContent = TestDomain("memory-test5")
-      val networkError = RuntimeException("Network error")
-
-      val dataStore = createDataStore(
-        networkFetcher = { throw networkError },
-        fromMemory = { memoryContent }
-      )
-
-      // WHEN & THEN
-      dataStore.collect(params, AsyncDataStore.LoadStrategy.CacheFirst).test {
-        val contentItem = awaitItem()
-        assertIs<Async.Content<TestDomain>>(contentItem)
-        assertEquals(memoryContent, contentItem.content)
-        awaitComplete()
-      }
-    }
+    assertEquals(0, networkCallCount)
+  }
 
   @Test
-  fun `GIVEN CacheOnly strategy and no cache WHEN collect THEN fetches from network`() =
+  fun `it should share single network request when multiple subscribers collect same params`() =
     runTest {
-      // GIVEN
-      val params = TestParams("test6")
-      val networkContent = TestDomain("network-test6")
-
-      val dataStore = createDataStore(
-        networkFetcher = { networkContent }
-      )
-
-      // WHEN & THEN
-      dataStore.collect(params, AsyncDataStore.LoadStrategy.CacheOnly).test {
-        assertIs<Async.Loading>(awaitItem())
-        val contentItem = awaitItem()
-        assertIs<Async.Content<TestDomain>>(contentItem)
-        assertEquals(networkContent, contentItem.content)
-        awaitComplete()
-      }
-    }
-
-  @Test
-  fun `GIVEN CacheOnly strategy with cache WHEN collect THEN returns cache without network call`() =
-    runTest {
-      // GIVEN
-      val params = TestParams("test7")
-      val memoryContent = TestDomain("memory-test7")
-      var networkCallCount = 0
-
-      val dataStore = createDataStore(
-        networkFetcher = {
-          ++networkCallCount
-          TestDomain("network-${it.id}")
-        },
-        fromMemory = { memoryContent }
-      )
-
-      // WHEN & THEN
-      dataStore.collect(params, AsyncDataStore.LoadStrategy.CacheOnly).test {
-        val contentItem = awaitItem()
-        assertIs<Async.Content<TestDomain>>(contentItem)
-        assertEquals(memoryContent, contentItem.content)
-        awaitComplete()
-      }
-
-      assertEquals(0, networkCallCount)
-    }
-
-  @Test
-  fun `GIVEN multiple concurrent collectors with same params WHEN collect THEN shares single flow and makes one network call`() =
-    runTest {
-      // GIVEN
       val params = TestParams("shared")
       var networkCallCount = 0
       val networkContent = TestDomain("network-shared")
@@ -210,186 +201,195 @@ internal class AsyncDataStoreTest {
       val dataStore = createDataStore(
         networkFetcher = {
           ++networkCallCount
-          delay(100) // Simulate network delay
+          delay(100)
           networkContent
         }
       )
 
-      // WHEN
+      val receivedContent = mutableListOf<TestDomain>()
+
       val job1 = launch {
         dataStore.collect(params, AsyncDataStore.LoadStrategy.CacheFirst).test {
-          assertIs<Async.Loading>(awaitItem())
+          // First subscriber gets Loading, then Content
+          awaitItem() // Loading
           val contentItem = awaitItem()
           assertIs<Async.Content<TestDomain>>(contentItem)
-          assertEquals(networkContent, contentItem.content)
-          awaitComplete()
+          receivedContent.add(contentItem.content)
+          cancelAndIgnoreRemainingEvents()
         }
       }
 
       val job2 = launch {
         dataStore.collect(params, AsyncDataStore.LoadStrategy.CacheFirst).test {
-          assertIs<Async.Loading>(awaitItem())
-          val contentItem = awaitItem()
-          assertIs<Async.Content<TestDomain>>(contentItem)
-          assertEquals(networkContent, contentItem.content)
-          awaitComplete()
+          // Later subscribers may miss Loading due to replay=0, so just await content
+          val item = awaitItem()
+          val content = if (item is Async.Loading) awaitItem() else item
+          assertIs<Async.Content<TestDomain>>(content)
+          receivedContent.add(content.content)
+          cancelAndIgnoreRemainingEvents()
         }
       }
 
       val job3 = launch {
         dataStore.collect(params, AsyncDataStore.LoadStrategy.CacheFirst).test {
-          assertIs<Async.Loading>(awaitItem())
-          val contentItem = awaitItem()
-          assertIs<Async.Content<TestDomain>>(contentItem)
-          assertEquals(networkContent, contentItem.content)
-          awaitComplete()
+          val item = awaitItem()
+          val content = if (item is Async.Loading) awaitItem() else item
+          assertIs<Async.Content<TestDomain>>(content)
+          receivedContent.add(content.content)
+          cancelAndIgnoreRemainingEvents()
         }
       }
 
-      // THEN
       job1.join()
       job2.join()
       job3.join()
 
-      assertEquals(1, networkCallCount) // Only one network call despite 3 collectors
+      assertEquals(1, networkCallCount)
+      assertEquals(3, receivedContent.size)
+      receivedContent.forEach { assertEquals(networkContent, it) }
     }
 
   @Test
-  fun `GIVEN different params WHEN collect concurrently THEN makes separate network calls`() =
-    runTest {
-      // GIVEN
-      val params1 = TestParams("test1")
-      val params2 = TestParams("test2")
-      var networkCallCount = 0
+  fun `it should make separate network calls for different params`() = runTest {
+    val params1 = TestParams("test1")
+    val params2 = TestParams("test2")
+    var networkCallCount = 0
 
-      val dataStore = createDataStore(
-        networkFetcher = { params ->
-          ++networkCallCount
-          delay(50)
-          TestDomain("network-${params.id}")
-        }
-      )
-
-      // WHEN
-      val results = mutableListOf<List<Async<TestDomain>>>()
-
-      val job1 = launch {
-        results.add(dataStore.collect(params1, AsyncDataStore.LoadStrategy.CacheFirst).toList())
+    val dataStore = createDataStore(
+      networkFetcher = { params ->
+        ++networkCallCount
+        delay(50)
+        TestDomain("network-${params.id}")
       }
+    )
 
-      val job2 = launch {
-        results.add(dataStore.collect(params2, AsyncDataStore.LoadStrategy.CacheFirst).toList())
+    val job1 = launch {
+      dataStore.collect(params1, AsyncDataStore.LoadStrategy.CacheFirst).test {
+        awaitItem() // Loading
+        awaitItem() // Content
+        cancelAndIgnoreRemainingEvents()
       }
-
-      job1.join()
-      job2.join()
-
-      // THEN
-      assertEquals(2, networkCallCount) // Two network calls for different params
-      assertEquals(2, results.size)
     }
 
+    val job2 = launch {
+      dataStore.collect(params2, AsyncDataStore.LoadStrategy.CacheFirst).test {
+        awaitItem() // Loading
+        awaitItem() // Content
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+
+    job1.join()
+    job2.join()
+
+    assertEquals(2, networkCallCount)
+  }
+
   @Test
-  fun `GIVEN same params but different strategies WHEN collect concurrently THEN makes separate network calls`() =
+  fun `it should share flow for same params regardless of strategy`() =
     runTest {
-      // GIVEN
       val params = TestParams("test")
       var networkCallCount = 0
+      val networkContent = TestDomain("network-test")
 
       val dataStore = createDataStore(
         networkFetcher = {
           ++networkCallCount
           delay(50)
-          TestDomain("network-${it.id}")
+          networkContent
         }
       )
 
-      // WHEN
+      val receivedContent = mutableListOf<TestDomain>()
+
       val job1 = launch {
-        dataStore.collect(params, AsyncDataStore.LoadStrategy.CacheFirst).toList()
+        dataStore.collect(params, AsyncDataStore.LoadStrategy.CacheFirst).test {
+          awaitItem() // Loading
+          val content = awaitItem()
+          assertIs<Async.Content<TestDomain>>(content)
+          receivedContent.add(content.content)
+          cancelAndIgnoreRemainingEvents()
+        }
       }
 
       val job2 = launch {
-        dataStore.collect(params, AsyncDataStore.LoadStrategy.CacheOnly).toList()
+        dataStore.collect(params, AsyncDataStore.LoadStrategy.CacheOnly).test {
+          // Shares the same flow, so may get Loading or Content depending on timing
+          val item = awaitItem()
+          val content = if (item is Async.Loading) awaitItem() else item
+          assertIs<Async.Content<TestDomain>>(content)
+          receivedContent.add(content.content)
+          cancelAndIgnoreRemainingEvents()
+        }
       }
 
       job1.join()
       job2.join()
 
-      // THEN
-      assertEquals(2, networkCallCount) // Different strategies = different flows
+      // Only one network call since flows are shared by params (strategy is ignored for caching)
+      assertEquals(1, networkCallCount)
+      assertEquals(2, receivedContent.size)
+      receivedContent.forEach { assertEquals(networkContent, it) }
     }
 
   @Test
-  fun `GIVEN updateLocal called WHEN collect with same params THEN invalidates shared flows`() =
-    runTest {
-      // GIVEN
-      val params = TestParams("test")
-      var networkCallCount = 0
-      val updatedContent = TestDomain("updated")
+  fun `it should make new network call after updateLocal is called`() = runTest {
+    val params = TestParams("test")
+    var networkCallCount = 0
+    val updatedContent = TestDomain("updated")
 
-      val dataStore = createDataStore(
-        networkFetcher = {
-          ++networkCallCount
-          TestDomain("network-${it.id}")
-        }
-      )
-
-      // WHEN - First collection
-      dataStore.collect(params, AsyncDataStore.LoadStrategy.CacheFirst).test {
-        awaitItem() // Loading
-        awaitItem() // Content
-        awaitComplete()
+    val dataStore = createDataStore(
+      networkFetcher = {
+        ++networkCallCount
+        TestDomain("network-${it.id}")
       }
+    )
 
-      // Update local data
-      dataStore.updateLocal(params, updatedContent)
-
-      // Second collection after update
-      dataStore.collect(params, AsyncDataStore.LoadStrategy.CacheFirst).test {
-        awaitItem() // Loading
-        awaitItem() // Content
-        awaitComplete()
-      }
-
-      // THEN
-      assertEquals(2, networkCallCount) // Should make new network call after invalidation
+    dataStore.collect(params, AsyncDataStore.LoadStrategy.CacheFirst).test {
+      awaitItem() // Loading
+      awaitItem() // Content
+      cancelAndIgnoreRemainingEvents()
     }
+
+    dataStore.updateLocal(params, updatedContent)
+
+    dataStore.collect(params, AsyncDataStore.LoadStrategy.CacheFirst).test {
+      awaitItem() // Loading
+      awaitItem() // Content
+      cancelAndIgnoreRemainingEvents()
+    }
+
+    assertEquals(2, networkCallCount)
+  }
 
   @Test
-  fun `GIVEN invalidateMemory called WHEN collect with same params THEN invalidates shared flows`() =
-    runTest {
-      // GIVEN
-      val params = TestParams("test")
-      var networkCallCount = 0
+  fun `it should make new network call after invalidateMemory is called`() = runTest {
+    val params = TestParams("test")
+    var networkCallCount = 0
 
-      val dataStore = createDataStore(
-        networkFetcher = {
-          ++networkCallCount
-          TestDomain("network-${it.id}")
-        }
-      )
-
-      // WHEN - First collection
-      dataStore.collect(params, AsyncDataStore.LoadStrategy.CacheFirst).test {
-        awaitItem() // Loading
-        awaitItem() // Content
-        awaitComplete()
+    val dataStore = createDataStore(
+      networkFetcher = {
+        ++networkCallCount
+        TestDomain("network-${it.id}")
       }
+    )
 
-      // Invalidate memory
-      dataStore.invalidateMemory(params)
-
-      // Second collection after invalidation
-      dataStore.collect(params, AsyncDataStore.LoadStrategy.CacheFirst).test {
-        awaitItem() // Loading
-        awaitItem() // Content
-        awaitComplete()
-      }
-
-      // THEN
-      assertEquals(2, networkCallCount) // Should make new network call after invalidation
+    dataStore.collect(params, AsyncDataStore.LoadStrategy.CacheFirst).test {
+      awaitItem() // Loading
+      awaitItem() // Content
+      cancelAndIgnoreRemainingEvents()
     }
+
+    dataStore.invalidateMemory(params)
+
+    dataStore.collect(params, AsyncDataStore.LoadStrategy.CacheFirst).test {
+      awaitItem() // Loading
+      awaitItem() // Content
+      cancelAndIgnoreRemainingEvents()
+    }
+
+    assertEquals(2, networkCallCount)
+  }
 
   data class TestParams(val id: String)
 

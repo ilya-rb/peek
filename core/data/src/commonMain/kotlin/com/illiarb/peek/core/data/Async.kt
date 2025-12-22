@@ -9,7 +9,7 @@ public sealed class Async<out T> {
 
   public data object Loading : Async<Nothing>()
 
-  public data class Content<T>(val content: T) : Async<T>()
+  public data class Content<T>(val content: T, val suppressedError: Throwable? = null) : Async<T>()
 
   public data class Error(val error: Throwable) : Async<Nothing>()
 
