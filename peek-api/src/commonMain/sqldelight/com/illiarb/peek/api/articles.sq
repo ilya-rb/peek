@@ -1,27 +1,29 @@
-import com.illiarb.peek.api.domain.NewsSourceKind;
-import com.illiarb.peek.core.types.Url;
-import kotlin.collections.List;
-import kotlin.time.Instant;
-
 CREATE TABLE IF NOT EXISTS `articleEntity`(
-    `url` TEXT AS Url PRIMARY KEY NOT NULL,
+    `url` TEXT PRIMARY KEY NOT NULL,
     `title` TEXT NOT NULL,
-    `kind` TEXT AS NewsSourceKind NOT NULL,
-    `date` INTEGER AS Instant NOT NULL,
+    `kind` TEXT NOT NULL,
+    `date` INTEGER NOT NULL,
     `saved` INTEGER NOT NULL
 );
 
+CREATE INDEX IF NOT EXISTS `article_title` ON `articleEntity`(`title`);
+
 articlesOfKind:
-SELECT * FROM articleEntity WHERE kind = :kind;
+SELECT * FROM articleEntity
+WHERE kind = :kind;
 
 articleByUrl:
-SELECT * FROM articleEntity WHERE url = :url LIMIT 1;
+SELECT * FROM articleEntity
+WHERE url = :url
+LIMIT 1;
 
 savedArticlesUrls:
-SELECT url FROM articleEntity WHERE saved = 1;
+SELECT url FROM articleEntity
+WHERE saved = 1;
 
 savedArticles:
-SELECT * FROM articleEntity WHERE saved = 1;
+SELECT * FROM articleEntity
+WHERE saved = 1;
 
 setSaved:
 UPDATE articleEntity SET saved = :saved
@@ -41,8 +43,3 @@ INSERT OR REPLACE INTO articleEntity (
     :date,
     :saved
 );
-
-
-
-
-

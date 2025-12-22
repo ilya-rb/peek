@@ -4,7 +4,7 @@ import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.memory.MemoryCache
 import coil3.util.Logger
-import com.illiarb.peek.core.appinfo.AppEnvironment
+import com.illiarb.peek.core.appinfo.AppEnvironmentState
 import com.illiarb.peek.core.arch.di.AppScope
 import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.Provides
@@ -17,7 +17,6 @@ public object ImageLoaderBindings {
   @Provides
   @SingleIn(AppScope::class)
   public fun provideImageLoader(
-    environment: AppEnvironment,
     context: PlatformContext,
     debugLogger: Logger,
   ): ImageLoader {
@@ -28,7 +27,7 @@ public object ImageLoaderBindings {
           .build()
       }
       .apply {
-        if (environment.isDev) {
+        if (AppEnvironmentState.isDev()) {
           logger(debugLogger)
         }
       }

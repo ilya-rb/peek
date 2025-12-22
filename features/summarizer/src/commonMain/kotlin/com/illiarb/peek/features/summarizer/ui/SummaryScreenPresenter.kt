@@ -25,7 +25,7 @@ internal class SummaryScreenPresenter(
     val articleWithSummary by produceRetainedState<Async<ArticleWithSummary>>(Async.Loading) {
       peekApiService.collectArticleByUrl(screen.url)
         .flatMapLatestContent { article ->
-          summarizerService.summarizeArticle(article.url.url).mapContent { summary ->
+          summarizerService.summarizeArticle(article.url).mapContent { summary ->
             ArticleWithSummary(
               article = article,
               summary = summary,
@@ -47,6 +47,10 @@ internal class SummaryScreenPresenter(
 
           is SummaryScreenContract.Event.OpenInReaderClick -> {
             navigator.pop(SummaryScreen.Result.OpenInReader(event.article.url))
+          }
+
+          is SummaryScreenContract.Event.ErrorRetryClicked -> {
+            // No-op
           }
         }
       }

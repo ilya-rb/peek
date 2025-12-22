@@ -1,7 +1,7 @@
 package com.illiarb.peek.core.network.di
 
 import com.illiarb.peek.core.appinfo.AppConfiguration
-import com.illiarb.peek.core.appinfo.AppEnvironment
+import com.illiarb.peek.core.appinfo.AppEnvironmentState
 import com.illiarb.peek.core.network.HttpClient
 import com.illiarb.peek.core.network.HttpClientFactory
 import com.illiarb.peek.core.network.plugins.debugDelayPlugin
@@ -19,17 +19,13 @@ public abstract class NetworkBindings {
   internal companion object {
 
     @Provides
-    fun providePlugins(
-      appConfiguration: AppConfiguration,
-      environment: AppEnvironment,
-    ): List<HttpClientPlugin<*, *>> {
-      return when (environment) {
-        AppEnvironment.PROD -> emptyList()
-        AppEnvironment.DEV -> {
-          listOf(
-            debugDelayPlugin(appConfiguration)
-          )
-        }
+    fun providePlugins(appConfiguration: AppConfiguration): List<HttpClientPlugin<*, *>> {
+      return if (AppEnvironmentState.isDev()) {
+        listOf(
+          debugDelayPlugin(appConfiguration),
+        )
+      } else {
+        emptyList()
       }
     }
   }

@@ -5,14 +5,25 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 internal data class SummaryRequest(
-  @SerialName("messages") val messages: List<Message>,
   @SerialName("model") val model: String,
-  @SerialName("max_completion_tokens") val maxTokens: Int,
+  @SerialName("input") val input: List<Input>,
+  @SerialName("tools") val tools: List<Tool>,
 ) {
 
   @Serializable
-  data class Message(
-    @SerialName("content") val content: String,
+  data class Input(
     @SerialName("role") val role: String,
+    @SerialName("content") val content: List<Message>,
+  )
+
+  @Serializable
+  data class Message(
+    @SerialName("type") val type: String,
+    @SerialName("text") val text: String,
+  )
+
+  @Serializable
+  data class Tool(
+    @SerialName("type") val type: String
   )
 }

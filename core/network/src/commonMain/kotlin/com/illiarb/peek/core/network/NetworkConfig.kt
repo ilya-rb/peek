@@ -8,22 +8,13 @@ public data class NetworkConfig(
 )
 
 public data class TimeoutConfig(
-  val connect: Long,
-  val read: Long,
-  val write: Long,
+  val connect: Long = DEFAULT_TIMEOUT_SECONDS,
+  val read: Long = DEFAULT_TIMEOUT_SECONDS,
+  val write: Long = DEFAULT_TIMEOUT_SECONDS,
 ) {
 
-  public companion object {
-
+  private companion object {
     private const val DEFAULT_TIMEOUT_SECONDS: Long = 10L
-
-    public fun default(): TimeoutConfig {
-      return TimeoutConfig(
-        connect = DEFAULT_TIMEOUT_SECONDS,
-        read = DEFAULT_TIMEOUT_SECONDS,
-        write = DEFAULT_TIMEOUT_SECONDS,
-      )
-    }
   }
 }
 

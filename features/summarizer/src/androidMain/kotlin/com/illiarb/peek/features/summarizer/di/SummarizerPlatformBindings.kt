@@ -9,11 +9,11 @@ import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.Provides
 
 @BindingContainer
-public actual object SummarizerPlatformBindings {
+internal actual object SummarizerPlatformBindings {
 
   @Provides
   @InternalApi
-  public fun provideSummarizerSqlDriver(context: Context): SqlDriver {
+  fun provideSummarizerSqlDriver(context: Context): SqlDriver {
     return AndroidSqliteDriver(
       schema = Database.Schema,
       context = context,
