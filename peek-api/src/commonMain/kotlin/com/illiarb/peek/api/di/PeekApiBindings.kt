@@ -11,6 +11,7 @@ import com.illiarb.peek.api.domain.NewsSourceKind
 import com.illiarb.peek.api.repository.ArticlesRepository
 import com.illiarb.peek.core.arch.di.AppScope
 import com.illiarb.peek.core.data.ConcurrentHashMapCache
+import com.illiarb.peek.core.data.KeyValueStorage
 import com.illiarb.peek.core.data.MemoryCache
 import com.illiarb.peek.core.types.Url
 import com.prof18.rssparser.RssParser
@@ -38,6 +39,13 @@ internal object PeekApiBindingsInternal {
     newsDataSources: Set<NewsDataSource>,
   ): PeekApiService {
     return DefaultPeekApiService(articlesRepository, newsDataSources)
+  }
+
+  @Provides
+  @SingleIn(AppScope::class)
+  @InternalApi
+  fun provideKeyValueStorage(factory: KeyValueStorage.Factory): KeyValueStorage {
+    return factory.create(STORAGE_NAME)
   }
 
   @Provides
@@ -70,6 +78,8 @@ internal object PeekApiBindingsInternal {
   fun provideDouNewsDataSource(rssParser: RssParser): NewsDataSource {
     return RssNewsDataSource(rssParser, Url(BuildKonfig.SERVICE_DOU), NewsSourceKind.Dou)
   }
+
+  private const val STORAGE_NAME = "articles.storage"
 }
 
 @BindingContainer
