@@ -12,8 +12,3 @@ public interface MemoryCache<K> {
 
   public fun contains(key: K): Boolean
 }
-
-public data class ConcurrentHashMapCache(val cache: DefaultConcurrentHashMapCache<String>) {
-
-  public operator fun invoke(): MemoryCache<String> = cache
-}

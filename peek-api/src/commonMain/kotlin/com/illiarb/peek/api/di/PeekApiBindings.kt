@@ -11,15 +11,13 @@ import com.illiarb.peek.api.domain.NewsSourceKind
 import com.illiarb.peek.api.repository.ArticlesRepository
 import com.illiarb.peek.core.arch.di.AppScope
 import com.illiarb.peek.core.data.ConcurrentHashMapCache
-import com.illiarb.peek.core.data.DefaultConcurrentHashMapCache
-import com.illiarb.peek.core.network.HttpClient
-import com.illiarb.peek.core.network.NetworkConfig
-import com.illiarb.peek.core.network.TimeoutConfig
+import com.illiarb.peek.core.data.MemoryCache
 import com.illiarb.peek.core.types.Url
 import com.prof18.rssparser.RssParser
 import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.IntoSet
 import dev.zacsweers.metro.Provides
+import dev.zacsweers.metro.Qualifier
 import dev.zacsweers.metro.SingleIn
 
 @BindingContainer(
@@ -31,29 +29,14 @@ import dev.zacsweers.metro.SingleIn
 public object PeekApiBindings {
 
   @Provides
-  @SingleIn(AppScope::class)
-  public fun provideMemoryCache(): ConcurrentHashMapCache {
-    return ConcurrentHashMapCache(DefaultConcurrentHashMapCache())
-  }
-
-  @Provides
-  public fun providePeekApiNetworkConfig(): NetworkConfig {
-    return NetworkConfig(
-      timeouts = TimeoutConfig.default(),
-    )
-  }
-
-  @Provides
-  public fun provideHttpClient(
-    config: NetworkConfig,
-    factory: HttpClient.Factory,
-  ): HttpClient {
-    return factory.create(config)
+  @InternalApi
+  internal fun provideMemoryCache(): MemoryCache<String> {
+    return ConcurrentHashMapCache()
   }
 
   @Provides
   @SingleIn(AppScope::class)
-  public fun providePeekApiService(
+  internal fun providePeekApiService(
     articlesRepository: ArticlesRepository,
     newsDataSources: Set<NewsDataSource>,
   ): PeekApiService {
@@ -62,43 +45,35 @@ public object PeekApiBindings {
 
   @Provides
   @SingleIn(AppScope::class)
-  public fun provideDatabase(sqlDriver: SqlDriver): Database {
+  @InternalApi
+  internal fun provideDatabase(sqlDriver: SqlDriver): Database {
     return Database(sqlDriver)
   }
 
   @Provides
   @IntoSet
-  public fun provideHackerNewsDataSource(rssParser: RssParser): NewsDataSource {
-    return RssNewsDataSource(
-      rssParser,
-      Url(BuildKonfig.SERVICE_HN),
-      NewsSourceKind.HackerNews,
-    )
+  internal fun provideHackerNewsDataSource(rssParser: RssParser): NewsDataSource {
+    return RssNewsDataSource(rssParser, Url(BuildKonfig.SERVICE_HN), NewsSourceKind.HackerNews)
   }
 
   @Provides
   @IntoSet
-  public fun provideFtNewsDataSource(rssParser: RssParser): NewsDataSource {
-    return RssNewsDataSource(
-      rssParser,
-      Url(BuildKonfig.SERVICE_FT),
-      NewsSourceKind.Ft,
-    )
+  internal fun provideFtNewsDataSource(rssParser: RssParser): NewsDataSource {
+    return RssNewsDataSource(rssParser, Url(BuildKonfig.SERVICE_FT), NewsSourceKind.Ft)
   }
 
   @Provides
   @IntoSet
-  public fun provideDouNewsDataSource(rssParser: RssParser): NewsDataSource {
-    return RssNewsDataSource(
-      rssParser,
-      Url(BuildKonfig.SERVICE_DOU),
-      NewsSourceKind.Dou,
-    )
+  internal fun provideDouNewsDataSource(rssParser: RssParser): NewsDataSource {
+    return RssNewsDataSource(rssParser, Url(BuildKonfig.SERVICE_DOU), NewsSourceKind.Dou)
   }
 }
 
 @BindingContainer
-public expect object SqlDatabasePlatformBindings
+internal expect object SqlDatabasePlatformBindings
 
 @BindingContainer
-public expect object RssParserBindings
+internal expect object RssParserBindings
+
+@Qualifier
+internal annotation class InternalApi

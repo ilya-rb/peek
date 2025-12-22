@@ -2,7 +2,7 @@ package com.illiarb.peek.features.summarizer.repository
 
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.core.data.AsyncDataStore
-import com.illiarb.peek.core.data.ConcurrentHashMapCache
+import com.illiarb.peek.core.data.MemoryCache
 import com.illiarb.peek.core.network.HttpClient
 import com.illiarb.peek.core.types.Url
 import com.illiarb.peek.features.summarizer.BuildKonfig
@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.Flow
 @Inject
 public class SummarizerRepository(
   @InternalApi private val httpClient: HttpClient,
-  @InternalApi private val memoryCache: ConcurrentHashMapCache,
+  @InternalApi private val memoryCache: MemoryCache<String>,
   private val summaryDao: ArticlesSummaryDao,
 ) {
 
@@ -39,10 +39,10 @@ public class SummarizerRepository(
       summaryDao.saveSummary(summary)
     },
     fromMemory = { url ->
-      memoryCache.cache.get(url.url)
+      memoryCache.get(url.url)
     },
     intoMemory = { url, summary ->
-      memoryCache.cache.put(url.url, summary)
+      memoryCache.put(url.url, summary)
     },
   )
 

@@ -8,11 +8,11 @@ import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
 
 @BindingContainer
-public actual object RssParserBindings {
+internal actual object RssParserBindings {
 
   @Provides
   @SingleIn(AppScope::class)
-  public fun provideRssParser(): RssParser {
+  fun provideRssParser(): RssParser {
     return RssParserBuilder().build()
   }
 }

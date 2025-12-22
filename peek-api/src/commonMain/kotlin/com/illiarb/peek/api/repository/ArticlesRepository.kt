@@ -2,11 +2,13 @@ package com.illiarb.peek.api.repository
 
 import com.illiarb.peek.api.datasource.NewsDataSource
 import com.illiarb.peek.api.db.dao.ArticlesDao
+import com.illiarb.peek.api.di.InternalApi
 import com.illiarb.peek.api.domain.Article
 import com.illiarb.peek.api.domain.NewsSourceKind
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.core.data.AsyncDataStore
 import com.illiarb.peek.core.data.ConcurrentHashMapCache
+import com.illiarb.peek.core.data.MemoryCache
 import com.illiarb.peek.core.data.mapContent
 import com.illiarb.peek.core.logging.Logger
 import com.illiarb.peek.core.types.Url
@@ -15,8 +17,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlin.jvm.JvmSuppressWildcards
 
 @Inject
-public class ArticlesRepository(
-  private val memoryCache: ConcurrentHashMapCache,
+internal class ArticlesRepository(
+  @InternalApi private val memoryCache: MemoryCache<String>,
   private val articlesDao: ArticlesDao,
   private val newsDataSources: Set<@JvmSuppressWildcards NewsDataSource>,
 ) {
@@ -33,10 +35,10 @@ public class ArticlesRepository(
       }
     },
     fromMemory = { kind ->
-      memoryCache().get<List<Article>>(kind.name)?.takeIf { it.isNotEmpty() }
+      memoryCache.get<List<Article>>(kind.name)?.takeIf { it.isNotEmpty() }
     },
     intoMemory = { kind, articles ->
-      memoryCache().put(kind.name, articles)
+      memoryCache.put(kind.name, articles)
     },
     fromStorage = { kind ->
       articlesDao.articlesOfKind(kind).getOrNull()?.takeIf { it.isNotEmpty() }
@@ -45,7 +47,7 @@ public class ArticlesRepository(
       articlesDao.saveArticles(articles)
     },
     invalidateMemory = { kind ->
-      memoryCache().delete(kind.name)
+      memoryCache.delete(kind.name)
     }
   )
 

@@ -2,7 +2,7 @@ package com.illiarb.peek.core.data
 
 import co.touchlab.stately.collections.ConcurrentMutableMap
 
-public class DefaultConcurrentHashMapCache<K> : MemoryCache<K> {
+public class ConcurrentHashMapCache<K> : MemoryCache<K> {
 
   private val cache = ConcurrentMutableMap<K, Any>()
 

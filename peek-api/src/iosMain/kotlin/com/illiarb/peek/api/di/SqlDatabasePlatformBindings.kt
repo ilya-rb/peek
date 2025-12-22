@@ -9,11 +9,11 @@ import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
 
 @BindingContainer
-public actual object SqlDatabasePlatformBindings {
+internal actual object SqlDatabasePlatformBindings {
 
   @Provides
   @SingleIn(AppScope::class)
-  public fun provideSqlDriver(): SqlDriver =
+  fun provideSqlDriver(): SqlDriver =
     NativeSqliteDriver(
       schema = Database.Schema,
       name = "peek.db",

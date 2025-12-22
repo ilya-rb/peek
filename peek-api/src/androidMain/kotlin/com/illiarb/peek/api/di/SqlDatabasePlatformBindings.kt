@@ -11,11 +11,11 @@ import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
 
 @BindingContainer
-public actual object SqlDatabasePlatformBindings {
+internal actual object SqlDatabasePlatformBindings {
 
   @Provides
   @SingleIn(AppScope::class)
-  public fun provideSqlDriver(context: Context): SqlDriver =
+  fun provideSqlDriver(context: Context): SqlDriver =
     AndroidSqliteDriver(
       schema = Database.Schema,
       context = context,

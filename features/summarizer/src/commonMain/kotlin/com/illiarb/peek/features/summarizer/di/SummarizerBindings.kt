@@ -3,7 +3,7 @@ package com.illiarb.peek.features.summarizer.di
 import app.cash.sqldelight.db.SqlDriver
 import com.illiarb.peek.core.arch.di.AppScope
 import com.illiarb.peek.core.data.ConcurrentHashMapCache
-import com.illiarb.peek.core.data.DefaultConcurrentHashMapCache
+import com.illiarb.peek.core.data.MemoryCache
 import com.illiarb.peek.core.network.HttpClient
 import com.illiarb.peek.core.network.NetworkConfig
 import com.illiarb.peek.core.network.TimeoutConfig
@@ -25,14 +25,14 @@ public object SummarizerBindings {
   @InternalApi
   public fun provideSummarizerNetworkConfig(): NetworkConfig {
     return NetworkConfig(
-      timeouts = TimeoutConfig.default(read = 40.seconds.inWholeMilliseconds),
+      timeouts = TimeoutConfig(read = 30.seconds.inWholeSeconds),
     )
   }
 
   @Provides
   @InternalApi
   public fun provideSummarizerHttpClient(
-    config: NetworkConfig,
+    @InternalApi config: NetworkConfig,
     factory: HttpClient.Factory,
   ): HttpClient {
     return factory.create(
@@ -44,8 +44,8 @@ public object SummarizerBindings {
   @Provides
   @SingleIn(AppScope::class)
   @InternalApi
-  public fun provideSummarizerMemoryCache(): ConcurrentHashMapCache {
-    return ConcurrentHashMapCache(DefaultConcurrentHashMapCache())
+  public fun provideSummarizerMemoryCache(): MemoryCache<String> {
+    return ConcurrentHashMapCache()
   }
 
   @Provides
