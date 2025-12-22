@@ -14,13 +14,12 @@ import kotlinx.coroutines.withContext
 import kotlin.time.Instant
 
 @Inject
-@InternalApi
-public class ArticlesDao(
+internal class ArticlesDao(
   @InternalApi private val db: Database,
   private val appDispatchers: AppDispatchers,
 ) {
 
-  public suspend fun articlesOfKind(sourceKind: NewsSourceKind): Result<List<Article>?> {
+  suspend fun articlesOfKind(sourceKind: NewsSourceKind): Result<List<Article>?> {
     return withContext(appDispatchers.io) {
       suspendRunCatching {
         db.articlesQueries.articlesOfKind(sourceKind.name).executeAsList()
@@ -30,7 +29,7 @@ public class ArticlesDao(
     }
   }
 
-  public suspend fun articleByUrl(url: Url): Result<Article?> {
+  suspend fun articleByUrl(url: Url): Result<Article?> {
     return withContext(appDispatchers.io) {
       suspendRunCatching {
         db.articlesQueries.articleByUrl(url.url).executeAsOneOrNull()?.asArticle()
@@ -38,7 +37,7 @@ public class ArticlesDao(
     }
   }
 
-  public suspend fun saveArticle(article: Article): Result<Unit> {
+  suspend fun saveArticle(article: Article): Result<Unit> {
     return withContext(appDispatchers.io) {
       suspendRunCatching {
         db.articlesQueries.setSaved(
@@ -52,7 +51,7 @@ public class ArticlesDao(
     }
   }
 
-  public suspend fun savedArticles(): Result<List<Article>> {
+  suspend fun savedArticles(): Result<List<Article>> {
     return withContext(appDispatchers.io) {
       suspendRunCatching {
         db.articlesQueries.savedArticles()
@@ -62,7 +61,7 @@ public class ArticlesDao(
     }
   }
 
-  public suspend fun saveArticles(articles: List<Article>): Result<Unit> {
+  suspend fun saveArticles(articles: List<Article>): Result<Unit> {
     return withContext(appDispatchers.io) {
       suspendRunCatching {
         db.transactionWithResult {
@@ -72,7 +71,7 @@ public class ArticlesDao(
     }
   }
 
-  public suspend fun savedArticlesUrls(): Result<List<Url>> {
+  suspend fun savedArticlesUrls(): Result<List<Url>> {
     return withContext(appDispatchers.io) {
       suspendRunCatching {
         db.articlesQueries.savedArticlesUrls().executeAsList().map { Url(it) }

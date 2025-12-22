@@ -7,11 +7,11 @@ import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.Provides
 
 @BindingContainer
-public actual object SummarizerPlatformBindings {
+internal actual object SummarizerPlatformBindings {
 
   @Provides
   @InternalApi
-  public fun provideSummarizerSqlDriver(): SqlDriver {
+  fun provideSummarizerSqlDriver(): SqlDriver {
     return NativeSqliteDriver(
       schema = Database.Schema,
       name = "summarizer.db",

@@ -1,5 +1,6 @@
 package com.illiarb.peek.features.summarizer.repository
 
+import com.illiarb.peek.core.arch.di.AppScope
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.core.data.AsyncDataStore
 import com.illiarb.peek.core.data.MemoryCache
@@ -13,11 +14,13 @@ import com.illiarb.peek.features.summarizer.network.ApiConfig
 import com.illiarb.peek.features.summarizer.network.SummaryRequest
 import com.illiarb.peek.features.summarizer.network.SummaryResponse
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import io.ktor.client.call.body
 import kotlinx.coroutines.flow.Flow
 
 @Inject
-public class SummarizerRepository(
+@SingleIn(AppScope::class)
+internal class SummarizerRepository(
   @InternalApi private val httpClient: HttpClient,
   @InternalApi private val memoryCache: MemoryCache<String>,
   private val summaryDao: ArticlesSummaryDao,
@@ -46,7 +49,7 @@ public class SummarizerRepository(
     },
   )
 
-  public fun articleSummary(url: Url): Flow<Async<ArticleSummary>> {
+  fun articleSummary(url: Url): Flow<Async<ArticleSummary>> {
     return summaryStore.collect(url, AsyncDataStore.LoadStrategy.CacheOnly)
   }
 

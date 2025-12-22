@@ -11,12 +11,13 @@ import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.withContext
 
 @Inject
-public class ArticlesSummaryDao(
+@InternalApi
+internal class ArticlesSummaryDao(
   private val appDispatchers: AppDispatchers,
   @InternalApi private val db: Database,
 ) {
 
-  public suspend fun summaryByUrl(url: Url): Result<ArticleSummary?> {
+  suspend fun summaryByUrl(url: Url): Result<ArticleSummary?> {
     return withContext(appDispatchers.io) {
       suspendRunCatching {
         db.summariesQueries.summaryByUrl(url.url).executeAsOneOrNull()?.toDomain()
@@ -24,7 +25,7 @@ public class ArticlesSummaryDao(
     }
   }
 
-  public suspend fun saveSummary(summary: ArticleSummary): Result<Unit> {
+  suspend fun saveSummary(summary: ArticleSummary): Result<Unit> {
     return withContext(appDispatchers.io) {
       suspendRunCatching {
         db.summariesQueries.saveSummary(

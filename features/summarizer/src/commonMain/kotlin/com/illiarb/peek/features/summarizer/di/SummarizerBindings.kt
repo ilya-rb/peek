@@ -18,12 +18,25 @@ import dev.zacsweers.metro.Qualifier
 import dev.zacsweers.metro.SingleIn
 import kotlin.time.Duration.Companion.seconds
 
-@BindingContainer(includes = [SummarizerPlatformBindings::class])
-public object SummarizerBindings {
+@BindingContainer(
+  includes = [
+    SummarizerBindingsInternal::class,
+    SummarizerPlatformBindings::class,
+  ]
+)
+public object SummarizerBindings
+
+@BindingContainer
+internal object SummarizerBindingsInternal {
+
+  @Provides
+  fun provideSummarizerService(repository: SummarizerRepository): SummarizerService {
+    return DefaultSummarizerService(repository)
+  }
 
   @Provides
   @InternalApi
-  public fun provideSummarizerNetworkConfig(): NetworkConfig {
+  fun provideSummarizerNetworkConfig(): NetworkConfig {
     return NetworkConfig(
       timeouts = TimeoutConfig(read = 30.seconds.inWholeSeconds),
     )
@@ -31,7 +44,7 @@ public object SummarizerBindings {
 
   @Provides
   @InternalApi
-  public fun provideSummarizerHttpClient(
+  fun provideSummarizerHttpClient(
     @InternalApi config: NetworkConfig,
     factory: HttpClient.Factory,
   ): HttpClient {
@@ -42,28 +55,21 @@ public object SummarizerBindings {
   }
 
   @Provides
-  @SingleIn(AppScope::class)
   @InternalApi
-  public fun provideSummarizerMemoryCache(): MemoryCache<String> {
+  fun provideSummarizerMemoryCache(): MemoryCache<String> {
     return ConcurrentHashMapCache()
   }
 
   @Provides
-  @SingleIn(AppScope::class)
-  public fun provideSummarizerService(repository: SummarizerRepository): SummarizerService {
-    return DefaultSummarizerService(repository)
-  }
-
-  @Provides
   @InternalApi
   @SingleIn(AppScope::class)
-  public fun provideSummarizerDatabase(@InternalApi driver: SqlDriver): Database {
+  fun provideSummarizerDatabase(@InternalApi driver: SqlDriver): Database {
     return Database(driver)
   }
 }
 
 @BindingContainer
-public expect object SummarizerPlatformBindings
+internal expect object SummarizerPlatformBindings
 
 @Qualifier
 internal annotation class InternalApi
