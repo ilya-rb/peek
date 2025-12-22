@@ -39,6 +39,9 @@ import com.illiarb.peek.uikit.core.components.cell.SelectableCircleAvatar
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_action_bookmarks
 import com.illiarb.peek.uikit.resources.acsb_action_settings
+import com.illiarb.peek.uikit.resources.dou_logo
+import com.illiarb.peek.uikit.resources.ft_logo
+import com.illiarb.peek.uikit.resources.hn_logo
 import com.illiarb.peek.uikit.resources.home_screen_title
 import com.illiarb.peek.uikit.resources.service_dou_name
 import com.illiarb.peek.uikit.resources.service_ft_name
@@ -215,7 +218,11 @@ private fun NewsSourcesContent(
     keyProvider = { _, source -> source.name },
     itemContent = { index, source ->
       SelectableCircleAvatar(
-        imageUrl = "https://picsum.photos/200/300",
+        image = when (source) {
+          NewsSourceKind.HackerNews -> Res.drawable.hn_logo
+          NewsSourceKind.Dou -> Res.drawable.dou_logo
+          NewsSourceKind.Ft -> Res.drawable.ft_logo
+        },
         selected = index == selectedTabIndex,
         onClick = {
           onTabClick.invoke(source)
