@@ -1,43 +1,40 @@
 package com.illiarb.peek.features.summarizer.network
 
+import com.illiarb.peek.core.types.Url
 import com.illiarb.peek.features.summarizer.domain.ArticleSummary
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 internal data class SummaryResponse(
-  @SerialName("id") val id: String,
-  @SerialName("object") val type: String,
-  @SerialName("created") val created: Long,
-  @SerialName("model") val model: String,
-  @SerialName("usage") val usage: Usage,
-  @SerialName("choices") val choices: List<Choice>,
+  @SerialName("output") val output: List<Output>,
 ) {
 
   @Serializable
-  data class Usage(
-    @SerialName("prompt_tokens") val promptTokens: Int,
-    @SerialName("completion_tokens") val completionTokens: Int,
-    @SerialName("total_tokens") val totalTokens: Int,
-  )
-
-  @Serializable
-  data class Choice(
-    @SerialName("finish_reason") val finishReason: String,
-    @SerialName("index") val index: Int,
-    @SerialName("message") val message: Message,
+  data class Output(
+    @SerialName("type") val type: String,
+    @SerialName("content") val content: List<Message>? = null,
   )
 
   @Serializable
   data class Message(
-    @SerialName("role") val role: String = ApiConfig.ROLE,
-    @SerialName("content") val content: String,
+    @SerialName("type") val type: String,
+    @SerialName("text") val text: String,
   )
 
-  fun asArticleSummary(url: String): ArticleSummary {
+  fun asArticleSummary(url: Url): ArticleSummary {
     return ArticleSummary(
       url = url,
-      content = choices.joinToString(separator = ",") { it.message.content }
+      content = output.asSequence()
+        .filter { it.type == TYPE_MESSAGE }
+        .mapNotNull { it.content }
+        .flatten()
+        .map { it.text }
+        .joinToString("\n")
     )
+  }
+
+  companion object {
+    const val TYPE_MESSAGE = "message"
   }
 }

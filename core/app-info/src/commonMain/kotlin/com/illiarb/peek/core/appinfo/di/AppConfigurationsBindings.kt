@@ -1,8 +1,6 @@
 package com.illiarb.peek.core.appinfo.di
 
 import com.illiarb.peek.core.appinfo.AppConfiguration
-import com.illiarb.peek.core.appinfo.AppEnvironment
-import com.illiarb.peek.core.appinfo.BuildKonfig
 import com.illiarb.peek.core.appinfo.internal.DefaultAppConfiguration
 import com.illiarb.peek.core.data.KeyValueStorage
 import dev.zacsweers.metro.BindingContainer
@@ -16,11 +14,6 @@ public abstract class AppConfigurationsBindings {
   internal abstract val DefaultAppConfiguration.bind: AppConfiguration
 
   internal companion object {
-
-    @Provides
-    fun provideEnvironment(): AppEnvironment {
-      return AppEnvironment.valueOf(BuildKonfig.ENV)
-    }
 
     @Provides
     fun provideKeyValueStorage(factory: KeyValueStorage.Factory): KeyValueStorage {

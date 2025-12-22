@@ -2,6 +2,7 @@ package com.illiarb.peek.features.summarizer.db
 
 import com.illiarb.peek.core.coroutines.AppDispatchers
 import com.illiarb.peek.core.coroutines.suspendRunCatching
+import com.illiarb.peek.core.types.Url
 import com.illiarb.peek.features.summarizer.Database
 import com.illiarb.peek.features.summarizer.Summaries
 import com.illiarb.peek.features.summarizer.di.InternalApi
@@ -15,10 +16,10 @@ public class ArticlesSummaryDao(
   @InternalApi private val db: Database,
 ) {
 
-  public suspend fun summaryByUrl(url: String): Result<ArticleSummary?> {
+  public suspend fun summaryByUrl(url: Url): Result<ArticleSummary?> {
     return withContext(appDispatchers.io) {
       suspendRunCatching {
-        db.summariesQueries.summaryByUrl(url).executeAsOneOrNull()?.toDomain()
+        db.summariesQueries.summaryByUrl(url.url).executeAsOneOrNull()?.toDomain()
       }
     }
   }
@@ -27,7 +28,7 @@ public class ArticlesSummaryDao(
     return withContext(appDispatchers.io) {
       suspendRunCatching {
         db.summariesQueries.saveSummary(
-          url = summary.url,
+          url = summary.url.url,
           summary = summary.content,
         )
         Unit
@@ -36,6 +37,6 @@ public class ArticlesSummaryDao(
   }
 
   private fun Summaries.toDomain(): ArticleSummary {
-    return ArticleSummary(url, summary)
+    return ArticleSummary(Url(url), summary)
   }
 }

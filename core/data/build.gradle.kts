@@ -19,6 +19,7 @@ kotlin {
       implementation(projects.core.arch)
       implementation(projects.core.coroutines)
       implementation(projects.core.logging)
+      implementation(projects.core.types)
     }
 
     commonTest.dependencies {

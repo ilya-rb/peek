@@ -16,6 +16,7 @@ import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.Qualifier
 import dev.zacsweers.metro.SingleIn
+import kotlin.time.Duration.Companion.seconds
 
 @BindingContainer(includes = [SummarizerPlatformBindings::class])
 public object SummarizerBindings {
@@ -24,7 +25,7 @@ public object SummarizerBindings {
   @InternalApi
   public fun provideSummarizerNetworkConfig(): NetworkConfig {
     return NetworkConfig(
-      timeouts = TimeoutConfig.default(),
+      timeouts = TimeoutConfig.default(read = 40.seconds.inWholeMilliseconds),
     )
   }
 

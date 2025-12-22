@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- Exclude databases from backup to prevent schema conflicts -->
+    <exclude domain="database" path="peek.db" />
+    <exclude domain="database" path="summarizer.db" />
+</full-backup-content>

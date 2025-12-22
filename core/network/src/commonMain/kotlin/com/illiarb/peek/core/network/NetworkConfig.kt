@@ -17,12 +17,12 @@ public data class TimeoutConfig(
 
     private const val DEFAULT_TIMEOUT_SECONDS: Long = 10L
 
-    public fun default(): TimeoutConfig {
-      return TimeoutConfig(
-        connect = DEFAULT_TIMEOUT_SECONDS,
-        read = DEFAULT_TIMEOUT_SECONDS,
-        write = DEFAULT_TIMEOUT_SECONDS,
-      )
+    public fun default(
+      connect: Long = DEFAULT_TIMEOUT_SECONDS,
+      read: Long = DEFAULT_TIMEOUT_SECONDS,
+      write: Long = DEFAULT_TIMEOUT_SECONDS,
+    ): TimeoutConfig {
+      return TimeoutConfig(connect, read, write)
     }
   }
 }

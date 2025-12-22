@@ -1,7 +1,6 @@
 package com.illiarb.peek.core.appinfo.internal
 
 import com.illiarb.peek.core.appinfo.AppConfiguration
-import com.illiarb.peek.core.appinfo.AppEnvironment
 import com.illiarb.peek.core.appinfo.DebugConfig
 import com.illiarb.peek.core.arch.di.AppScope
 import com.illiarb.peek.core.data.KeyValueStorage
@@ -9,14 +8,12 @@ import com.illiarb.peek.core.data.MemoryField
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onStart
 
 @Inject
 @SingleIn(AppScope::class)
 internal class DefaultAppConfiguration(
-  private val environment: AppEnvironment,
   private val keyValueStorage: KeyValueStorage,
   private val memoryField: MemoryField<DebugConfig?> = MemoryField(value = null),
 ) : AppConfiguration {
@@ -24,10 +21,6 @@ internal class DefaultAppConfiguration(
   override val isAndroidQ: Boolean get() = isAndroidQ()
 
   override fun debugConfig(): Flow<DebugConfig> {
-    if (environment != AppEnvironment.DEV) {
-      return emptyFlow()
-    }
-
     return memoryField.observe()
       .onStart {
         if (memoryField.get() == null) {
@@ -50,6 +43,7 @@ internal class DefaultAppConfiguration(
     keyValueStorage.get(KEY_DEBUG_CONFIG, DebugConfig.serializer())
       .map { it ?: defaultDebugConfig() }
       .onSuccess(memoryField::set)
+      .getOrThrow()
   }
 
   private fun defaultDebugConfig(): DebugConfig =

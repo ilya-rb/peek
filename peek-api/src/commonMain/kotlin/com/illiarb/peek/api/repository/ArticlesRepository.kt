@@ -7,6 +7,8 @@ import com.illiarb.peek.api.domain.NewsSourceKind
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.core.data.AsyncDataStore
 import com.illiarb.peek.core.data.ConcurrentHashMapCache
+import com.illiarb.peek.core.data.mapContent
+import com.illiarb.peek.core.logging.Logger
 import com.illiarb.peek.core.types.Url
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
@@ -21,7 +23,14 @@ public class ArticlesRepository(
 
   private val articlesStore = AsyncDataStore<NewsSourceKind, List<Article>>(
     networkFetcher = { kind ->
-      dataSourceFor(kind).getArticles()
+      val newArticles = dataSourceFor(kind).getArticles()
+      val cached = articlesDao.savedArticlesUrls().getOrElse { error ->
+        Logger.e(throwable = error) { "Error reading cached articles" }
+        emptyList()
+      }
+      newArticles.map {
+        it.copy(saved = it.url in cached)
+      }
     },
     fromMemory = { kind ->
       memoryCache().get<List<Article>>(kind.name)?.takeIf { it.isNotEmpty() }
@@ -41,12 +50,19 @@ public class ArticlesRepository(
   )
 
   public fun articlesFrom(kind: NewsSourceKind): Flow<Async<List<Article>>> {
-    return articlesStore.collect(kind, AsyncDataStore.LoadStrategy.CacheFirst)
+    return articlesStore.collect(kind, AsyncDataStore.LoadStrategy.CacheOnly)
+      .mapContent { articles ->
+        articles.sortedByDescending {
+          it.date
+        }
+      }
   }
 
   public fun savedArticles(): Flow<Async<List<Article>>> {
     return Async.fromFlow {
-      articlesDao.savedArticles().getOrThrow()
+      articlesDao.savedArticles().getOrThrow().sortedByDescending {
+        it.date
+      }
     }
   }
 

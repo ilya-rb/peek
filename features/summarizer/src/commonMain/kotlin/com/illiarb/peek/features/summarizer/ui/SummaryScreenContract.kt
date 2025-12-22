@@ -35,6 +35,7 @@ internal interface SummaryScreenContract {
 
   sealed interface Event : CircuitUiEvent {
     data object NavigationIconClick : Event
+    data object ErrorRetryClicked : Event
     data class OpenInReaderClick(val article: Article) : Event
   }
 
