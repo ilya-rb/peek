@@ -35,18 +35,17 @@ internal class ArticlesRepository(
   private val articlesLoadingStrategy = TimeBased(
     duration = 3.hours,
     invalidator = object : TimeBased.CacheInvalidator<NewsSourceKind> {
-      override suspend fun getCacheTimestamp(params: NewsSourceKind): Instant? {
+      override suspend fun getCacheTimestamp(params: NewsSourceKind): Result<Instant?> {
         val key = "${KEY_ARTICLES_LAST_FETCHED_PREFIX}_${params.name}"
-        val stamp = storage.get(key, Long.serializer()).getOrNull()
 
-        return stamp?.let {
-          Instant.fromEpochMilliseconds(it)
+        return storage.get(key, Long.serializer()).map { stamp ->
+          stamp?.let { Instant.fromEpochMilliseconds(it) }
         }
       }
 
-      override suspend fun setCacheTimestamp(params: NewsSourceKind, time: Instant) {
+      override suspend fun setCacheTimestamp(params: NewsSourceKind, time: Instant): Result<Unit> {
         val key = "${KEY_ARTICLES_LAST_FETCHED_PREFIX}_${params.name}"
-        storage.put(key, time.toEpochMilliseconds(), Long.serializer())
+        return storage.put(key, time.toEpochMilliseconds(), Long.serializer())
       }
     }
   )

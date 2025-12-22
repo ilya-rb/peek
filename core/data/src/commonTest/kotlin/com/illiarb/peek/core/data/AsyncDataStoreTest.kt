@@ -634,12 +634,13 @@ internal class AsyncDataStoreTest {
   private class TestCacheInvalidator : TimeBased.CacheInvalidator<TestParams> {
     val timestamps = mutableMapOf<TestParams, Instant>()
 
-    override suspend fun getCacheTimestamp(params: TestParams): Instant? {
-      return timestamps[params]
+    override suspend fun getCacheTimestamp(params: TestParams): Result<Instant?> {
+      return Result.success(timestamps[params])
     }
 
-    override suspend fun setCacheTimestamp(params: TestParams, time: Instant) {
+    override suspend fun setCacheTimestamp(params: TestParams, time: Instant): Result<Unit> {
       timestamps[params] = time
+      return Result.success(Unit)
     }
   }
 

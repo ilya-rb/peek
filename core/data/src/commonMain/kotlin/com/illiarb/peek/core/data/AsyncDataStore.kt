@@ -147,15 +147,17 @@ public class AsyncDataStore<Params, Domain>(
 
       is LoadStrategy.TimeBased -> {
         val current = strategy.invalidator.getCacheTimestamp(params)
-        val cacheExpired = if (current == null) {
-          true
-        } else {
-          (Clock.System.now() - current) > strategy.duration
-        }
+          .onFailure { error ->
+            Logger.e(TAG, error) { "Failed to read cached timestamp for $params" }
+          }
+          .getOrNull()
 
+        val cacheExpired = current == null || (Clock.System.now() - current) > strategy.duration
         if (cacheExpired) {
           suspendRunCatching { networkFetcher.invoke(params) }.onSuccess {
-            strategy.invalidator.setCacheTimestamp(params, Clock.System.now())
+            strategy.invalidator.setCacheTimestamp(params, Clock.System.now()).onFailure { error ->
+              Logger.e(TAG, error) { "Failed to save cached timestamp for $params" }
+            }
           }
         } else {
           null
@@ -176,8 +178,8 @@ public class AsyncDataStore<Params, Domain>(
     ) : LoadStrategy<P> {
 
       public interface CacheInvalidator<P> {
-        public suspend fun getCacheTimestamp(params: P): Instant?
-        public suspend fun setCacheTimestamp(params: P, time: Instant)
+        public suspend fun getCacheTimestamp(params: P): Result<Instant?>
+        public suspend fun setCacheTimestamp(params: P, time: Instant): Result<Unit>
       }
     }
   }
