@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS `articleEntity`(
     `saved` INTEGER NOT NULL
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS `article_title` ON `articleEntity`(`title`);
+CREATE INDEX IF NOT EXISTS `article_title` ON `articleEntity`(`title`);
 
 articlesOfKind:
 SELECT * FROM articleEntity

@@ -22,7 +22,7 @@ public abstract class NetworkBindings {
     fun providePlugins(appConfiguration: AppConfiguration): List<HttpClientPlugin<*, *>> {
       return if (AppEnvironmentState.isDev()) {
         listOf(
-          debugDelayPlugin(appConfiguration)
+          debugDelayPlugin(appConfiguration),
         )
       } else {
         emptyList()

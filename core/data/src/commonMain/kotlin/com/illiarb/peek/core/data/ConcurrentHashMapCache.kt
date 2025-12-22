@@ -17,8 +17,7 @@ public class ConcurrentHashMapCache<K> : MemoryCache<K> {
 
   override fun <V : Any> getOrCreate(key: K, creator: () -> V): V {
     @Suppress("UNCHECKED_CAST")
-    val cached = cache[key] as? V
-    return cached ?: creator().also { put(key, it) }
+    return cache.getOrPut(key, creator) as V
   }
 
   override fun delete(key: K) {

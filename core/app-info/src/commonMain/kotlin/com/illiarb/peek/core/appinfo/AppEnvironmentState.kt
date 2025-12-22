@@ -2,7 +2,11 @@ package com.illiarb.peek.core.appinfo
 
 public object AppEnvironmentState {
 
-  internal var current: AppEnvironment = AppEnvironment.valueOf(BuildKonfig.ENV)
+  internal val current: AppEnvironment = runCatching {
+    AppEnvironment.valueOf(BuildKonfig.ENV)
+  }.getOrElse {
+    AppEnvironment.UNDEFINED
+  }
 
   public fun isDev(): Boolean = current == AppEnvironment.DEV
 }
