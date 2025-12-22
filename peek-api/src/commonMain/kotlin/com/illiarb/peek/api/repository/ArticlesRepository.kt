@@ -5,18 +5,20 @@ import com.illiarb.peek.api.db.dao.ArticlesDao
 import com.illiarb.peek.api.di.InternalApi
 import com.illiarb.peek.api.domain.Article
 import com.illiarb.peek.api.domain.NewsSourceKind
+import com.illiarb.peek.core.arch.di.AppScope
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.core.data.AsyncDataStore
-import com.illiarb.peek.core.data.ConcurrentHashMapCache
 import com.illiarb.peek.core.data.MemoryCache
 import com.illiarb.peek.core.data.mapContent
 import com.illiarb.peek.core.logging.Logger
 import com.illiarb.peek.core.types.Url
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.Flow
 import kotlin.jvm.JvmSuppressWildcards
 
 @Inject
+@SingleIn(AppScope::class)
 internal class ArticlesRepository(
   @InternalApi private val memoryCache: MemoryCache<String>,
   private val articlesDao: ArticlesDao,

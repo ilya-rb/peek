@@ -35,7 +35,6 @@ public object PeekApiBindings {
   }
 
   @Provides
-  @SingleIn(AppScope::class)
   internal fun providePeekApiService(
     articlesRepository: ArticlesRepository,
     newsDataSources: Set<NewsDataSource>,
