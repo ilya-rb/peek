@@ -5,6 +5,7 @@ import com.illiarb.peek.api.db.dao.ArticlesDao
 import com.illiarb.peek.api.di.InternalApi
 import com.illiarb.peek.api.domain.Article
 import com.illiarb.peek.api.domain.NewsSourceKind
+import com.illiarb.peek.api.error.ArticleNotFoundException
 import com.illiarb.peek.core.arch.di.AppScope
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.core.data.AsyncDataStore
@@ -53,7 +54,7 @@ internal class ArticlesRepository(
     }
   )
 
-  public fun articlesFrom(kind: NewsSourceKind): Flow<Async<List<Article>>> {
+  fun articlesFrom(kind: NewsSourceKind): Flow<Async<List<Article>>> {
     return articlesStore.collect(kind, AsyncDataStore.LoadStrategy.CacheOnly)
       .mapContent { articles ->
         articles.sortedByDescending {
@@ -62,7 +63,7 @@ internal class ArticlesRepository(
       }
   }
 
-  public fun savedArticles(): Flow<Async<List<Article>>> {
+  fun savedArticles(): Flow<Async<List<Article>>> {
     return Async.fromFlow {
       articlesDao.savedArticles().getOrThrow().sortedByDescending {
         it.date
@@ -70,14 +71,14 @@ internal class ArticlesRepository(
     }
   }
 
-  public fun articleByUrl(url: Url): Flow<Async<Article>> {
+  fun articleByUrl(url: Url): Flow<Async<Article>> {
     return Async.fromFlow {
       val article = articlesDao.articleByUrl(url).getOrElse { throw it }
       article ?: throw ArticleNotFoundException()
     }
   }
 
-  public suspend fun saveArticle(article: Article): Result<Unit> {
+  suspend fun saveArticle(article: Article): Result<Unit> {
     return articlesDao.saveArticle(article).onSuccess {
       articlesStore.invalidateMemory(article.kind)
     }
@@ -86,6 +87,4 @@ internal class ArticlesRepository(
   private fun dataSourceFor(kind: NewsSourceKind): NewsDataSource {
     return newsDataSources.first { it.kind == kind }
   }
-
-  public class ArticleNotFoundException : Throwable()
 }

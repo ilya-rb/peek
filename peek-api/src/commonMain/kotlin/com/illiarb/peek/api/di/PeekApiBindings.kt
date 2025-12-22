@@ -22,20 +22,18 @@ import dev.zacsweers.metro.SingleIn
 
 @BindingContainer(
   includes = [
+    PeekApiBindingsInternal::class,
     RssParserBindings::class,
     SqlDatabasePlatformBindings::class,
   ]
 )
-public object PeekApiBindings {
+public object PeekApiBindings
+
+@BindingContainer
+internal object PeekApiBindingsInternal {
 
   @Provides
-  @InternalApi
-  internal fun provideMemoryCache(): MemoryCache<String> {
-    return ConcurrentHashMapCache()
-  }
-
-  @Provides
-  internal fun providePeekApiService(
+  fun providePeekApiService(
     articlesRepository: ArticlesRepository,
     newsDataSources: Set<NewsDataSource>,
   ): PeekApiService {
@@ -43,27 +41,33 @@ public object PeekApiBindings {
   }
 
   @Provides
+  @InternalApi
+  fun provideMemoryCache(): MemoryCache<String> {
+    return ConcurrentHashMapCache()
+  }
+
+  @Provides
   @SingleIn(AppScope::class)
   @InternalApi
-  internal fun provideDatabase(sqlDriver: SqlDriver): Database {
+  fun provideDatabase(sqlDriver: SqlDriver): Database {
     return Database(sqlDriver)
   }
 
   @Provides
   @IntoSet
-  internal fun provideHackerNewsDataSource(rssParser: RssParser): NewsDataSource {
+  fun provideHackerNewsDataSource(rssParser: RssParser): NewsDataSource {
     return RssNewsDataSource(rssParser, Url(BuildKonfig.SERVICE_HN), NewsSourceKind.HackerNews)
   }
 
   @Provides
   @IntoSet
-  internal fun provideFtNewsDataSource(rssParser: RssParser): NewsDataSource {
+  fun provideFtNewsDataSource(rssParser: RssParser): NewsDataSource {
     return RssNewsDataSource(rssParser, Url(BuildKonfig.SERVICE_FT), NewsSourceKind.Ft)
   }
 
   @Provides
   @IntoSet
-  internal fun provideDouNewsDataSource(rssParser: RssParser): NewsDataSource {
+  fun provideDouNewsDataSource(rssParser: RssParser): NewsDataSource {
     return RssNewsDataSource(rssParser, Url(BuildKonfig.SERVICE_DOU), NewsSourceKind.Dou)
   }
 }
