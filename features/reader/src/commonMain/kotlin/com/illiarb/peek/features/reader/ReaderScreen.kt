@@ -57,11 +57,15 @@ internal fun ReaderScreen(
 ) {
   val eventSink = state.eventSink
 
-  val screenWidth = getScreenWidth()
   val contentScrollState = rememberScrollState()
   val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
-  val percent = (contentScrollState.value.toFloat() / contentScrollState.maxValue.toFloat()) * 100f
-  val progress = percent / 100f * screenWidth.value
+
+  val screenWidth = getScreenWidth()
+  val progress = if (contentScrollState.maxValue > 0) {
+    (contentScrollState.value.toFloat() / contentScrollState.maxValue.toFloat()) * screenWidth.value
+  } else {
+    0f
+  }
 
   if (state.summaryShowing) {
     OverlayEffect(Unit) {
