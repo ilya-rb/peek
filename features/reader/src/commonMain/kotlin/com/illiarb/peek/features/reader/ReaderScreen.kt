@@ -25,7 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
@@ -58,14 +57,15 @@ internal fun ReaderScreen(
 ) {
   val eventSink = state.eventSink
 
-  val progressColor = MaterialTheme.colorScheme.primary
-  val progressSize = 8.dp
-  val screenWidth = getScreenWidth()
-
   val contentScrollState = rememberScrollState()
   val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
-  val percent = (contentScrollState.value.toFloat() / contentScrollState.maxValue.toFloat()) * 100f
-  val scrolledWidth = percent / 100f * screenWidth.value
+
+  val screenWidth = getScreenWidth()
+  val progress = if (contentScrollState.maxValue > 0) {
+    (contentScrollState.value.toFloat() / contentScrollState.maxValue.toFloat()) * screenWidth.value
+  } else {
+    0f
+  }
 
   if (state.summaryShowing) {
     OverlayEffect(Unit) {
@@ -82,7 +82,7 @@ internal fun ReaderScreen(
     contentWindowInsets = WindowInsets(0, 0, 0, 0),
     topBar = {
       TopAppBar(
-        modifier = Modifier.backgroundProgressed(scrolledWidth, progressSize.value, progressColor),
+        modifier = Modifier.withProgressLine(progress),
         scrollBehavior = scrollBehavior,
         colors = TopAppBarDefaults.topAppBarColors(
           scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
@@ -104,9 +104,8 @@ internal fun ReaderScreen(
       )
     },
   ) { innerPadding ->
-    val modifier = Modifier.fillMaxSize().padding(innerPadding)
-    Box(modifier) {
-      ReaderContent(state.article, contentScrollState, modifier) {
+    Box(Modifier.fillMaxSize().padding(innerPadding)) {
+      ReaderContent(state.article, contentScrollState) {
         eventSink.invoke(Event.ErrorRetryClicked)
       }
     }
@@ -172,7 +171,6 @@ private fun ReaderTitle(article: Async<Article>) {
 private fun ReaderContent(
   article: Async<Article>,
   contentScrollState: ScrollState,
-  modifier: Modifier,
   onErrorClicked: () -> Unit,
 ) {
   when (article) {
@@ -181,17 +179,17 @@ private fun ReaderContent(
     is Async.Content -> {
       WebView(
         url = article.content.url.url,
-        modifier = modifier.fillMaxSize().verticalScroll(contentScrollState),
+        modifier = Modifier.fillMaxSize().verticalScroll(contentScrollState),
       )
     }
   }
 }
 
-private fun Modifier.backgroundProgressed(
-  progress: Float,
-  progressSize: Float,
-  progressColor: Color,
-): Modifier {
+@Composable
+private fun Modifier.withProgressLine(progress: Float): Modifier {
+  val progressColor = MaterialTheme.colorScheme.primary
+  val progressSize = 8.dp.value
+
   return drawWithContent {
     drawContent()
     drawRect(
@@ -202,7 +200,7 @@ private fun Modifier.backgroundProgressed(
       ),
       topLeft = Offset(
         x = 0f,
-        y = this.size.height - progress,
+        y = this.size.height - progressSize,
       )
     )
   }
