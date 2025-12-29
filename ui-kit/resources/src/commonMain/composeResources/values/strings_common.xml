@@ -19,6 +19,6 @@
   </plurals>
 
   <string name="duration_minutes_ago">Updated %1$d minutes ago</string>
-  <string name="duration_less_then_a_minute">Updated less then a minute ago</string>
+  <string name="duration_less_then_a_minute">Updated less than a minute ago</string>
 
 </resources>
