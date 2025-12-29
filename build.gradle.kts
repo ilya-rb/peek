@@ -24,8 +24,6 @@ doctor {
   negativeAvoidanceThreshold.set(500)
   warnIfKotlinCompileDaemonFallback.set(true)
   warnWhenJetifierEnabled.set(true)
-  // Check
-  disallowMultipleDaemons.set(false)
 
   javaHome {
     ensureJavaHomeMatches.set(true)

@@ -49,8 +49,13 @@ public class AsyncDataStore<Params, Domain>(
     intoMemory.invoke(params, domain)
   }
 
-  public fun invalidateMemory(params: Params) {
+  public suspend fun invalidateMemory(params: Params) {
     invalidateMemory.invoke(params)
+
+    val storageCached = fromStorage.invoke(params)
+    if (storageCached != null) {
+      intoMemory.invoke(params, storageCached)
+    }
   }
 
   private fun createFlowFor(params: Params, strategy: LoadStrategy<Params>): Flow<Async<Domain>> {
