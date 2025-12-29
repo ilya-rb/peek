@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
-public fun <T, R> Flow<Async<T>>.mapContent(mapper: (T) -> R): Flow<Async<R>> {
+public fun <T, R> Flow<Async<T>>.mapContent(mapper: suspend (T) -> R): Flow<Async<R>> {
   return map { data ->
     when (data) {
       is Async.Loading -> Async.Loading

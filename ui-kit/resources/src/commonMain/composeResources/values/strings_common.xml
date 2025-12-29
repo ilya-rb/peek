@@ -12,4 +12,13 @@
     <item quantity="zero">Less than a minute</item>
     <item quantity="other">%1$d minutes</item>
   </plurals>
+
+  <plurals name="duration_hours_ago">
+    <item quantity="one">Updated an hour ago</item>
+    <item quantity="other">Updated %1$d hours ago</item>
+  </plurals>
+
+  <string name="duration_minutes_ago">Updated %1$d minutes ago</string>
+  <string name="duration_less_then_a_minute">Updated less than a minute ago</string>
+
 </resources>

@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.illiarb.peek.uikit.core.components.popup.ShareAction
 import com.illiarb.peek.uikit.core.components.popup.SummarizeAction
@@ -170,7 +172,15 @@ private fun ArticlePopupMenu(
   onShareClick: () -> Unit,
 ) {
   Box {
-    IconButton(onMenuClick) {
+    val iconColors = IconButtonDefaults.iconButtonColors().let {
+      if (expanded) {
+        it.copy(containerColor = MaterialTheme.colorScheme.onPrimaryFixedVariant)
+      } else {
+        it
+      }
+    }
+
+    IconButton(onMenuClick, colors = iconColors) {
       Icon(
         imageVector = Icons.Filled.MoreHoriz,
         tint = MaterialTheme.colorScheme.primary,
@@ -180,6 +190,7 @@ private fun ArticlePopupMenu(
     DropdownMenu(
       expanded = expanded,
       onDismissRequest = onDismiss,
+      offset = DpOffset((-8).dp, 0.dp),
     ) {
       SummarizeAction(onClick = onSummarizeClick)
       ShareAction(onClick = onShareClick)

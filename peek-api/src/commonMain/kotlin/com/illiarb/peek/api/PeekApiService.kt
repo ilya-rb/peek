@@ -2,6 +2,7 @@ package com.illiarb.peek.api
 
 import com.illiarb.peek.api.datasource.NewsDataSource
 import com.illiarb.peek.api.domain.Article
+import com.illiarb.peek.api.domain.ArticlesOfKind
 import com.illiarb.peek.api.domain.NewsSourceKind
 import com.illiarb.peek.api.repository.ArticlesRepository
 import com.illiarb.peek.core.data.Async
@@ -12,7 +13,7 @@ public interface PeekApiService {
 
   public fun getAvailableSources(): List<NewsSourceKind>
 
-  public fun collectLatestNewsFrom(kind: NewsSourceKind): Flow<Async<List<Article>>>
+  public fun collectLatestNewsFrom(kind: NewsSourceKind): Flow<Async<ArticlesOfKind>>
 
   public fun collectArticleByUrl(url: Url): Flow<Async<Article>>
 
@@ -26,7 +27,7 @@ internal class DefaultPeekApiService(
   private val newsDataSources: Set<NewsDataSource>,
 ) : PeekApiService {
 
-  override fun collectLatestNewsFrom(kind: NewsSourceKind): Flow<Async<List<Article>>> {
+  override fun collectLatestNewsFrom(kind: NewsSourceKind): Flow<Async<ArticlesOfKind>> {
     return articlesRepository.articlesFrom(kind)
   }
 

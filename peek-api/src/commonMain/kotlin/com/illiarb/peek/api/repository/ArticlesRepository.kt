@@ -4,6 +4,7 @@ import com.illiarb.peek.api.datasource.NewsDataSource
 import com.illiarb.peek.api.db.dao.ArticlesDao
 import com.illiarb.peek.api.di.InternalApi
 import com.illiarb.peek.api.domain.Article
+import com.illiarb.peek.api.domain.ArticlesOfKind
 import com.illiarb.peek.api.domain.NewsSourceKind
 import com.illiarb.peek.api.error.ArticleNotFoundException
 import com.illiarb.peek.core.arch.di.AppScope
@@ -22,6 +23,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.builtins.serializer
 import kotlin.jvm.JvmSuppressWildcards
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Instant
 
@@ -74,15 +76,13 @@ internal class ArticlesRepository(
     },
     invalidateMemory = { kind ->
       memoryCache.delete(kind.name)
-    }
+    },
   )
 
-  fun articlesFrom(kind: NewsSourceKind): Flow<Async<List<Article>>> {
+  fun articlesFrom(kind: NewsSourceKind): Flow<Async<ArticlesOfKind>> {
     return articlesStore.collect(kind, articlesLoadingStrategy)
       .mapContent { articles ->
-        articles.sortedByDescending {
-          it.date
-        }
+        articles.sortedByDescending { it.date }.toArticlesOfKind(kind)
       }
   }
 
@@ -108,6 +108,18 @@ internal class ArticlesRepository(
     return articlesDao.saveArticle(article).onSuccess {
       articlesStore.invalidateMemory(article.kind)
     }
+  }
+
+  private suspend fun List<Article>.toArticlesOfKind(kind: NewsSourceKind): ArticlesOfKind {
+    val timestamp = requireNotNull(
+      articlesLoadingStrategy.invalidator.getCacheTimestamp(kind).getOrThrow()
+    )
+
+    return ArticlesOfKind(
+      kind = kind,
+      articles = this,
+      lastUpdated = Clock.System.now() - timestamp,
+    )
   }
 
   private fun NewsSourceKind.dataSource(): NewsDataSource {

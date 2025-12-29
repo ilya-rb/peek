@@ -21,12 +21,14 @@ import com.slack.circuit.runtime.ui.ui
 import dev.zacsweers.metro.ContributesIntoSet
 import dev.zacsweers.metro.Inject
 import kotlinx.collections.immutable.ImmutableList
+import kotlin.time.Duration
 
 internal interface HomeScreenContract {
 
   @Immutable
   data class State(
     val articles: Async<ImmutableList<Article>>,
+    val articlesLastUpdatedTime: Duration?,
     val newsSources: ImmutableList<NewsSourceKind>,
     val selectedNewsSourceIndex: Int,
     val articleSummaryToShow: Article?,

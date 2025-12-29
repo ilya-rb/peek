@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.os.Build
 import android.os.StrictMode
+import com.illiarb.peek.core.appinfo.AppEnvironmentState
 import com.illiarb.peek.di.AndroidAppGraph
 import dev.zacsweers.metro.createGraphFactory
 import io.github.aakira.napier.DebugAntilog
@@ -17,12 +18,18 @@ internal class PeekApp : Application() {
 
   override fun onCreate() {
     super.onCreate()
-    setupStrictMode()
-
-    Napier.base(DebugAntilog())
+    setup()
   }
 
   fun appGraph(): AndroidAppGraph = appGraph
+
+  fun setup() {
+    if (AppEnvironmentState.isDev()) {
+      setupStrictMode()
+
+      Napier.base(DebugAntilog())
+    }
+  }
 
   private fun setupStrictMode() {
     StrictMode.setThreadPolicy(
@@ -41,9 +48,8 @@ internal class PeekApp : Application() {
         .detectFileUriExposure()
         .detectCleartextNetwork()
         .apply {
-          if (Build.VERSION.SDK_INT >= 26) {
-            detectContentUriWithoutPermission()
-          }
+          detectContentUriWithoutPermission()
+
           if (Build.VERSION.SDK_INT >= 29) {
             detectCredentialProtectedWhileLocked()
           }
