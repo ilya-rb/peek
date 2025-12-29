@@ -17,7 +17,7 @@ internal class PeekAppComponentFactory : AppComponentFactory() {
     className: String,
     intent: Intent?
   ): Activity {
-    return getInstance(cl, className, appRef.appGraph().activityProviders)
+    return appRef?.let { app -> getInstance(cl, className, app.appGraph().activityProviders) }
       ?: super.instantiateActivityCompat(cl, className, intent)
   }
 
@@ -39,6 +39,6 @@ internal class PeekAppComponentFactory : AppComponentFactory() {
 
   companion object {
     // AppComponentFactory can be created multiple times
-    private lateinit var appRef: PeekApp
+    private var appRef: PeekApp? = null
   }
 }
