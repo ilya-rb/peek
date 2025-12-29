@@ -7,12 +7,15 @@ import androidx.compose.runtime.setValue
 import com.illiarb.peek.api.PeekApiService
 import com.illiarb.peek.api.domain.Article
 import com.illiarb.peek.core.arch.message.MessageDispatcher
+import com.illiarb.peek.core.arch.message.MessageDispatcher.Message
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.core.data.mapContent
 import com.illiarb.peek.core.types.Url
 import com.illiarb.peek.features.home.articles.ArticlesUi
 import com.illiarb.peek.features.navigation.map.ReaderScreen
 import com.illiarb.peek.features.navigation.map.ShareScreen
+import com.illiarb.peek.uikit.resources.Res
+import com.illiarb.peek.uikit.resources.bookmarks_action_removed
 import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
@@ -21,6 +24,7 @@ import com.slack.circuit.runtime.presenter.Presenter
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 
 internal class BookmarksPresenter(
   private val navigator: Navigator,
@@ -37,23 +41,13 @@ internal class BookmarksPresenter(
       mutableStateOf<Article?>(value = null)
     }
 
-    var contentTriggers by rememberRetained {
-      mutableStateOf(
-        BookmarksScreenContract.ContentTriggers(
-          articleBookmarked = false,
-          contentForceRefresh = false,
-        )
-      )
-    }
-
-    val articles by produceRetainedState<Async<ImmutableList<Article>>>(
-      initialValue = Async.Loading,
-      key1 = contentTriggers,
-    ) {
+    val articles by produceRetainedState<Async<ImmutableList<Article>>>(Async.Loading) {
       peekApiService.collectSavedArticles()
         .mapContent { it.toImmutableList() }
         .collect { value = it }
     }
+
+    val bookmarksRemovedMessage = stringResource(Res.string.bookmarks_action_removed)
 
     return BookmarksScreenContract.State(
       articles = articles,
@@ -65,13 +59,10 @@ internal class BookmarksPresenter(
               val article = event.item.copy(saved = false)
 
               peekApiService.saveArticle(article).onSuccess {
-                contentTriggers = contentTriggers.copy(
-                  articleBookmarked = !contentTriggers.articleBookmarked
-                )
                 messageDispatcher.sendMessage(
-                  MessageDispatcher.Message(
-                    content = "Removed from bookmarks",
-                    type = MessageDispatcher.Message.MessageType.SUCCESS,
+                  Message(
+                    content = bookmarksRemovedMessage,
+                    type = Message.MessageType.SUCCESS,
                   )
                 )
               }
@@ -90,11 +81,7 @@ internal class BookmarksPresenter(
             articleSummaryToShow = event.item
           }
 
-          is ArticlesUi.ArticlesRefreshClicked -> {
-            contentTriggers = contentTriggers.copy(
-              contentForceRefresh = !contentTriggers.contentForceRefresh
-            )
-          }
+          is ArticlesUi.ArticlesRefreshClicked -> Unit
         }
       },
       eventSink = { event ->

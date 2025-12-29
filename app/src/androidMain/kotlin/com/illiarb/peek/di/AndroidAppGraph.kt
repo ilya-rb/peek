@@ -1,5 +1,6 @@
 package com.illiarb.peek.di
 
+import android.app.Activity
 import android.content.Context
 import coil3.ImageLoader
 import com.illiarb.peek.api.di.PeekApiBindings
@@ -14,7 +15,10 @@ import com.illiarb.peek.features.settings.di.AppSettingsBindings
 import com.illiarb.peek.features.summarizer.di.SummarizerBindings
 import com.illiarb.peek.uikit.imageloader.ImageLoaderBindings
 import dev.zacsweers.metro.DependencyGraph
+import dev.zacsweers.metro.Multibinds
+import dev.zacsweers.metro.Provider
 import dev.zacsweers.metro.Provides
+import kotlin.reflect.KClass
 
 @DependencyGraph(
   scope = AppScope::class,
@@ -32,11 +36,14 @@ internal interface AndroidAppGraph : AppGraph {
 
   val uiGraph: AndroidUiGraph.Factory
   val appConfiguration: AppConfiguration
-  val settingsService: SettingsService
   val imageLoader: ImageLoader
+  val activityProviders: Map<KClass<out Activity>, Provider<Activity>>
 
   @Provides
   fun provideAppDispatchers(): AppDispatchers = AppDispatchers()
+
+  @Multibinds
+  fun activityProviders(): Map<KClass<out Activity>, Activity>
 
   @DependencyGraph.Factory
   fun interface Factory {

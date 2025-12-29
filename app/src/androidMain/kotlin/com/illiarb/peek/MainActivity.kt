@@ -1,5 +1,6 @@
 package com.illiarb.peek
 
+import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -12,14 +13,20 @@ import androidx.activity.enableEdgeToEdge
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.core.net.toUri
-import androidx.lifecycle.lifecycleScope
+import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
+import com.illiarb.peek.core.appinfo.AppConfiguration
+import com.illiarb.peek.core.arch.ActivityKey
+import com.illiarb.peek.core.arch.di.AppScope
 import com.illiarb.peek.core.arch.message.MessageDispatcher
 import com.illiarb.peek.features.navigation.map.HomeScreen
 import com.illiarb.peek.features.navigation.map.OpenUrlScreen
 import com.illiarb.peek.features.navigation.map.ShareScreen
+import com.illiarb.peek.features.settings.data.SettingsService
 import com.illiarb.peek.features.settings.data.SettingsService.SettingType
 import com.illiarb.peek.uikit.core.theme.UiKitTheme
 import com.slack.circuit.backstack.rememberSaveableBackStack
@@ -31,10 +38,19 @@ import com.slack.circuit.retained.collectAsRetainedState
 import com.slack.circuitx.android.AndroidScreen
 import com.slack.circuitx.android.rememberAndroidScreenAwareNavigator
 import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.binding
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.launch
 
-internal class MainActivity : ComponentActivity() {
+@Inject
+@ActivityKey(MainActivity::class)
+@ContributesIntoMap(AppScope::class, binding = binding<Activity>())
+internal class MainActivity(
+  private val settingsService: SettingsService,
+  private val imageLoader: ImageLoader,
+  private val appConfig: AppConfiguration,
+) : ComponentActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     enableEdgeToEdge(SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT))
@@ -44,7 +60,7 @@ internal class MainActivity : ComponentActivity() {
     val appGraph = applicationContext.appGraph()
     val uiGraph = appGraph.uiGraph.create(this)
 
-    if (appGraph.appConfiguration.isAndroidQ && isTaskRoot) {
+    if (appConfig.isAndroidQ && isTaskRoot) {
       onBackPressedDispatcher.addCallback {
         // https://twitter.com/Piwai/status/1169274622614704129
         // https://issuetracker.google.com/issues/139738913
@@ -52,15 +68,7 @@ internal class MainActivity : ComponentActivity() {
       }
     }
 
-    lifecycleScope.launch {
-      uiGraph.messageProvider.messages
-        .filterNotNull()
-        .collect { showToast(it) }
-    }
-
     setContent {
-      val settingsService = appGraph.settingsService
-
       val dynamicColorsEnabled by settingsService
         .observeSettingChange(SettingType.DYNAMIC_COLORS)
         .collectAsRetainedState(initial = false)
@@ -69,7 +77,11 @@ internal class MainActivity : ComponentActivity() {
         .observeSettingChange(SettingType.DARK_THEME)
         .collectAsRetainedState(initial = isSystemInDarkTheme())
 
-      setSingletonImageLoaderFactory { appGraph.imageLoader }
+      val message by uiGraph.messageProvider.messages
+        .filterNotNull()
+        .collectAsState(null)
+
+      setSingletonImageLoaderFactory { imageLoader }
 
       UiKitTheme(
         useDynamicColors = dynamicColorsEnabled,
@@ -80,6 +92,12 @@ internal class MainActivity : ComponentActivity() {
           delegate = rememberCircuitNavigator(backStack) {},
           starter = ::navigateTo,
         )
+
+        if (message != null) {
+          SideEffect {
+            showToast(message!!)
+          }
+        }
 
         CircuitCompositionLocals(uiGraph.circuit) {
           ContentWithOverlays {

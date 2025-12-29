@@ -1,5 +1,6 @@
 package com.illiarb.peek.api.db.dao
 
+import app.cash.sqldelight.coroutines.asFlow
 import com.illiarb.peek.api.ArticleEntity
 import com.illiarb.peek.api.Database
 import com.illiarb.peek.api.di.InternalApi
@@ -10,6 +11,9 @@ import com.illiarb.peek.core.coroutines.suspendRunCatching
 import com.illiarb.peek.core.logging.Logger
 import com.illiarb.peek.core.types.Url
 import dev.zacsweers.metro.Inject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlin.time.Instant
 
@@ -51,14 +55,14 @@ internal class ArticlesDao(
     }
   }
 
-  suspend fun savedArticles(): Result<List<Article>> {
-    return withContext(appDispatchers.io) {
-      suspendRunCatching {
-        db.articlesQueries.savedArticles()
-          .executeAsList()
-          .map { entity -> entity.asArticle() }
+  fun savedArticles(): Flow<List<Article>> {
+    return db.articlesQueries.savedArticles().asFlow()
+      .map { query ->
+        query.executeAsList().map { entity ->
+          entity.asArticle()
+        }
       }
-    }
+      .flowOn(appDispatchers.io)
   }
 
   suspend fun saveArticles(articles: List<Article>): Result<Unit> {

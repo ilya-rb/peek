@@ -18,6 +18,8 @@ import com.illiarb.peek.core.types.Url
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.builtins.serializer
 import kotlin.jvm.JvmSuppressWildcards
 import kotlin.time.Duration.Companion.hours
@@ -85,11 +87,14 @@ internal class ArticlesRepository(
   }
 
   fun savedArticles(): Flow<Async<List<Article>>> {
-    return Async.fromFlow {
-      articlesDao.savedArticles().getOrThrow().sortedByDescending {
-        it.date
+    return articlesDao.savedArticles()
+      .map { articles ->
+        articles.sortedByDescending {
+          it.date
+        }
       }
-    }
+      .map { Async.Content(it) as Async<List<Article>> }
+      .catch { emit(Async.Error(it)) }
   }
 
   fun articleByUrl(url: Url): Flow<Async<Article>> {
