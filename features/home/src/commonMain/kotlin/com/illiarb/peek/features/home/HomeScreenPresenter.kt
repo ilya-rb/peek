@@ -1,15 +1,16 @@
 package com.illiarb.peek.features.home
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.illiarb.peek.api.PeekApiService
 import com.illiarb.peek.api.domain.Article
+import com.illiarb.peek.api.domain.ArticlesOfKind
 import com.illiarb.peek.api.domain.NewsSourceKind
 import com.illiarb.peek.core.arch.message.MessageDispatcher
 import com.illiarb.peek.core.data.Async
-import com.illiarb.peek.core.data.mapContent
 import com.illiarb.peek.features.home.HomeScreenContract.Event
 import com.illiarb.peek.features.home.HomeScreenContract.State.BookmarkMessage
 import com.illiarb.peek.features.home.articles.ArticlesUi
@@ -58,21 +59,28 @@ internal class HomeScreenPresenter(
       )
     }
 
-    val articles by produceRetainedState<Async<ImmutableList<Article>>>(
+    val articlesOfKind by produceRetainedState<Async<ArticlesOfKind>>(
       initialValue = Async.Loading,
       key1 = contentTriggers,
     ) {
       val source = newsSources[contentTriggers.selectedNewsSourceIndex]
+      peekApiService.collectLatestNewsFrom(source).collect { value = it }
+    }
 
-      peekApiService.collectLatestNewsFrom(source)
-        .mapContent { it.toImmutableList() }
-        .collect { value = it }
+    val articles by derivedStateOf {
+      articlesOfKind.map {
+        it.articles.toImmutableList()
+      }
+    }
+    val articlesLastUpdatedTime by derivedStateOf {
+      articlesOfKind.contentOrNull()?.lastUpdated
     }
 
     return HomeScreenContract.State(
       newsSources = newsSources,
       selectedNewsSourceIndex = contentTriggers.selectedNewsSourceIndex,
       articleSummaryToShow = articleSummaryToShow,
+      articlesLastUpdatedTime = articlesLastUpdatedTime,
       articles = articles,
       bookmarkMessage = bookmarkMessage,
       eventSink = { event ->

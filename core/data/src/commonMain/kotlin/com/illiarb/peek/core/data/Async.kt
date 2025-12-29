@@ -20,6 +20,14 @@ public sealed class Async<out T> {
     }
   }
 
+  public fun <R> map(mapper: (T) -> R): Async<R> {
+    return when (this) {
+      is Content -> Content(mapper(this.content), this.suppressedError)
+      is Error -> Error(this.error)
+      is Loading -> Loading
+    }
+  }
+
   public fun stateKey(): Any {
     return when (this) {
       is Content<*> -> {

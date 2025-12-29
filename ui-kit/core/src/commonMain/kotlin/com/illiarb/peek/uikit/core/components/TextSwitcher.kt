@@ -11,7 +11,6 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -25,8 +24,8 @@ import kotlin.time.Duration
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 public fun TextSwitcher(
-  first: String,
-  second: String,
+  first: @Composable (Modifier) -> Unit,
+  second: @Composable (Modifier) -> Unit,
   switchEvery: Duration,
   containerHeightDp: Int,
   modifier: Modifier = Modifier,
@@ -62,9 +61,9 @@ public fun TextSwitcher(
     val modifier = Modifier.fillMaxWidth()
 
     if (showFirst) {
-      Text(text = first, modifier = modifier)
+      first(modifier)
     } else {
-      Text(text = second, modifier = modifier)
+      second(modifier)
     }
   }
 }

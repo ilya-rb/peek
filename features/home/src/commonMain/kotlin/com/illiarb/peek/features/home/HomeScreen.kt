@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -16,6 +17,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -36,6 +38,7 @@ import com.illiarb.peek.uikit.core.components.HorizontalList
 import com.illiarb.peek.uikit.core.components.TextSwitcher
 import com.illiarb.peek.uikit.core.components.cell.FullscreenErrorState
 import com.illiarb.peek.uikit.core.components.cell.SelectableCircleAvatar
+import com.illiarb.peek.uikit.core.components.text.DateFormats
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_action_bookmarks
 import com.illiarb.peek.uikit.resources.acsb_action_settings
@@ -114,8 +117,21 @@ private fun TopBarTitle(state: HomeScreenContract.State) {
     NewsSourceKind.Ft -> stringResource(Res.string.service_ft_name)
   }
   TextSwitcher(
-    first = stringResource(Res.string.home_screen_title),
-    second = name,
+    first = { modifier ->
+      Text(stringResource(Res.string.home_screen_title), modifier)
+    },
+    second = { modifier ->
+      Column(modifier) {
+        Text(name, style = MaterialTheme.typography.bodyLarge)
+        state.articlesLastUpdatedTime?.let { time ->
+          Text(
+            text = DateFormats.formatTimestamp(time),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.primaryFixedDim,
+          )
+        }
+      }
+    },
     containerHeightDp = TopAppBarDefaults.TopAppBarExpandedHeight.value.toInt(),
     switchEvery = 5.seconds,
   )
