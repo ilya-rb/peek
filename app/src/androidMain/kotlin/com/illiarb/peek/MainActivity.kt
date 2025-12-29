@@ -93,9 +93,9 @@ internal class MainActivity(
           starter = ::navigateTo,
         )
 
-        if (message != null) {
+        message?.let {
           SideEffect {
-            showToast(message!!)
+            showToast(it)
           }
         }
 
