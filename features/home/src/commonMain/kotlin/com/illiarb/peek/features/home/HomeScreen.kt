@@ -9,12 +9,14 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmarks
+import androidx.compose.material.icons.filled.Reorder
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.BottomAppBarScrollBehavior
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -32,6 +34,7 @@ import com.illiarb.peek.features.home.HomeScreenContract.Event
 import com.illiarb.peek.features.home.articles.ArticlesContent
 import com.illiarb.peek.features.home.articles.ArticlesEmpty
 import com.illiarb.peek.features.home.articles.ArticlesLoading
+import com.illiarb.peek.features.navigation.map.ServicesScreen
 import com.illiarb.peek.features.navigation.map.SummaryScreen
 import com.illiarb.peek.features.navigation.map.showScreenOverlay
 import com.illiarb.peek.uikit.core.components.HorizontalList
@@ -58,6 +61,7 @@ import dev.chrisbanes.haze.materials.HazeMaterials
 import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
@@ -70,13 +74,25 @@ internal fun HomeScreen(state: HomeScreenContract.State, modifier: Modifier = Mo
   val hazeState = rememberHazeState()
   val hazeStyle = HazeMaterials.thin(MaterialTheme.colorScheme.surface)
 
-  if (state.articleSummaryToShow != null) {
-    OverlayEffect(Unit) {
-      val result = showScreenOverlay(
-        SummaryScreen(state.articleSummaryToShow.url, SummaryScreen.Context.HOME),
-        onDismiss = { SummaryScreen.Result.Close },
-      )
-      eventSink.invoke(Event.SummaryResult(result))
+  when {
+    state.articleSummaryToShow != null -> {
+      OverlayEffect(Unit) {
+        val result = showScreenOverlay(
+          SummaryScreen(state.articleSummaryToShow.url, SummaryScreen.Context.HOME),
+          onDismiss = { SummaryScreen.Result.Close },
+        )
+        eventSink.invoke(Event.SummaryResult(result))
+      }
+    }
+
+    state.servicesOrderToShow != null -> {
+      OverlayEffect(Unit) {
+        showScreenOverlay(
+          ServicesScreen,
+          onDismiss = { ServicesScreen.Result }
+        )
+        eventSink.invoke(Event.ReorderServicesClosed)
+      }
     }
   }
 
@@ -110,6 +126,10 @@ internal fun HomeScreen(state: HomeScreenContract.State, modifier: Modifier = Mo
 
 @Composable
 private fun TopBarTitle(state: HomeScreenContract.State) {
+  if (state.newsSources.isEmpty()) {
+    return
+  }
+
   val selectedSource = state.newsSources[state.selectedNewsSourceIndex]
   val name = when (selectedSource) {
     NewsSourceKind.Dou -> stringResource(Res.string.service_dou_name)
@@ -125,7 +145,7 @@ private fun TopBarTitle(state: HomeScreenContract.State) {
         Text(name, style = MaterialTheme.typography.bodyLarge)
         state.articlesLastUpdatedTime?.let { time ->
           Text(
-            text = DateFormats.formatTimestamp(time),
+            text = DateFormats.formatTimestamp(Clock.System.now() - time),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.primaryFixedDim,
           )
@@ -177,6 +197,20 @@ private fun BottomBar(
           .alpha(bottomBarAlpha)
       )
     },
+    floatingActionButton = {
+      IconButton(
+        onClick = { eventSink.invoke(Event.ReorderServicesClicked) },
+        colors = IconButtonDefaults.iconButtonColors(
+          containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        ),
+      ) {
+        Icon(
+          imageVector = Icons.Filled.Reorder,
+          tint = MaterialTheme.colorScheme.primary,
+          contentDescription = null,
+        )
+      }
+    }
   )
 }
 

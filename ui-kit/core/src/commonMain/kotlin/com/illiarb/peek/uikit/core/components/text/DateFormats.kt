@@ -30,7 +30,7 @@ public object DateFormats {
     return time.toComponents { hours, minutes, _, _ ->
       when {
         hours > 0 -> pluralStringResource(Res.plurals.duration_hours_ago, hours.toInt(), hours)
-        minutes > 0 -> stringResource(Res.string.duration_minutes_ago, minutes)
+        minutes > 1 -> stringResource(Res.string.duration_minutes_ago, minutes)
         else -> stringResource(Res.string.duration_less_then_a_minute)
       }
     }

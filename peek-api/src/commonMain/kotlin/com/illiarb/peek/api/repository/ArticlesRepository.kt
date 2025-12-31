@@ -118,7 +118,7 @@ internal class ArticlesRepository(
     return ArticlesOfKind(
       kind = kind,
       articles = this,
-      lastUpdated = Clock.System.now() - timestamp,
+      lastUpdated = timestamp,
     )
   }
 
