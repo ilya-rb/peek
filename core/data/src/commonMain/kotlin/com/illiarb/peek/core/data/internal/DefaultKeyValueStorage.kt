@@ -6,7 +6,10 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.illiarb.peek.core.coroutines.suspendRunCatching
 import com.illiarb.peek.core.data.KeyValueStorage
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 
@@ -34,5 +37,11 @@ internal class DefaultKeyValueStorage(
         json.decodeFromString(serializer, value)
       }
     }
+  }
+
+  override fun <T> observe(key: String, serializer: KSerializer<T>): Flow<T> {
+    return dataStore.data
+      .mapNotNull { preferences -> preferences[stringPreferencesKey(key)] }
+      .map { json.decodeFromString(serializer, it) }
   }
 }

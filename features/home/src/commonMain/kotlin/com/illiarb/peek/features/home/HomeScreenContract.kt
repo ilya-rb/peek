@@ -22,16 +22,18 @@ import dev.zacsweers.metro.ContributesIntoSet
 import dev.zacsweers.metro.Inject
 import kotlinx.collections.immutable.ImmutableList
 import kotlin.time.Duration
+import kotlin.time.Instant
 
 internal interface HomeScreenContract {
 
   @Immutable
   data class State(
     val articles: Async<ImmutableList<Article>>,
-    val articlesLastUpdatedTime: Duration?,
+    val articlesLastUpdatedTime: Instant?,
     val newsSources: ImmutableList<NewsSourceKind>,
     val selectedNewsSourceIndex: Int,
     val articleSummaryToShow: Article?,
+    val servicesOrderToShow: Unit?,
     val bookmarkMessage: BookmarkMessage?,
     val eventSink: (Event) -> Unit,
     val articlesEventSink: (ArticlesUi) -> Unit,
@@ -56,6 +58,8 @@ internal interface HomeScreenContract {
     data object SettingsClicked : Event
     data object BookmarksClicked : Event
     data object BookmarkToastResult : Event
+    data object ReorderServicesClicked : Event
+    data object ReorderServicesClosed : Event
   }
 
   @Inject

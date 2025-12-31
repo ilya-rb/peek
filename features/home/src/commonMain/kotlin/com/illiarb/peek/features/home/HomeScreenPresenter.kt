@@ -24,7 +24,6 @@ import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import com.slack.circuit.runtime.presenter.Presenter
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 
@@ -34,10 +33,6 @@ internal class HomeScreenPresenter(
   private val messageDispatcher: MessageDispatcher,
 ) : Presenter<HomeScreenContract.State> {
 
-  private val newsSources: ImmutableList<NewsSourceKind> by lazy {
-    peekApiService.getAvailableSources().toImmutableList()
-  }
-
   @Composable
   @Suppress("CyclomaticComplexMethod", "LongMethod")
   override fun present(): HomeScreenContract.State {
@@ -46,25 +41,48 @@ internal class HomeScreenPresenter(
     var articleSummaryToShow by rememberRetained {
       mutableStateOf<Article?>(value = null)
     }
+    var servicesOrderToShow by rememberRetained {
+      mutableStateOf<Unit?>(null)
+    }
     var bookmarkMessage by rememberRetained {
       mutableStateOf<BookmarkMessage?>(value = null)
     }
     var contentTriggers by rememberRetained {
       mutableStateOf(
         HomeScreenContract.ContentTriggers(
-          selectedNewsSourceIndex = 0,
+          selectedNewsSourceIndex = -1,
           articleBookmarked = false,
           manualReloadTriggered = false,
         )
       )
     }
 
+    val newsSources by produceRetainedState(emptyList<NewsSourceKind>().toImmutableList()) {
+      peekApiService.collectAvailableSources().collect {
+        if (it is Async.Content) {
+          val existingIndex = contentTriggers.selectedNewsSourceIndex
+          val newValue = it.content.map { source -> source.kind }.toImmutableList()
+
+          contentTriggers = if (existingIndex == -1) {
+            contentTriggers.copy(selectedNewsSourceIndex = 0)
+          } else {
+            contentTriggers.copy(
+              selectedNewsSourceIndex = newValue.indexOf(value[existingIndex])
+            )
+          }
+          value = newValue
+        }
+      }
+    }
+
     val articlesOfKind by produceRetainedState<Async<ArticlesOfKind>>(
       initialValue = Async.Loading,
       key1 = contentTriggers,
     ) {
-      val source = newsSources[contentTriggers.selectedNewsSourceIndex]
-      peekApiService.collectLatestNewsFrom(source).collect { value = it }
+      val source = newsSources.getOrNull(contentTriggers.selectedNewsSourceIndex)
+      if (source != null) {
+        peekApiService.collectLatestNewsFrom(source).collect { value = it }
+      }
     }
 
     val articles by derivedStateOf {
@@ -72,6 +90,7 @@ internal class HomeScreenPresenter(
         it.articles.toImmutableList()
       }
     }
+
     val articlesLastUpdatedTime by derivedStateOf {
       articlesOfKind.contentOrNull()?.lastUpdated
     }
@@ -81,6 +100,7 @@ internal class HomeScreenPresenter(
       selectedNewsSourceIndex = contentTriggers.selectedNewsSourceIndex,
       articleSummaryToShow = articleSummaryToShow,
       articlesLastUpdatedTime = articlesLastUpdatedTime,
+      servicesOrderToShow = servicesOrderToShow,
       articles = articles,
       bookmarkMessage = bookmarkMessage,
       eventSink = { event ->
@@ -90,6 +110,14 @@ internal class HomeScreenPresenter(
             contentTriggers = contentTriggers.copy(
               manualReloadTriggered = !contentTriggers.manualReloadTriggered
             )
+          }
+
+          is Event.ReorderServicesClicked -> {
+            servicesOrderToShow = Unit
+          }
+
+          is Event.ReorderServicesClosed -> {
+            servicesOrderToShow = null
           }
 
           is Event.SummaryResult -> {

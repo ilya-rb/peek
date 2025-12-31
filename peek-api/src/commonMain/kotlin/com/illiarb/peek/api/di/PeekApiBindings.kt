@@ -9,6 +9,7 @@ import com.illiarb.peek.api.datasource.NewsDataSource
 import com.illiarb.peek.api.datasource.RssNewsDataSource
 import com.illiarb.peek.api.domain.NewsSourceKind
 import com.illiarb.peek.api.repository.ArticlesRepository
+import com.illiarb.peek.api.repository.NewsSourcesRepository
 import com.illiarb.peek.core.arch.di.AppScope
 import com.illiarb.peek.core.data.ConcurrentHashMapCache
 import com.illiarb.peek.core.data.KeyValueStorage
@@ -36,9 +37,9 @@ internal object PeekApiBindingsInternal {
   @Provides
   fun providePeekApiService(
     articlesRepository: ArticlesRepository,
-    newsDataSources: Set<NewsDataSource>,
+    newsSourcesRepository: NewsSourcesRepository,
   ): PeekApiService {
-    return DefaultPeekApiService(articlesRepository, newsDataSources)
+    return DefaultPeekApiService(articlesRepository, newsSourcesRepository)
   }
 
   @Provides

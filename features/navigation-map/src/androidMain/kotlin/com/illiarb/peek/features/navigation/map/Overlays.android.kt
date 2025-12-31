@@ -32,7 +32,6 @@ public actual suspend fun <I : Any, R : Any> OverlayHost.showOverlay(
   return show(
     BottomSheetOverlay(
       model = input,
-      // sheetContainerColor = input.containerColor,
       skipPartiallyExpandedState = true,
       onDismiss = {
         onDismiss.invoke()

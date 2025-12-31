@@ -17,6 +17,14 @@ public object BookmarksScreen : Screen, CommonParcelable
 
 @CommonParcelize
 @Immutable
+public object ServicesScreen : Screen, CommonParcelable {
+
+  @CommonParcelize
+  public data object Result : PopResult, CommonParcelable
+}
+
+@CommonParcelize
+@Immutable
 public data object SettingsScreen : Screen, CommonParcelable
 
 @CommonParcelize
