@@ -33,7 +33,7 @@ import org.jetbrains.compose.resources.vectorResource
 public fun SelectableCircleAvatar(
   modifier: Modifier = Modifier,
   image: DrawableResource,
-  selected: Boolean,
+  state: AvatarState= AvatarState.Default,
   onClick: () -> Unit,
 ) {
   val colors = listOf(
@@ -42,8 +42,18 @@ public fun SelectableCircleAvatar(
     MaterialTheme.colorScheme.onPrimary,
     MaterialTheme.colorScheme.primary,
   )
-  val alpha: Float by animateFloatAsState(if (selected) 1f else 0.5f)
-  val scale: Float by animateFloatAsState(if (selected) 1f else 0.8f)
+  val alpha: Float by animateFloatAsState(
+    when (state) {
+      AvatarState.Default, AvatarState.Selected -> 1f
+      AvatarState.Unselected -> 0.5f
+    }
+  )
+  val scale: Float by animateFloatAsState(
+    when (state) {
+      AvatarState.Default, AvatarState.Selected -> 1f
+      AvatarState.Unselected -> 0.8f
+    }
+  )
   val borderWidth = 2.dp
   val infiniteTransition = rememberInfiniteTransition()
   val angle by infiniteTransition.animateFloat(
@@ -64,7 +74,7 @@ public fun SelectableCircleAvatar(
       .padding(borderWidth)
       .graphicsLayer(alpha = alpha, scaleX = scale, scaleY = scale)
       .let {
-        if (selected) {
+        if (state == AvatarState.Selected) {
           it.selectedBorder(colors, borderWidth, angle)
         } else {
           it
@@ -73,6 +83,12 @@ public fun SelectableCircleAvatar(
       .clip(CircleShape)
       .clickable(onClick = onClick)
   )
+}
+
+public enum class AvatarState {
+  Default,
+  Selected,
+  Unselected,
 }
 
 private fun Modifier.selectedBorder(

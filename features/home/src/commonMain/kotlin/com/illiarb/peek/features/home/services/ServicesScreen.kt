@@ -96,13 +96,12 @@ private fun ServiceItem(source: NewsSource, modifier: Modifier) {
         NewsSourceKind.Dou -> Res.drawable.dou_logo
         NewsSourceKind.Ft -> Res.drawable.ft_logo
       },
-      selected = false,
       onClick = {
       }
     )
 
     Text(
-      modifier = Modifier.padding(start = 8.dp),
+      modifier = Modifier.padding(start = 16.dp),
       text = when (source.kind) {
         NewsSourceKind.Dou -> stringResource(Res.string.service_dou_name)
         NewsSourceKind.HackerNews -> stringResource(Res.string.service_hacker_news_name)
