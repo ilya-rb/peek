@@ -7,6 +7,8 @@ import com.illiarb.peek.api.domain.NewsSourceKind
 import com.illiarb.peek.api.repository.ArticlesRepository
 import com.illiarb.peek.api.repository.NewsSourcesRepository
 import com.illiarb.peek.core.data.Async
+import com.illiarb.peek.core.data.AsyncDataStore
+import com.illiarb.peek.core.data.AsyncDataStore.LoadStrategy
 import com.illiarb.peek.core.types.Url
 import kotlinx.coroutines.flow.Flow
 
@@ -16,7 +18,10 @@ public interface PeekApiService {
 
   public suspend fun updateAvailableSources(sources: List<NewsSource>)
 
-  public fun collectLatestNewsFrom(kind: NewsSourceKind): Flow<Async<ArticlesOfKind>>
+  public fun collectLatestNewsFrom(
+    kind: NewsSourceKind,
+    strategy: LoadStrategy<NewsSourceKind>? = null,
+  ): Flow<Async<ArticlesOfKind>>
 
   public fun collectArticleByUrl(url: Url): Flow<Async<Article>>
 
@@ -30,8 +35,11 @@ internal class DefaultPeekApiService(
   private val newsSourcesRepository: NewsSourcesRepository,
 ) : PeekApiService {
 
-  override fun collectLatestNewsFrom(kind: NewsSourceKind): Flow<Async<ArticlesOfKind>> {
-    return articlesRepository.articlesFrom(kind)
+  override fun collectLatestNewsFrom(
+    kind: NewsSourceKind,
+    strategy: LoadStrategy<NewsSourceKind>?,
+  ): Flow<Async<ArticlesOfKind>> {
+    return articlesRepository.articlesFrom(kind, strategy)
   }
 
   override suspend fun updateAvailableSources(sources: List<NewsSource>) {

@@ -12,7 +12,7 @@ public fun <T, R> Flow<Async<T>>.mapContent(mapper: suspend (T) -> R): Flow<Asyn
       is Async.Loading -> Async.Loading
       is Async.Error -> Async.Error(data.error)
       is Async.Content -> {
-        Async.Content(mapper(data.content))
+        Async.Content(mapper(data.content), data.contentRefreshing)
       }
     }
   }

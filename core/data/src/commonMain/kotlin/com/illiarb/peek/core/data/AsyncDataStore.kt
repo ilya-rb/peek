@@ -7,6 +7,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
@@ -60,50 +61,94 @@ public class AsyncDataStore<Params, Domain>(
 
   private fun createFlowFor(params: Params, strategy: LoadStrategy<Params>): Flow<Async<Domain>> {
     return flow {
-      val memCached = getFromMemory(params)
-      if (memCached != null) {
-        emit(Async.Content(memCached))
+      val networkRefreshRequired = when (strategy) {
+        is LoadStrategy.ForceReload, LoadStrategy.CacheFirst -> true
+        is LoadStrategy.TimeBased<Params> -> cacheExpired(params, strategy)
+        else -> false
       }
 
-      val storageCached = if (memCached != null) {
+      val memCached = if (strategy is LoadStrategy.ForceReload) {
         null
       } else {
-        emit(Async.Loading)
+        getFromMemory(params)
+      }
+      if (memCached != null) {
+        emit(Async.Content(memCached, networkRefreshRequired))
+      }
+
+      val storageCached = if (memCached != null || strategy is LoadStrategy.ForceReload) {
+        null
+      } else {
         getFromStorage(params)
       }
-
       if (storageCached != null) {
-        emit(Async.Content(storageCached))
+        emit(Async.Content(storageCached, networkRefreshRequired))
       }
 
-      val fromNetwork = getFromNetwork(params, strategy, memCached, storageCached)
-
-      fromNetwork?.onSuccess { content ->
-        suspendRunCatching { intoStorage.invoke(params, content) }.onFailure { error ->
-          Logger.e(TAG, error) { "Failed to update storage, params $params" }
-        }
-
-        suspendRunCatching { intoMemory.invoke(params, content) }.onFailure { error ->
-          Logger.e(TAG, error) { "Failed to update memory cache, params $params" }
-        }
-
-        emit(Async.Content(content))
+      val noCache = memCached == null && storageCached == null
+      if (noCache) {
+        emit(Async.Loading)
       }
 
-      fromNetwork?.onFailure { error ->
-        Logger.e(TAG, error) { "Failed to fetch from network, params $params" }
-
-        emit(
-          when {
-            memCached != null -> Async.Content(memCached, suppressedError = error)
-            storageCached != null -> Async.Content(storageCached, suppressedError = error)
-            else -> Async.Error(error)
-          }
-        )
+      val fromNetwork = if (networkRefreshRequired || noCache) {
+        getFromNetwork(params, strategy)
+      } else {
+        null
       }
+
+      fromNetwork?.fold(
+        onSuccess = { content ->
+          onNetworkSuccess(params, content)
+        },
+        onFailure = { error ->
+          onNetworkFailure(error, params, memCached, storageCached)
+        },
+      )
     }.catch { error ->
       emit(Async.Error(error))
     }
+  }
+
+  private suspend fun FlowCollector<Async<Domain>>.onNetworkSuccess(
+    params: Params,
+    content: Domain,
+  ) {
+    suspendRunCatching { intoStorage.invoke(params, content) }.onFailure { error ->
+      Logger.e(TAG, error) { "Failed to update storage, params $params" }
+    }
+
+    suspendRunCatching { intoMemory.invoke(params, content) }.onFailure { error ->
+      Logger.e(TAG, error) { "Failed to update memory cache, params $params" }
+    }
+
+    emit(Async.Content(content, contentRefreshing = false))
+  }
+
+  private suspend fun FlowCollector<Async<Domain>>.onNetworkFailure(
+    error: Throwable,
+    params: Params,
+    memCached: Domain?,
+    storageCached: Domain?,
+  ) {
+    Logger.e(TAG, error) { "Failed to fetch from network, params $params" }
+
+    emit(
+      when {
+        memCached != null -> Async.Content(
+          memCached,
+          contentRefreshing = false,
+          suppressedError = error
+        )
+
+        storageCached != null -> Async.Content(
+          storageCached,
+          contentRefreshing = false,
+          suppressedError = error
+        )
+
+        else -> Async.Error(error)
+      }
+    )
   }
 
   private suspend fun getFromMemory(params: Params): Domain? {
@@ -129,43 +174,27 @@ public class AsyncDataStore<Params, Domain>(
       .getOrNull()
   }
 
+  private suspend fun cacheExpired(
+    params: Params,
+    strategy: LoadStrategy.TimeBased<Params>,
+  ): Boolean {
+    val current = strategy.invalidator.getCacheTimestamp(params)
+      .onFailure { error ->
+        Logger.e(TAG, error) { "Failed to read cached timestamp for $params" }
+      }
+      .getOrNull()
+
+    return current == null || (Clock.System.now() - current) > strategy.duration
+  }
+
   private suspend fun getFromNetwork(
     params: Params,
-    strategy: LoadStrategy<Params>,
-    fromMemory: Domain?,
-    fromStorage: Domain?,
-  ): Result<Domain>? {
-    return when (strategy) {
-      is LoadStrategy.CacheFirst -> suspendRunCatching {
-        networkFetcher.invoke(params)
-      }
-
-      is LoadStrategy.CacheOnly -> {
-        if (fromMemory == null && fromStorage == null) {
-          suspendRunCatching {
-            networkFetcher.invoke(params)
-          }
-        } else {
-          null
-        }
-      }
-
-      is LoadStrategy.TimeBased -> {
-        val current = strategy.invalidator.getCacheTimestamp(params)
-          .onFailure { error ->
-            Logger.e(TAG, error) { "Failed to read cached timestamp for $params" }
-          }
-          .getOrNull()
-
-        val cacheExpired = current == null || (Clock.System.now() - current) > strategy.duration
-        if (cacheExpired) {
-          suspendRunCatching { networkFetcher.invoke(params) }.onSuccess {
-            strategy.invalidator.setCacheTimestamp(params, Clock.System.now()).onFailure { error ->
-              Logger.e(TAG, error) { "Failed to save cached timestamp for $params" }
-            }
-          }
-        } else {
-          null
+    strategy: LoadStrategy<Params>
+  ): Result<Domain> {
+    return suspendRunCatching { networkFetcher.invoke(params) }.onSuccess {
+      if (strategy is LoadStrategy.TimeBased<Params>) {
+        strategy.invalidator.setCacheTimestamp(params, Clock.System.now()).onFailure { error ->
+          Logger.e(TAG, error) { "Failed to save cached timestamp for $params" }
         }
       }
     }
@@ -176,6 +205,8 @@ public class AsyncDataStore<Params, Domain>(
     public data object CacheFirst : LoadStrategy<Nothing>
 
     public data object CacheOnly : LoadStrategy<Nothing>
+
+    public data object ForceReload : LoadStrategy<Nothing>
 
     public data class TimeBased<P>(
       val duration: Duration,

@@ -41,7 +41,6 @@ import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.binding
-import kotlinx.coroutines.flow.filterNotNull
 
 @Inject
 @ActivityKey(MainActivity::class)
@@ -78,7 +77,6 @@ internal class MainActivity(
         .collectAsRetainedState(initial = isSystemInDarkTheme())
 
       val message by uiGraph.messageProvider.messages
-        .filterNotNull()
         .collectAsState(null)
 
       setSingletonImageLoaderFactory { imageLoader }

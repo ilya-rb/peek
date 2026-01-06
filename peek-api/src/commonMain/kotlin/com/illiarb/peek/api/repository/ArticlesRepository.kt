@@ -23,7 +23,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.builtins.serializer
 import kotlin.jvm.JvmSuppressWildcards
-import kotlin.time.Clock
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Instant
 
@@ -79,8 +78,11 @@ internal class ArticlesRepository(
     },
   )
 
-  fun articlesFrom(kind: NewsSourceKind): Flow<Async<ArticlesOfKind>> {
-    return articlesStore.collect(kind, articlesLoadingStrategy)
+  fun articlesFrom(
+    kind: NewsSourceKind,
+    strategy: AsyncDataStore.LoadStrategy<NewsSourceKind>? = null,
+  ): Flow<Async<ArticlesOfKind>> {
+    return articlesStore.collect(kind, strategy ?: articlesLoadingStrategy)
       .mapContent { articles ->
         articles.sortedByDescending { it.date }.toArticlesOfKind(kind)
       }
@@ -93,7 +95,7 @@ internal class ArticlesRepository(
           it.date
         }
       }
-      .map { Async.Content(it) as Async<List<Article>> }
+      .map { Async.Content(it, contentRefreshing = false) as Async<List<Article>> }
       .catch { emit(Async.Error(it)) }
   }
 

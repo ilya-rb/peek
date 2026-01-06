@@ -1,5 +1,6 @@
 package com.illiarb.peek.features.home.bookmarks
 
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.Immutable
 import com.illiarb.peek.api.PeekApiService
 import com.illiarb.peek.api.domain.Article
@@ -25,6 +26,7 @@ internal interface BookmarksScreenContract {
   data class State(
     val articles: Async<ImmutableList<Article>>,
     val articleSummaryToShow: Article?,
+    val search: TextFieldState,
     val articlesEventSink: (ArticlesUi) -> Unit,
     val eventSink: (Event) -> Unit,
   ) : CircuitUiState
