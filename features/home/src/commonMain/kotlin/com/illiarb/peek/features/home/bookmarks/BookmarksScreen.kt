@@ -105,7 +105,7 @@ private fun BookmarksContent(
   ) { targetState ->
     when (targetState) {
       is Async.Error -> {
-        FullscreenErrorState {
+        FullscreenErrorState(Modifier.padding(contentPadding)) {
           eventSink.invoke(Event.ErrorRetryClicked)
         }
       }
