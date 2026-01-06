@@ -35,6 +35,7 @@ internal interface HomeScreenContract {
     val articleSummaryToShow: Article?,
     val servicesOrderToShow: Unit?,
     val bookmarkMessage: BookmarkMessage?,
+    val contentRefreshing: Boolean,
     val eventSink: (Event) -> Unit,
     val articlesEventSink: (ArticlesUi) -> Unit,
   ) : CircuitUiState {
@@ -60,6 +61,7 @@ internal interface HomeScreenContract {
     data object BookmarkToastResult : Event
     data object ReorderServicesClicked : Event
     data object ReorderServicesClosed : Event
+    data object RefreshTriggered : Event
   }
 
   @Inject

@@ -13,6 +13,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -78,7 +79,6 @@ internal class MainActivity(
         .collectAsRetainedState(initial = isSystemInDarkTheme())
 
       val message by uiGraph.messageProvider.messages
-        .filterNotNull()
         .collectAsState(null)
 
       setSingletonImageLoaderFactory { imageLoader }

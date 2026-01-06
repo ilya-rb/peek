@@ -7,6 +7,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -74,14 +75,15 @@ internal class AsyncDataStoreTest {
     )
 
     dataStore.collect(params, AsyncDataStore.LoadStrategy.CacheFirst).test {
-      assertIs<Async.Loading>(awaitItem())
       val storageItem = awaitItem()
       assertIs<Async.Content<TestDomain>>(storageItem)
       assertEquals(storageContent, storageItem.content)
+      assertTrue(storageItem.contentRefreshing)
 
       val networkItem = awaitItem()
       assertIs<Async.Content<TestDomain>>(networkItem)
       assertEquals(networkContent, networkItem.content)
+      assertFalse(networkItem.contentRefreshing)
 
       cancelAndIgnoreRemainingEvents()
     }
@@ -582,7 +584,6 @@ internal class AsyncDataStoreTest {
     )
 
     dataStore.collect(params, strategy).test {
-      assertIs<Async.Loading>(awaitItem())
       val contentItem = awaitItem()
       assertIs<Async.Content<TestDomain>>(contentItem)
       assertEquals(storageContent, contentItem.content)
@@ -626,6 +627,165 @@ internal class AsyncDataStoreTest {
         cancelAndIgnoreRemainingEvents()
       }
     }
+
+  @Test
+  fun `ForceReload should skip memory cache and fetch from network`() = runTest {
+    val params = TestParams("forcereload1")
+    val memoryContent = TestDomain("memory-forcereload1")
+    val networkContent = TestDomain("network-forcereload1")
+    var networkCallCount = 0
+    var memoryReadCount = 0
+
+    val dataStore = createDataStore(
+      networkFetcher = {
+        ++networkCallCount
+        networkContent
+      },
+      fromMemory = {
+        ++memoryReadCount
+        memoryContent
+      }
+    )
+
+    dataStore.collect(params, AsyncDataStore.LoadStrategy.ForceReload).test {
+      assertIs<Async.Loading>(awaitItem())
+      val contentItem = awaitItem()
+      assertIs<Async.Content<TestDomain>>(contentItem)
+      assertEquals(networkContent, contentItem.content)
+      cancelAndIgnoreRemainingEvents()
+    }
+
+    assertEquals(1, networkCallCount)
+    assertEquals(0, memoryReadCount)
+  }
+
+  @Test
+  fun `ForceReload should skip storage cache and fetch from network`() = runTest {
+    val params = TestParams("forcereload2")
+    val storageContent = TestDomain("storage-forcereload2")
+    val networkContent = TestDomain("network-forcereload2")
+    var networkCallCount = 0
+    var storageReadCount = 0
+
+    val dataStore = createDataStore(
+      networkFetcher = {
+        ++networkCallCount
+        networkContent
+      },
+      fromStorage = {
+        ++storageReadCount
+        storageContent
+      }
+    )
+
+    dataStore.collect(params, AsyncDataStore.LoadStrategy.ForceReload).test {
+      assertIs<Async.Loading>(awaitItem())
+      val contentItem = awaitItem()
+      assertIs<Async.Content<TestDomain>>(contentItem)
+      assertEquals(networkContent, contentItem.content)
+      cancelAndIgnoreRemainingEvents()
+    }
+
+    assertEquals(1, networkCallCount)
+    assertEquals(0, storageReadCount)
+  }
+
+  @Test
+  fun `ForceReload should skip both memory and storage cache`() = runTest {
+    val params = TestParams("forcereload3")
+    val memoryContent = TestDomain("memory-forcereload3")
+    val storageContent = TestDomain("storage-forcereload3")
+    val networkContent = TestDomain("network-forcereload3")
+    var memoryReadCount = 0
+    var storageReadCount = 0
+
+    val dataStore = createDataStore(
+      networkFetcher = { networkContent },
+      fromMemory = {
+        ++memoryReadCount
+        memoryContent
+      },
+      fromStorage = {
+        ++storageReadCount
+        storageContent
+      }
+    )
+
+    dataStore.collect(params, AsyncDataStore.LoadStrategy.ForceReload).test {
+      assertIs<Async.Loading>(awaitItem())
+      val contentItem = awaitItem()
+      assertIs<Async.Content<TestDomain>>(contentItem)
+      assertEquals(networkContent, contentItem.content)
+      cancelAndIgnoreRemainingEvents()
+    }
+
+    assertEquals(0, memoryReadCount)
+    assertEquals(0, storageReadCount)
+  }
+
+  @Test
+  fun `ForceReload should update storage and memory after successful network fetch`() = runTest {
+    val params = TestParams("forcereload4")
+    val networkContent = TestDomain("network-forcereload4")
+    val storageUpdates = mutableListOf<TestDomain>()
+    val memoryUpdates = mutableListOf<TestDomain>()
+
+    val dataStore = createDataStore(
+      networkFetcher = { networkContent },
+      intoStorage = { _, domain -> storageUpdates.add(domain) },
+      intoMemory = { _, domain -> memoryUpdates.add(domain) }
+    )
+
+    dataStore.collect(params, AsyncDataStore.LoadStrategy.ForceReload).test {
+      awaitItem() // Loading
+      awaitItem() // Content
+      cancelAndIgnoreRemainingEvents()
+    }
+
+    assertEquals(listOf(networkContent), storageUpdates)
+    assertEquals(listOf(networkContent), memoryUpdates)
+  }
+
+  @Test
+  fun `ForceReload should emit error when network fails`() = runTest {
+    val params = TestParams("forcereload5")
+    val memoryContent = TestDomain("memory-forcereload5")
+    val networkError = RuntimeException("Network error")
+
+    val dataStore = createDataStore(
+      networkFetcher = { throw networkError },
+      fromMemory = { memoryContent }
+    )
+
+    dataStore.collect(params, AsyncDataStore.LoadStrategy.ForceReload).test {
+      assertIs<Async.Loading>(awaitItem())
+      val errorItem = awaitItem()
+      assertIs<Async.Error>(errorItem)
+      assertEquals(networkError, errorItem.error)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `ForceReload should always emit Loading state first`() = runTest {
+    val params = TestParams("forcereload6")
+    val networkContent = TestDomain("network-forcereload6")
+    val emissions = mutableListOf<Async<TestDomain>>()
+
+    val dataStore = createDataStore(
+      networkFetcher = { networkContent }
+    )
+
+    dataStore.collect(params, AsyncDataStore.LoadStrategy.ForceReload).test {
+      emissions.add(awaitItem())
+      emissions.add(awaitItem())
+      cancelAndIgnoreRemainingEvents()
+    }
+
+    assertEquals(2, emissions.size)
+    assertIs<Async.Loading>(emissions[0])
+    assertIs<Async.Content<TestDomain>>(emissions[1])
+  }
 
   data class TestParams(val id: String)
 

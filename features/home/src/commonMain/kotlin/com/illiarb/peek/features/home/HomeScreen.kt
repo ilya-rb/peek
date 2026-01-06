@@ -22,6 +22,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -97,32 +98,37 @@ internal fun HomeScreen(state: HomeScreenContract.State, modifier: Modifier = Mo
     }
   }
 
-  Scaffold(
-    modifier = modifier
-      .nestedScroll(bottomBarBehavior.nestedScrollConnection)
-      .nestedScroll(topBarBehavior.nestedScrollConnection),
-    topBar = {
-      TopAppBar(
-        scrollBehavior = topBarBehavior,
-        colors = TopAppBarDefaults.topAppBarColors(
-          scrolledContainerColor = Color.Transparent,
-        ),
-        modifier = Modifier.hazeEffect(state = hazeState, style = hazeStyle),
-        title = {
-          TopBarTitle(state)
-        },
-        actions = {
-          TopBarActions(eventSink)
-        },
-      )
-    },
-    bottomBar = {
-      BottomBar(state, hazeState, hazeStyle, bottomBarBehavior, eventSink)
-    },
-    content = { innerPadding ->
-      ScreenContent(state, innerPadding, hazeState)
-    }
-  )
+  PullToRefreshBox(
+    isRefreshing = state.contentRefreshing,
+    onRefresh = { eventSink.invoke(Event.RefreshTriggered) },
+  ) {
+    Scaffold(
+      modifier = modifier
+        .nestedScroll(bottomBarBehavior.nestedScrollConnection)
+        .nestedScroll(topBarBehavior.nestedScrollConnection),
+      topBar = {
+        TopAppBar(
+          scrollBehavior = topBarBehavior,
+          colors = TopAppBarDefaults.topAppBarColors(
+            scrolledContainerColor = Color.Transparent,
+          ),
+          modifier = Modifier.hazeEffect(state = hazeState, style = hazeStyle),
+          title = {
+            TopBarTitle(state)
+          },
+          actions = {
+            TopBarActions(eventSink)
+          },
+        )
+      },
+      bottomBar = {
+        BottomBar(state, hazeState, hazeStyle, bottomBarBehavior, eventSink)
+      },
+      content = { innerPadding ->
+        ScreenContent(state, innerPadding, hazeState)
+      }
+    )
+  }
 }
 
 @Composable
