@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -44,7 +45,10 @@ import com.slack.circuit.overlay.OverlayEffect
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun BookmarksScreen(state: BookmarksScreenContract.State, ignored: Modifier = Modifier) {
+internal fun BookmarksScreen(
+  state: BookmarksScreenContract.State,
+  ignored: Modifier = Modifier,
+) {
   val eventSink = state.eventSink
 
   if (state.articleSummaryToShow != null) {
@@ -71,18 +75,25 @@ internal fun BookmarksScreen(state: BookmarksScreenContract.State, ignored: Modi
             )
           }
         },
+        actions = {
+          Icon(
+            imageVector = Icons.Filled.Search,
+            contentDescription = null,
+            modifier = Modifier.padding(end = 8.dp),
+          )
+        }
       )
     },
     content = { innerPadding ->
       BookmarksContent(state, innerPadding)
-    }
+    },
   )
 }
 
 @Composable
 private fun BookmarksContent(
   state: BookmarksScreenContract.State,
-  innerPadding: PaddingValues,
+  contentPadding: PaddingValues,
 ) {
   val articlesEventSink = state.articlesEventSink
   val eventSink = state.eventSink
@@ -94,23 +105,23 @@ private fun BookmarksContent(
   ) { targetState ->
     when (targetState) {
       is Async.Error -> {
-        FullscreenErrorState(Modifier.padding(innerPadding)) {
+        FullscreenErrorState(Modifier.padding(contentPadding)) {
           eventSink.invoke(Event.ErrorRetryClicked)
         }
       }
 
       is Async.Loading -> {
-        ArticlesLoading(contentPadding = innerPadding)
+        ArticlesLoading(contentPadding = contentPadding)
       }
 
       is Async.Content -> {
         if (targetState.content.isEmpty()) {
-          BookmarksEmpty(contentPadding = innerPadding) {
+          BookmarksEmpty(contentPadding = contentPadding) {
             articlesEventSink.invoke(ArticlesUi.ArticlesRefreshClicked)
           }
         } else {
           ArticlesContent(
-            contentPadding = innerPadding,
+            contentPadding = contentPadding,
             articles = targetState.content,
             eventSink = articlesEventSink,
           )

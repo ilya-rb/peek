@@ -11,6 +11,7 @@ import com.illiarb.peek.api.domain.ArticlesOfKind
 import com.illiarb.peek.api.domain.NewsSourceKind
 import com.illiarb.peek.core.arch.message.MessageDispatcher
 import com.illiarb.peek.core.data.Async
+import com.illiarb.peek.core.data.AsyncDataStore
 import com.illiarb.peek.features.home.HomeScreenContract.Event
 import com.illiarb.peek.features.home.HomeScreenContract.State.BookmarkMessage
 import com.illiarb.peek.features.home.articles.ArticlesUi
@@ -56,6 +57,9 @@ internal class HomeScreenPresenter(
         )
       )
     }
+    var contentRefreshing by rememberRetained {
+      mutableStateOf(false)
+    }
 
     val newsSources by produceRetainedState(emptyList<NewsSourceKind>().toImmutableList()) {
       peekApiService.collectAvailableSources().collect {
@@ -81,7 +85,21 @@ internal class HomeScreenPresenter(
     ) {
       val source = newsSources.getOrNull(contentTriggers.selectedNewsSourceIndex)
       if (source != null) {
-        peekApiService.collectLatestNewsFrom(source).collect { value = it }
+        peekApiService.collectLatestNewsFrom(
+          kind = source,
+          strategy = if (contentRefreshing) {
+            AsyncDataStore.LoadStrategy.ForceReload
+          } else {
+            null
+          }
+        ).collect {
+          contentRefreshing = if (it is Async.Content<*>) {
+            it.contentRefreshing
+          } else {
+            false
+          }
+          value = it
+        }
       }
     }
 
@@ -100,6 +118,7 @@ internal class HomeScreenPresenter(
       selectedNewsSourceIndex = contentTriggers.selectedNewsSourceIndex,
       articleSummaryToShow = articleSummaryToShow,
       articlesLastUpdatedTime = articlesLastUpdatedTime,
+      contentRefreshing = contentRefreshing,
       servicesOrderToShow = servicesOrderToShow,
       articles = articles,
       bookmarkMessage = bookmarkMessage,
@@ -143,6 +162,13 @@ internal class HomeScreenPresenter(
 
           is Event.BookmarkToastResult -> {
             bookmarkMessage = null
+          }
+
+          is Event.RefreshTriggered -> {
+            contentRefreshing = true
+            contentTriggers = contentTriggers.copy(
+              manualReloadTriggered = !contentTriggers.manualReloadTriggered
+            )
           }
         }
       },

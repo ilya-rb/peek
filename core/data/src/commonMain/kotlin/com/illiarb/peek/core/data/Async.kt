@@ -9,7 +9,11 @@ public sealed class Async<out T> {
 
   public data object Loading : Async<Nothing>()
 
-  public data class Content<T>(val content: T, val suppressedError: Throwable? = null) : Async<T>()
+  public data class Content<T>(
+    val content: T,
+    val contentRefreshing: Boolean,
+    val suppressedError: Throwable? = null,
+  ) : Async<T>()
 
   public data class Error(val error: Throwable) : Async<Nothing>()
 
@@ -22,7 +26,7 @@ public sealed class Async<out T> {
 
   public fun <R> map(mapper: (T) -> R): Async<R> {
     return when (this) {
-      is Content -> Content(mapper(this.content), this.suppressedError)
+      is Content -> Content(mapper(this.content), this.contentRefreshing, this.suppressedError)
       is Error -> Error(this.error)
       is Loading -> Loading
     }
@@ -46,7 +50,7 @@ public sealed class Async<out T> {
 
     public fun <T> fromFlow(value: suspend () -> T): Flow<Async<T>> {
       return flow<Async<T>> {
-        emit(Content(value()))
+        emit(Content(value(), contentRefreshing = false))
       }.onStart {
         emit(Loading)
       }.catch { error ->

@@ -22,6 +22,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -39,6 +40,7 @@ import com.illiarb.peek.features.navigation.map.SummaryScreen
 import com.illiarb.peek.features.navigation.map.showScreenOverlay
 import com.illiarb.peek.uikit.core.components.HorizontalList
 import com.illiarb.peek.uikit.core.components.TextSwitcher
+import com.illiarb.peek.uikit.core.components.cell.AvatarState
 import com.illiarb.peek.uikit.core.components.cell.FullscreenErrorState
 import com.illiarb.peek.uikit.core.components.cell.SelectableCircleAvatar
 import com.illiarb.peek.uikit.core.components.text.DateFormats
@@ -96,32 +98,37 @@ internal fun HomeScreen(state: HomeScreenContract.State, modifier: Modifier = Mo
     }
   }
 
-  Scaffold(
-    modifier = modifier
-      .nestedScroll(bottomBarBehavior.nestedScrollConnection)
-      .nestedScroll(topBarBehavior.nestedScrollConnection),
-    topBar = {
-      TopAppBar(
-        scrollBehavior = topBarBehavior,
-        colors = TopAppBarDefaults.topAppBarColors(
-          scrolledContainerColor = Color.Transparent,
-        ),
-        modifier = Modifier.hazeEffect(state = hazeState, style = hazeStyle),
-        title = {
-          TopBarTitle(state)
-        },
-        actions = {
-          TopBarActions(eventSink)
-        },
-      )
-    },
-    bottomBar = {
-      BottomBar(state, hazeState, hazeStyle, bottomBarBehavior, eventSink)
-    },
-    content = { innerPadding ->
-      ScreenContent(state, innerPadding, hazeState)
-    }
-  )
+  PullToRefreshBox(
+    isRefreshing = state.contentRefreshing,
+    onRefresh = { eventSink.invoke(Event.RefreshTriggered) },
+  ) {
+    Scaffold(
+      modifier = modifier
+        .nestedScroll(bottomBarBehavior.nestedScrollConnection)
+        .nestedScroll(topBarBehavior.nestedScrollConnection),
+      topBar = {
+        TopAppBar(
+          scrollBehavior = topBarBehavior,
+          colors = TopAppBarDefaults.topAppBarColors(
+            scrolledContainerColor = Color.Transparent,
+          ),
+          modifier = Modifier.hazeEffect(state = hazeState, style = hazeStyle),
+          title = {
+            TopBarTitle(state)
+          },
+          actions = {
+            TopBarActions(eventSink)
+          },
+        )
+      },
+      bottomBar = {
+        BottomBar(state, hazeState, hazeStyle, bottomBarBehavior, eventSink)
+      },
+      content = { innerPadding ->
+        ScreenContent(state, innerPadding, hazeState)
+      }
+    )
+  }
 }
 
 @Composable
@@ -273,7 +280,11 @@ private fun NewsSourcesContent(
           NewsSourceKind.Dou -> Res.drawable.dou_logo
           NewsSourceKind.Ft -> Res.drawable.ft_logo
         },
-        selected = index == selectedTabIndex,
+        state = if (index == selectedTabIndex) {
+          AvatarState.Selected
+        } else {
+          AvatarState.Unselected
+        },
         onClick = {
           onTabClick.invoke(source)
         }

@@ -31,7 +31,7 @@ internal class NewsSourcesRepository(
       }
       emitAll(storage.observe(KEY_SERVICES_META, NewsSources.serializer()))
     }.map {
-      Async.Content(it.sources)
+      Async.Content(it.sources, contentRefreshing = false)
     }
   }
 

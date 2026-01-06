@@ -1,5 +1,6 @@
 package com.illiarb.peek.features.home.bookmarks
 
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,7 +25,7 @@ import com.slack.circuit.runtime.presenter.Presenter
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.getString
 
 internal class BookmarksPresenter(
   private val navigator: Navigator,
@@ -47,10 +48,11 @@ internal class BookmarksPresenter(
         .collect { value = it }
     }
 
-    val bookmarksRemovedMessage = stringResource(Res.string.bookmarks_action_removed)
+    val searchState = rememberTextFieldState()
 
     return BookmarksScreenContract.State(
       articles = articles,
+      search = searchState,
       articleSummaryToShow = articleSummaryToShow,
       articlesEventSink = { event ->
         when (event) {
@@ -61,7 +63,7 @@ internal class BookmarksPresenter(
               peekApiService.saveArticle(article).onSuccess {
                 messageDispatcher.sendMessage(
                   Message(
-                    content = bookmarksRemovedMessage,
+                    content = getString(Res.string.bookmarks_action_removed),
                     type = Message.MessageType.SUCCESS,
                   )
                 )
