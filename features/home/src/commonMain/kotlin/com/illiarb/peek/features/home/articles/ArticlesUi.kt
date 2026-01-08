@@ -100,7 +100,7 @@ internal fun ArticlesContent(
       items = articles,
       key = { article -> article.url.url },
       itemContent = { article ->
-        val badge = if (showStaleBadges && article.stale()) {
+        val badge = if (showStaleBadges && article.stale) {
           stringResource(Res.string.bookmarks_stale_badge)
         } else {
           null
