@@ -106,7 +106,6 @@ internal fun ArticlesContent(
           null
         }
         ArticleCell(
-          modifier = Modifier.animateItem(),
           title = article.title,
           caption = article.date.toLocalDateTime(TimeZone.UTC).format(DateFormats.default),
           saved = article.saved,
