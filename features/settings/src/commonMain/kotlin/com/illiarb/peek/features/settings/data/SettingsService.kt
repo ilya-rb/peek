@@ -24,9 +24,11 @@ public interface SettingsService {
   ) {
 
     val articlesRetentionDaysOptions: List<Int>
-      get() = listOf(7, 10, 14)
+      get() = RETENTION_DAYS_OPTIONS
 
     public companion object {
+      private val RETENTION_DAYS_OPTIONS: List<Int> = listOf(7, 10, 14)
+
       public fun defaults(): Settings {
         return Settings(
           darkTheme = true,
