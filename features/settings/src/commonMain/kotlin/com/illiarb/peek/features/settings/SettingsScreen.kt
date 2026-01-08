@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.BugReport
+import androidx.compose.material.icons.filled.Dataset
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.HorizontalDivider
@@ -19,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.illiarb.peek.core.appinfo.DebugConfig
 import com.illiarb.peek.features.settings.SettingsScreenContract.Event
+import com.illiarb.peek.uikit.core.components.cell.NumberPickerCell
 import com.illiarb.peek.uikit.core.components.cell.RowCell
 import com.illiarb.peek.uikit.core.components.cell.SwitchCell
 import com.illiarb.peek.uikit.core.model.VectorIcon
@@ -26,7 +28,10 @@ import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_icon_appearance
 import com.illiarb.peek.uikit.resources.acsb_navigation_back
 import com.illiarb.peek.uikit.resources.settings_appearance_title
+import com.illiarb.peek.uikit.resources.settings_article_retention_subtitle
+import com.illiarb.peek.uikit.resources.settings_article_retention_title
 import com.illiarb.peek.uikit.resources.settings_dark_theme_title
+import com.illiarb.peek.uikit.resources.settings_data_title
 import com.illiarb.peek.uikit.resources.settings_dynamic_colors_subtitle
 import com.illiarb.peek.uikit.resources.settings_dynamic_colors_title
 import com.illiarb.peek.uikit.resources.settings_screen_title
@@ -93,6 +98,27 @@ private fun SettingsContent(
       events.invoke(Event.DarkThemeEnabledChecked(checked))
     }
   )
+  SettingsHeader(
+    modifier = Modifier.padding(top = 16.dp),
+    text = stringResource(Res.string.settings_data_title),
+    icon = VectorIcon(
+      imageVector = Icons.Filled.Dataset,
+      contentDescription = stringResource(Res.string.settings_data_title),
+    ),
+  )
+  NumberPickerCell(
+    text = stringResource(Res.string.settings_article_retention_title),
+    subtitle = stringResource(
+      Res.string.settings_article_retention_subtitle,
+      state.articleRetentionDays
+    ),
+    value = state.articleRetentionDays,
+    options = state.articleRetentionDaysOptions,
+    onValueSelected = { days ->
+      events.invoke(Event.ArticleRetentionDaysChanged(days))
+    },
+  )
+
   if (state.debugSettings != null) {
     SettingsHeader(
       modifier = Modifier.padding(top = 16.dp),

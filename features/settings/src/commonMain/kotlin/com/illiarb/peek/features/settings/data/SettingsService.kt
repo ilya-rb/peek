@@ -2,24 +2,41 @@ package com.illiarb.peek.features.settings.data
 
 import com.illiarb.peek.core.arch.di.AppScope
 import com.illiarb.peek.core.data.KeyValueStorage
-import com.illiarb.peek.core.data.MemoryField
-import com.illiarb.peek.features.settings.data.SettingsService.SettingType
+import com.illiarb.peek.features.settings.data.SettingsService.Settings
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
-import kotlinx.serialization.builtins.serializer
+import kotlinx.coroutines.flow.onStart
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 public interface SettingsService {
 
-  public fun observeSettingChange(type: SettingType): Flow<Boolean>
+  public fun observeSettings(): Flow<Settings>
 
-  public suspend fun updateSetting(type: SettingType, value: Boolean): Result<Unit>
+  public suspend fun updateSettings(settings: Settings): Result<Unit>
 
-  public enum class SettingType(public val defaultValue: Boolean) {
-    DYNAMIC_COLORS(true),
-    DARK_THEME(true),
+  @Serializable
+  public data class Settings(
+    @SerialName("darkTheme") val darkTheme: Boolean,
+    @SerialName("dynamicColors") val dynamicColors: Boolean,
+    @SerialName("articlesRetentionDays") val articlesRetentionDays: Int,
+  ) {
+
+    val articlesRetentionDaysOptions: List<Int>
+      get() = RETENTION_DAYS_OPTIONS
+
+    public companion object {
+      private val RETENTION_DAYS_OPTIONS: List<Int> = listOf(7, 10, 14)
+
+      public fun defaults(): Settings {
+        return Settings(
+          darkTheme = true,
+          dynamicColors = false,
+          articlesRetentionDays = 10,
+        )
+      }
+    }
   }
 }
 
@@ -27,29 +44,23 @@ public interface SettingsService {
 @SingleIn(AppScope::class)
 internal class DefaultSettingsService(
   private val keyValueStorage: KeyValueStorage,
-  private val cachedSettings: MutableMap<SettingType, MemoryField<Boolean>> = mutableMapOf(),
 ) : SettingsService {
 
-  override fun observeSettingChange(type: SettingType): Flow<Boolean> =
-    flow {
-      val fromMemory = cachedSettings[type]
-      if (fromMemory == null) {
-        val memoryField = MemoryField(type.defaultValue)
-        cachedSettings[type] = memoryField
-
-        keyValueStorage.get(type.name, Boolean.serializer()).onSuccess { fromStorage ->
-          if (fromStorage != null) {
-            memoryField.set(fromStorage)
-          }
+  override fun observeSettings(): Flow<Settings> {
+    return keyValueStorage.observe(KEY_SETTINGS, Settings.serializer()).onStart {
+      keyValueStorage.get(KEY_SETTINGS, Settings.serializer()).onSuccess { cached ->
+        if (cached == null) {
+          updateSettings(Settings.defaults())
         }
-        emitAll(memoryField.observe())
-      } else {
-        emitAll(fromMemory.observe())
       }
     }
+  }
 
-  override suspend fun updateSetting(type: SettingType, value: Boolean): Result<Unit> {
-    return keyValueStorage.put(type.name, value, Boolean.serializer())
-      .onSuccess { cachedSettings[type]?.set(value) }
+  override suspend fun updateSettings(settings: Settings): Result<Unit> {
+    return keyValueStorage.put(KEY_SETTINGS, settings, Settings.serializer())
+  }
+
+  companion object {
+    const val KEY_SETTINGS = "KEY_SETTINGS"
   }
 }
