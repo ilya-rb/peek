@@ -10,6 +10,7 @@ kotlin {
   sourceSets {
     commonMain.dependencies {
       implementation(libs.kotlinx.serialization)
+      implementation(libs.kotlinx.collections)
       implementation(libs.circuit.core)
 
       implementation(projects.core.appInfo)
