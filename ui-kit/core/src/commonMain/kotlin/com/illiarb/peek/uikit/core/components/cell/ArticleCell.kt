@@ -8,9 +8,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
@@ -20,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -48,12 +52,13 @@ public fun ArticleCell(
   onShareClick: () -> Unit,
   subtitle: String? = null,
   caption: String? = null,
+  badge: String? = null,
 ) {
   Row(
     verticalAlignment = Alignment.CenterVertically,
     modifier = modifier.clickable(onClick = onClick),
   ) {
-    ArticleContent(title = title, subtitle = subtitle, caption = caption)
+    ArticleContent(title = title, subtitle = subtitle, caption = caption, badge = badge)
     ArticleActions(saved, onBookmarkClick, onSummarizeClick, onShareClick)
   }
 }
@@ -64,6 +69,7 @@ private fun RowScope.ArticleContent(
   title: String,
   subtitle: String?,
   caption: String?,
+  badge: String?,
 ) {
   Column(modifier = modifier.weight(1f)) {
     val hasSubtitle = subtitle != null
@@ -74,7 +80,8 @@ private fun RowScope.ArticleContent(
         text = subtitle.uppercase(),
         style = MaterialTheme.typography.bodyLarge,
         color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+          .fillMaxWidth()
           .padding(top = paddingVertical, start = 16.dp, end = 24.dp),
       )
     }
@@ -93,19 +100,37 @@ private fun RowScope.ArticleContent(
       ),
     )
 
-    Row(verticalAlignment = Alignment.CenterVertically) {
-      if (caption != null) {
-        Text(
-          modifier = Modifier.padding(
-            start = 16.dp,
-            end = 16.dp,
-            top = 8.dp,
-            bottom = paddingVertical,
-          ),
-          text = caption,
-          style = MaterialTheme.typography.bodyMedium,
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+    if (caption != null || badge != null) {
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(
+          start = 16.dp,
+          end = 16.dp,
+          top = 8.dp,
+          bottom = paddingVertical,
+        ),
+      ) {
+        if (caption != null) {
+          Text(
+            text = caption,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+          )
+        }
+        if (badge != null) {
+          Spacer(modifier = Modifier.width(8.dp))
+          Surface(
+            shape = RoundedCornerShape(4.dp),
+            color = MaterialTheme.colorScheme.errorContainer,
+          ) {
+            Text(
+              text = badge,
+              style = MaterialTheme.typography.labelSmall,
+              color = MaterialTheme.colorScheme.onErrorContainer,
+              modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+            )
+          }
+        }
       }
     }
   }
@@ -132,8 +157,10 @@ private fun ArticleActions(
           bookmarkBounce.animateTo(1f, animationSpec = tween(200))
         }
         onBookmarkClick()
-      }, modifier = Modifier.graphicsLayer(
-        scaleX = bookmarkBounce.value, scaleY = bookmarkBounce.value
+      },
+      modifier = Modifier.graphicsLayer(
+        scaleX = bookmarkBounce.value,
+        scaleY = bookmarkBounce.value
       )
     ) {
       Icon(
