@@ -4,4 +4,8 @@
   <string name="settings_dynamic_colors_subtitle">Use system wallpaper colors</string>
   <string name="settings_dark_theme_title">Dark theme</string>
   <string name="settings_appearance_title">Appearance</string>
+  <string name="settings_data_title">Data</string>
+  <string name="settings_article_retention_title">Articles retention</string>
+  <string name="settings_article_retention_subtitle">Articles older than %1$d days will be deleted</string>
+  <string name="settings_article_retention_dialog_title">Select retention period</string>
 </resources>

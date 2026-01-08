@@ -12,7 +12,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -27,7 +26,7 @@ import com.illiarb.peek.features.navigation.map.HomeScreen
 import com.illiarb.peek.features.navigation.map.OpenUrlScreen
 import com.illiarb.peek.features.navigation.map.ShareScreen
 import com.illiarb.peek.features.settings.data.SettingsService
-import com.illiarb.peek.features.settings.data.SettingsService.SettingType
+import com.illiarb.peek.features.settings.data.SettingsService.Settings
 import com.illiarb.peek.uikit.core.theme.UiKitTheme
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.CircuitCompositionLocals
@@ -68,13 +67,9 @@ internal class MainActivity(
     }
 
     setContent {
-      val dynamicColorsEnabled by settingsService
-        .observeSettingChange(SettingType.DYNAMIC_COLORS)
-        .collectAsRetainedState(initial = false)
-
-      val darkThemeEnabled by settingsService
-        .observeSettingChange(SettingType.DARK_THEME)
-        .collectAsRetainedState(initial = isSystemInDarkTheme())
+      val settings by settingsService
+        .observeSettings()
+        .collectAsRetainedState(Settings.defaults())
 
       val message by uiGraph.messageProvider.messages
         .collectAsState(null)
@@ -82,8 +77,8 @@ internal class MainActivity(
       setSingletonImageLoaderFactory { imageLoader }
 
       UiKitTheme(
-        useDynamicColors = dynamicColorsEnabled,
-        useDarkTheme = darkThemeEnabled,
+        useDynamicColors = settings.dynamicColors,
+        useDarkTheme = settings.darkTheme,
       ) {
         val backStack = rememberSaveableBackStack(root = HomeScreen)
         val navigator = rememberAndroidScreenAwareNavigator(

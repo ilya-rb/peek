@@ -6,11 +6,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import com.illiarb.peek.core.appinfo.AppConfiguration
 import com.illiarb.peek.features.settings.SettingsScreenContract.Event
 import com.illiarb.peek.features.settings.data.SettingsService
-import com.illiarb.peek.features.settings.data.SettingsService.SettingType.DARK_THEME
-import com.illiarb.peek.features.settings.data.SettingsService.SettingType.DYNAMIC_COLORS
+import com.illiarb.peek.features.settings.data.SettingsService.Settings
 import com.slack.circuit.retained.collectAsRetainedState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 
 internal class SettingsScreenPresenter(
@@ -23,20 +23,18 @@ internal class SettingsScreenPresenter(
   override fun present(): SettingsScreenContract.State {
     val coroutineScope = rememberCoroutineScope()
 
-    val dynamicColorsEnabled by settingsService
-      .observeSettingChange(DYNAMIC_COLORS)
-      .collectAsRetainedState(initial = false)
-
-    val darkThemeEnabled by settingsService
-      .observeSettingChange(DARK_THEME)
-      .collectAsRetainedState(initial = false)
+    val settings by settingsService
+      .observeSettings()
+      .collectAsRetainedState(initial = Settings.defaults())
 
     val debugSettings by appConfiguration.debugConfig()
       .collectAsRetainedState(initial = null)
 
     return SettingsScreenContract.State(
-      dynamicColorsEnabled = dynamicColorsEnabled,
-      darkThemeEnabled = darkThemeEnabled,
+      dynamicColorsEnabled = settings.dynamicColors,
+      darkThemeEnabled = settings.darkTheme,
+      articleRetentionDays = settings.articlesRetentionDays,
+      articleRetentionDaysOptions = settings.articlesRetentionDaysOptions.toImmutableList(),
       debugSettings = debugSettings,
       events = { event ->
         when (event) {
@@ -45,11 +43,15 @@ internal class SettingsScreenPresenter(
           }
 
           is Event.MaterialColorsToggleChecked -> coroutineScope.launch {
-            settingsService.updateSetting(DYNAMIC_COLORS, event.checked)
+            settingsService.updateSettings(settings.copy(dynamicColors = event.checked))
           }
 
           is Event.DarkThemeEnabledChecked -> coroutineScope.launch {
-            settingsService.updateSetting(DARK_THEME, event.checked)
+            settingsService.updateSettings(settings.copy(darkTheme = event.checked))
+          }
+
+          is Event.ArticleRetentionDaysChanged -> coroutineScope.launch {
+            settingsService.updateSettings(settings.copy(articlesRetentionDays = event.days))
           }
 
           is Event.NetworkDelayChanged -> {

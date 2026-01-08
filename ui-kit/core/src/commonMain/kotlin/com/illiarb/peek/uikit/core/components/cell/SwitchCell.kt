@@ -33,7 +33,11 @@ public fun SwitchCell(
     },
     subtitle = {
       if (subtitle != null) {
-        Text(text = subtitle, style = MaterialTheme.typography.bodyMedium)
+        Text(
+          text = subtitle,
+          style = MaterialTheme.typography.bodyMedium,
+          color = MaterialTheme.colorScheme.primary,
+        )
       }
     },
     startIconPadding = if (startIcon == null) 0.dp else 16.dp,

@@ -2,12 +2,14 @@ plugins {
   alias(libs.plugins.peek.android.library)
   alias(libs.plugins.peek.multiplatform)
   alias(libs.plugins.peek.compose)
+  alias(libs.plugins.kotlinSerialization)
   alias(libs.plugins.metro)
 }
 
 kotlin {
   sourceSets {
     commonMain.dependencies {
+      implementation(libs.kotlinx.serialization)
       implementation(libs.circuit.core)
 
       implementation(projects.core.appInfo)

@@ -15,6 +15,7 @@ import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import dev.zacsweers.metro.ContributesIntoSet
 import dev.zacsweers.metro.Inject
+import kotlinx.collections.immutable.ImmutableList
 
 internal interface SettingsScreenContract {
 
@@ -23,6 +24,8 @@ internal interface SettingsScreenContract {
     val events: (Event) -> Unit,
     val dynamicColorsEnabled: Boolean,
     val darkThemeEnabled: Boolean,
+    val articleRetentionDays: Int,
+    val articleRetentionDaysOptions: ImmutableList<Int>,
     val debugSettings: DebugConfig?,
   ) : CircuitUiState
 
@@ -30,6 +33,7 @@ internal interface SettingsScreenContract {
     data object NavigationIconClick : Event
     data class MaterialColorsToggleChecked(val checked: Boolean) : Event
     data class DarkThemeEnabledChecked(val checked: Boolean) : Event
+    data class ArticleRetentionDaysChanged(val days: Int) : Event
     data class NetworkDelayChanged(val checked: Boolean) : Event
   }
 
