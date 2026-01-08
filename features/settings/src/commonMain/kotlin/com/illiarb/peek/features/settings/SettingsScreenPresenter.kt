@@ -1,7 +1,9 @@
 package com.illiarb.peek.features.settings
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import com.illiarb.peek.core.appinfo.AppConfiguration
 import com.illiarb.peek.features.settings.SettingsScreenContract.Event
@@ -27,6 +29,12 @@ internal class SettingsScreenPresenter(
       .observeSettings()
       .collectAsRetainedState(initial = Settings.defaults())
 
+    val articlesRetentionDaysOptions by remember {
+      derivedStateOf {
+        settings.articlesRetentionDaysOptions.toImmutableList()
+      }
+    }
+
     val debugSettings by appConfiguration.debugConfig()
       .collectAsRetainedState(initial = null)
 
@@ -34,7 +42,7 @@ internal class SettingsScreenPresenter(
       dynamicColorsEnabled = settings.dynamicColors,
       darkThemeEnabled = settings.darkTheme,
       articleRetentionDays = settings.articlesRetentionDays,
-      articleRetentionDaysOptions = settings.articlesRetentionDaysOptions.toImmutableList(),
+      articleRetentionDaysOptions = articlesRetentionDaysOptions,
       debugSettings = debugSettings,
       events = { event ->
         when (event) {
