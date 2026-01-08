@@ -75,7 +75,6 @@ private fun NumberPickerDialog(
   onSelected: (Int) -> Unit,
 ) {
   AlertDialog(
-    onDismissRequest = onDismiss,
     title = { Text(text = title) },
     text = {
       Column(modifier = Modifier.fillMaxWidth()) {
@@ -97,10 +96,14 @@ private fun NumberPickerDialog(
         }
       }
     },
-    confirmButton = {
+    onDismissRequest = onDismiss,
+    dismissButton = {
       TextButton(onClick = onDismiss) {
         Text(stringResource(Res.string.common_action_cancel))
       }
     },
+    confirmButton = {
+
+    }
   )
 }
