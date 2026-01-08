@@ -100,34 +100,36 @@ private fun RowScope.ArticleContent(
       ),
     )
 
-    Row(
-      verticalAlignment = Alignment.CenterVertically,
-      modifier = Modifier.padding(
-        start = 16.dp,
-        end = 16.dp,
-        top = 8.dp,
-        bottom = paddingVertical,
-      ),
-    ) {
-      if (caption != null) {
-        Text(
-          text = caption,
-          style = MaterialTheme.typography.bodyMedium,
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-      }
-      if (badge != null) {
-        Spacer(modifier = Modifier.width(8.dp))
-        Surface(
-          shape = RoundedCornerShape(4.dp),
-          color = MaterialTheme.colorScheme.errorContainer,
-        ) {
+    if (caption != null || badge != null) {
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(
+          start = 16.dp,
+          end = 16.dp,
+          top = 8.dp,
+          bottom = paddingVertical,
+        ),
+      ) {
+        if (caption != null) {
           Text(
-            text = badge,
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onErrorContainer,
-            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+            text = caption,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
           )
+        }
+        if (badge != null) {
+          Spacer(modifier = Modifier.width(8.dp))
+          Surface(
+            shape = RoundedCornerShape(4.dp),
+            color = MaterialTheme.colorScheme.errorContainer,
+          ) {
+            Text(
+              text = badge,
+              style = MaterialTheme.typography.labelSmall,
+              color = MaterialTheme.colorScheme.onErrorContainer,
+              modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+            )
+          }
         }
       }
     }
