@@ -124,6 +124,7 @@ private fun BookmarksContent(
             contentPadding = contentPadding,
             articles = targetState.content,
             eventSink = articlesEventSink,
+            showStaleBadges = true,
           )
         }
       }

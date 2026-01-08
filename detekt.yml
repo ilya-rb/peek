@@ -7,6 +7,8 @@ complexity:
   TooManyFunctions:
     active: true
     ignoreAnnotatedFunctions: ['Preview']
+  LongMethod:
+    threshold: 100
 
 naming:
   active: true

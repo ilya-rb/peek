@@ -26,6 +26,7 @@ import com.illiarb.peek.uikit.core.components.cell.ArticleLoadingCell
 import com.illiarb.peek.uikit.core.components.cell.EmptyState
 import com.illiarb.peek.uikit.core.components.text.DateFormats
 import com.illiarb.peek.uikit.resources.Res
+import com.illiarb.peek.uikit.resources.bookmarks_stale_badge
 import com.illiarb.peek.uikit.resources.home_articles_empty_action
 import com.illiarb.peek.uikit.resources.home_articles_empty_title
 import kotlinx.collections.immutable.ImmutableList
@@ -92,17 +93,24 @@ internal fun ArticlesContent(
   contentPadding: PaddingValues,
   articles: ImmutableList<Article>,
   eventSink: (ArticlesUi) -> Unit,
+  showStaleBadges: Boolean = false,
 ) {
   LazyColumn(modifier, contentPadding = contentPadding) {
     items(
       items = articles,
       key = { article -> article.url.url },
       itemContent = { article ->
+        val badge = if (showStaleBadges && article.stale()) {
+          stringResource(Res.string.bookmarks_stale_badge)
+        } else {
+          null
+        }
         ArticleCell(
           modifier = Modifier.animateItem(),
           title = article.title,
           caption = article.date.toLocalDateTime(TimeZone.UTC).format(DateFormats.default),
           saved = article.saved,
+          badge = badge,
           onClick = {
             eventSink.invoke(ArticlesUi.ArticleClicked(article))
           },
@@ -123,3 +131,4 @@ internal fun ArticlesContent(
     )
   }
 }
+
