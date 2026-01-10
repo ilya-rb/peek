@@ -2,19 +2,24 @@ package com.illiarb.peek
 
 import android.app.Application
 import android.content.Context
-import android.os.Build
-import android.os.StrictMode
 import com.illiarb.peek.core.appinfo.AppEnvironmentState
 import com.illiarb.peek.di.AndroidAppGraph
 import dev.zacsweers.metro.createGraphFactory
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 internal class PeekApp : Application() {
 
   private val appGraph: AndroidAppGraph by lazy {
     createGraphFactory<AndroidAppGraph.Factory>().create(this)
   }
+  private val appScope = CoroutineScope(SupervisorJob())
 
   override fun onCreate() {
     super.onCreate()
@@ -25,42 +30,27 @@ internal class PeekApp : Application() {
 
   fun setup() {
     if (AppEnvironmentState.isDev()) {
-      setupStrictMode()
-
       Napier.base(DebugAntilog())
     }
-  }
 
-  private fun setupStrictMode() {
-    StrictMode.setThreadPolicy(
-      StrictMode.ThreadPolicy.Builder()
-        .detectAll()
-        .penaltyLog()
-        .build(),
-    )
+    appScope.launch {
+      val (async, regular) = appGraph.androidAppInitializers.partition { it.async }
+      val dispatchers = appGraph.appDispatchers
 
-    StrictMode.setVmPolicy(
-      StrictMode.VmPolicy.Builder()
-        .detectLeakedSqlLiteObjects()
-        .detectActivityLeaks()
-        .detectLeakedClosableObjects()
-        .detectLeakedRegistrationObjects()
-        .detectFileUriExposure()
-        .detectCleartextNetwork()
-        .apply {
-          detectContentUriWithoutPermission()
-
-          if (Build.VERSION.SDK_INT >= 29) {
-            detectCredentialProtectedWhileLocked()
-          }
-          if (Build.VERSION.SDK_INT >= 31) {
-            detectIncorrectContextUse()
-            detectUnsafeIntentLaunch()
-          }
+      withContext(dispatchers.main) {
+        regular.forEach {
+          it.initialise(this@PeekApp)
         }
-        .penaltyLog()
-        .build()
-    )
+      }
+
+      val jobs = async.map {
+        async(dispatchers.default) {
+          it.initialise(this@PeekApp)
+        }
+      }
+
+      jobs.awaitAll()
+    }
   }
 }
 

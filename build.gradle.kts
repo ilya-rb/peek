@@ -20,7 +20,7 @@ plugins {
 doctor {
   GCWarningThreshold.set(0.10f)
   allowBuildingAllAndroidAppsSimultaneously.set(false)
-  disallowMultipleDaemons.set(true)
+  disallowMultipleDaemons.set(false)
   negativeAvoidanceThreshold.set(500)
   warnIfKotlinCompileDaemonFallback.set(true)
   warnWhenJetifierEnabled.set(true)
