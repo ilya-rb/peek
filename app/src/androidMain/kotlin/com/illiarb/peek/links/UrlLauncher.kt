@@ -1,6 +1,7 @@
 package com.illiarb.peek.links
 
 import android.content.Context
+import android.graphics.Color
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsCallback
 import androidx.browser.customtabs.CustomTabsClient
@@ -21,7 +22,7 @@ internal class UrlLauncher {
 
   fun openUrl(context: Context, url: Url): Boolean {
     val scheme = CustomTabColorSchemeParams.Builder()
-      .setToolbarColor(0x000000)
+      .setToolbarColor(Color.BLACK)
       .build()
 
     CustomTabsIntent.Builder(customTabsSession)
