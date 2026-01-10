@@ -34,7 +34,8 @@ import com.illiarb.peek.uikit.resources.hn_logo
 import com.illiarb.peek.uikit.resources.service_dou_name
 import com.illiarb.peek.uikit.resources.service_ft_name
 import com.illiarb.peek.uikit.resources.service_hacker_news_name
-import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.mutate
+import kotlinx.collections.immutable.toPersistentList
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -48,16 +49,16 @@ internal fun ServicesScreen(
 
   val eventSink = state.eventSink
   var items by remember {
-    mutableStateOf(state.sources.content.toImmutableList())
+    mutableStateOf(state.sources.content.toPersistentList())
   }
   val listState = rememberLazyListState()
   val reorderableState = rememberReorderableState(
     listState = listState,
     draggableItemsCount = items.size,
     onMove = { from, to ->
-      items = items.toMutableList()
-        .apply { add(to, removeAt(from)) }
-        .toImmutableList()
+      items = items.mutate {
+        it.add(to, it.removeAt(from))
+      }
     },
     onMoveComplete = {
       eventSink.invoke(ServicesScreenContract.Event.ItemsReordered(items))

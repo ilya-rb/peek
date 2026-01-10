@@ -81,7 +81,6 @@ public fun Modifier.dragHandle(state: ReorderableState, index: Int): Modifier {
     pointerInput(state) {
       detectDragGestures(
         onDragStart = {
-          // Only start drag if not already dragging
           if (state.draggingItemIndex == null) {
             state.onDragStartForIndex(index)
           }
@@ -90,8 +89,12 @@ public fun Modifier.dragHandle(state: ReorderableState, index: Int): Modifier {
           change.consume()
           state.onDrag(offset)
         },
-        onDragEnd = { state.onDragEnd() },
-        onDragCancel = { state.onDragEnd() },
+        onDragEnd = {
+          state.onDragEnd()
+        },
+        onDragCancel = {
+          state.onDragEnd()
+        },
       )
     }
   )
@@ -136,17 +139,19 @@ public class ReorderableState(
   public val onMoveComplete: () -> Unit,
 ) {
 
+  internal val animatedDelta = Animatable(0f)
+
   internal var draggingItemIndex: Int? by mutableStateOf(null)
   internal var droppingItemIndex: Int? by mutableStateOf(null)
-  private var delta: Float by mutableFloatStateOf(0f)
-  internal val animatedDelta = Animatable(0f)
   internal var scrollChannel = Channel<Float>()
   internal var dropChannel = Channel<Float>()
   internal var draggingItem: LazyListItemInfo? = null
 
+  private var delta: Float by mutableFloatStateOf(0f)
+
   internal val nestedScrollConnection = object : NestedScrollConnection {
     override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-      // Consume all vertical scroll when dragging to prevent bottom sheet from responding
+      // Consume all vertical scroll when dragging
       return if (draggingItemIndex != null || droppingItemIndex != null) {
         Offset(0f, available.y)
       } else {
