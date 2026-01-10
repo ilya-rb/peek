@@ -1,5 +1,6 @@
 package com.illiarb.peek.features.home.services
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.DragIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -70,11 +72,13 @@ internal fun ServicesScreen(
 
   LazyColumn(
     modifier = Modifier.reorderableContainer(reorderableState).padding(bottom = 24.dp),
+    verticalArrangement = Arrangement.spacedBy(8.dp),
     state = listState,
   ) {
     reorderableItems(
       items = items,
       state = reorderableState,
+      key = { source -> source.kind },
       content = { modifier, source ->
         ServiceItem(source, modifier)
       },
@@ -113,7 +117,7 @@ private fun ServiceItem(source: NewsSource, modifier: Modifier) {
 
     IconButton(onClick = { }) {
       Icon(
-        imageVector = Icons.Filled.DragIndicator,
+        imageVector = Icons.Filled.DragHandle,
         tint = MaterialTheme.colorScheme.primary,
         contentDescription = null,
       )

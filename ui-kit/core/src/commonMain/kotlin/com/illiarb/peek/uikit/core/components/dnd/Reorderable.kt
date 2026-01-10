@@ -1,5 +1,9 @@
 package com.illiarb.peek.uikit.core.components.dnd
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.VisibilityThreshold
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
@@ -21,7 +25,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import kotlinx.coroutines.channels.Channel
 
 @Composable
@@ -38,6 +44,17 @@ public fun rememberReorderableState(
     while (true) {
       val diff = state.scrollChannel.receive()
       listState.scrollBy(diff)
+    }
+  }
+  LaunchedEffect(Unit) {
+    while (true) {
+      val dropDelta = state.dropChannel.receive()
+      state.animatedDelta.snapTo(dropDelta)
+      state.animatedDelta.animateTo(
+        targetValue = 0f,
+        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+      )
+      state.onDropAnimationComplete()
     }
   }
   return state
@@ -60,24 +77,41 @@ public fun Modifier.reorderableContainer(state: ReorderableState): Modifier {
 public fun <T : Any> LazyListScope.reorderableItems(
   items: List<T>,
   state: ReorderableState,
+  key: (T) -> Any,
   content: @Composable (Modifier, T) -> Unit,
 ) {
   itemsIndexed(
     items = items,
+    key = { _, item -> key(item) },
     contentType = { index, _ -> DraggableItem(index) }
   ) { index, item ->
-    var modifier = Modifier.clickable(onClick = {})
-    modifier = if (state.draggingItemIndex == index) {
-      modifier
-        .graphicsLayer { translationY = state.delta }
-        .background(MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp))
-    } else {
-      modifier
-    }
+    val isDragging = state.draggingItemIndex == index
+    val isDropping = state.droppingItemIndex == index
+    val modifier = Modifier
+      .clickable(onClick = {})
+      .then(
+        when {
+          isDragging -> Modifier
+            .graphicsLayer { translationY = state.currentDelta() }
+            .zIndex(1f)
+            .background(MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp))
+
+          isDropping -> Modifier
+            .graphicsLayer { translationY = state.currentDelta() }
+            .background(MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp))
+
+          else -> Modifier.animateItem(
+            placementSpec = spring(
+              stiffness = Spring.StiffnessMediumLow,
+              visibilityThreshold = IntOffset.VisibilityThreshold,
+            )
+          )
+        }
+      )
+
     content(modifier, item)
   }
 }
-
 
 public data class ReorderableState(
   val draggableItemsCount: Int,
@@ -87,8 +121,11 @@ public data class ReorderableState(
 ) {
 
   internal var draggingItemIndex: Int? by mutableStateOf(null)
-  internal var delta: Float by mutableFloatStateOf(0f)
+  internal var droppingItemIndex: Int? by mutableStateOf(null)
+  private var delta: Float by mutableFloatStateOf(0f)
+  internal val animatedDelta = Animatable(0f)
   internal var scrollChannel = Channel<Float>()
+  internal var dropChannel = Channel<Float>()
   internal var draggingItem: LazyListItemInfo? = null
 
   internal fun onDragStart(offset: Offset) {
@@ -103,10 +140,24 @@ public data class ReorderableState(
   }
 
   internal fun onDragEnd() {
+    droppingItemIndex = draggingItemIndex
     draggingItem = null
     draggingItemIndex = null
+    dropChannel.trySend(delta)
     delta = 0f
+  }
+
+  internal fun onDropAnimationComplete() {
+    droppingItemIndex = null
     onMoveComplete()
+  }
+
+  internal fun currentDelta(): Float {
+    return when {
+      draggingItemIndex != null -> delta
+      droppingItemIndex != null -> animatedDelta.value
+      else -> 0f
+    }
   }
 
   internal fun onDrag(offset: Offset) {
