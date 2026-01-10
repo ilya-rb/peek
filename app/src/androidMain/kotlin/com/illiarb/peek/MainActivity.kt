@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.addCallback
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.browser.customtabs.CustomTabColorSchemeParams
@@ -27,6 +28,7 @@ import com.illiarb.peek.features.navigation.map.OpenUrlScreen
 import com.illiarb.peek.features.navigation.map.ShareScreen
 import com.illiarb.peek.features.settings.data.SettingsService
 import com.illiarb.peek.features.settings.data.SettingsService.Settings
+import com.illiarb.peek.navigation.ScreenNavDecoration
 import com.illiarb.peek.uikit.core.theme.UiKitTheme
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.CircuitCompositionLocals
@@ -36,7 +38,6 @@ import com.slack.circuit.overlay.ContentWithOverlays
 import com.slack.circuit.retained.collectAsRetainedState
 import com.slack.circuitx.android.AndroidScreen
 import com.slack.circuitx.android.rememberAndroidScreenAwareNavigator
-import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.binding
@@ -86,6 +87,14 @@ internal class MainActivity(
           starter = ::navigateTo,
         )
 
+        BackHandler {
+          if (backStack.size == 1) {
+            onBackPressedDispatcher.onBackPressed()
+          } else {
+            navigator.pop()
+          }
+        }
+
         message?.let {
           SideEffect {
             showToast(it)
@@ -97,10 +106,7 @@ internal class MainActivity(
             NavigableCircuitContent(
               navigator = navigator,
               backStack = backStack,
-              decoratorFactory = GestureNavigationDecorationFactory(
-                uiGraph.circuit.animatedNavDecoratorFactory,
-                navigator::pop,
-              ),
+              decoratorFactory = ScreenNavDecoration.Companion,
             )
           }
         }
