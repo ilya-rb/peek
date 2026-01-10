@@ -20,7 +20,6 @@ import com.slack.circuit.backstack.NavArgument
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.animation.AnimatedNavEvent
 import com.slack.circuit.foundation.animation.AnimatedNavState
-import kotlin.uuid.ExperimentalUuidApi
 
 @Stable
 public class ScreenNavDecoration<T : NavArgument> : AnimatedNavDecorator<T, ScreenNavState<T>> {
@@ -87,19 +86,6 @@ public class ScreenNavDecoration<T : NavArgument> : AnimatedNavDecorator<T, Scre
 }
 
 @Stable
-@OptIn(ExperimentalUuidApi::class)
-public class ScreenNavState<T : NavArgument>(
+public data class ScreenNavState<T : NavArgument>(
   override val backStack: List<T>,
-) : AnimatedNavState {
-
-  // Use the first item's key as unique identity for AnimatedContent
-  private val key: String = backStack.first().screen.hashCode().toString()
-
-  override fun equals(other: Any?): Boolean {
-    if (this === other) return true
-    if (other !is ScreenNavState<*>) return false
-    return key == other.key
-  }
-
-  override fun hashCode(): Int = key.hashCode()
-}
+) : AnimatedNavState
