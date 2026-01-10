@@ -12,6 +12,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 internal class PeekApp : Application() {
 
@@ -33,11 +34,13 @@ internal class PeekApp : Application() {
     }
 
     appScope.launch {
-      val (regular, async) = appGraph.androidAppInitializers.partition { it.async }
+      val (async, regular) = appGraph.androidAppInitializers.partition { it.async }
       val dispatchers = appGraph.appDispatchers
 
-      regular.forEach {
-        it.initialise(this@PeekApp)
+      withContext(dispatchers.main) {
+        regular.forEach {
+          it.initialise(this@PeekApp)
+        }
       }
 
       val jobs = async.map {
