@@ -11,12 +11,9 @@ import androidx.activity.addCallback
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.browser.customtabs.CustomTabColorSchemeParams
-import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.core.net.toUri
 import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
 import com.illiarb.peek.core.appinfo.AppConfiguration
@@ -28,6 +25,7 @@ import com.illiarb.peek.features.navigation.map.OpenUrlScreen
 import com.illiarb.peek.features.navigation.map.ShareScreen
 import com.illiarb.peek.features.settings.data.SettingsService
 import com.illiarb.peek.features.settings.data.SettingsService.Settings
+import com.illiarb.peek.links.UrlLauncher
 import com.illiarb.peek.navigation.ScreenNavDecoration
 import com.illiarb.peek.uikit.core.theme.UiKitTheme
 import com.slack.circuit.backstack.rememberSaveableBackStack
@@ -49,6 +47,7 @@ internal class MainActivity(
   private val settingsService: SettingsService,
   private val imageLoader: ImageLoader,
   private val appConfig: AppConfiguration,
+  private val urlLauncher: UrlLauncher,
 ) : ComponentActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -116,23 +115,10 @@ internal class MainActivity(
 
   private fun navigateTo(screen: AndroidScreen): Boolean {
     return when (screen) {
-      is OpenUrlScreen -> openChromeCustomTab(screen.url.url)
+      is OpenUrlScreen -> urlLauncher.openUrl(this, screen.url)
       is ShareScreen -> openShareScreen(screen.url.url)
       else -> false
     }
-  }
-
-  private fun openChromeCustomTab(url: String): Boolean {
-    val scheme = CustomTabColorSchemeParams.Builder().setToolbarColor(0x000000).build()
-
-    CustomTabsIntent.Builder()
-      .setColorSchemeParams(CustomTabsIntent.COLOR_SCHEME_DARK, scheme)
-      .setColorSchemeParams(CustomTabsIntent.COLOR_SCHEME_LIGHT, scheme)
-      .setShowTitle(true)
-      .build()
-      .launchUrl(this, url.toUri())
-
-    return true
   }
 
   private fun openShareScreen(url: String): Boolean {

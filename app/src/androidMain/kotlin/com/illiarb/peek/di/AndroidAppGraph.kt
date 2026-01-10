@@ -12,10 +12,8 @@ import com.illiarb.peek.core.data.di.CoreDataBindings
 import com.illiarb.peek.core.network.di.NetworkBindings
 import com.illiarb.peek.features.settings.di.AppSettingsBindings
 import com.illiarb.peek.features.summarizer.di.SummarizerBindings
+import com.illiarb.peek.init.AndroidAppInitializer
 import com.illiarb.peek.uikit.imageloader.ImageLoaderBindings
-import com.slack.circuit.foundation.animation.AnimatedScreenTransform
-import com.slack.circuit.runtime.ExperimentalCircuitApi
-import com.slack.circuit.runtime.screen.Screen
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.Multibinds
 import dev.zacsweers.metro.Provider
@@ -40,6 +38,8 @@ internal interface AndroidAppGraph : AppGraph {
   val appConfiguration: AppConfiguration
   val imageLoader: ImageLoader
   val activityProviders: Map<KClass<out Activity>, Provider<Activity>>
+  val androidAppInitializers: Set<AndroidAppInitializer>
+  val appDispatchers: AppDispatchers
 
   @Provides
   fun provideAppDispatchers(): AppDispatchers = AppDispatchers()
@@ -47,9 +47,8 @@ internal interface AndroidAppGraph : AppGraph {
   @Multibinds
   fun activityProviders(): Map<KClass<out Activity>, Activity>
 
-  @OptIn(ExperimentalCircuitApi::class)
-  @Multibinds(allowEmpty = true)
-  fun animatedScreenTransforms(): Map<KClass<out Screen>, AnimatedScreenTransform>
+  @Multibinds
+  fun androidAppInitializers(): Set<AndroidAppInitializer>
 
   @DependencyGraph.Factory
   fun interface Factory {
