@@ -66,7 +66,7 @@ internal fun ServicesScreen(
   )
 
   LazyColumn(
-    modifier = Modifier.reorderableContainer(reorderableState).padding(bottom = 24.dp),
+    modifier = modifier.reorderableContainer(reorderableState).padding(bottom = 24.dp),
     verticalArrangement = Arrangement.spacedBy(8.dp),
     state = listState,
   ) {
