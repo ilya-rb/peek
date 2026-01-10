@@ -1,5 +1,6 @@
 package com.illiarb.peek.features.home.services
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -7,13 +8,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DragIndicator
+import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,7 +34,8 @@ import com.illiarb.peek.uikit.resources.hn_logo
 import com.illiarb.peek.uikit.resources.service_dou_name
 import com.illiarb.peek.uikit.resources.service_ft_name
 import com.illiarb.peek.uikit.resources.service_hacker_news_name
-import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.mutate
+import kotlinx.collections.immutable.toPersistentList
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -49,19 +49,16 @@ internal fun ServicesScreen(
 
   val eventSink = state.eventSink
   var items by remember {
-    mutableStateOf(state.sources.content.toImmutableList())
-  }
-  val itemsCount by remember {
-    derivedStateOf { items.size }
+    mutableStateOf(state.sources.content.toPersistentList())
   }
   val listState = rememberLazyListState()
   val reorderableState = rememberReorderableState(
     listState = listState,
-    draggableItemsCount = itemsCount,
+    draggableItemsCount = items.size,
     onMove = { from, to ->
-      items = items.toMutableList()
-        .apply { add(to, removeAt(from)) }
-        .toImmutableList()
+      items = items.mutate {
+        it.add(to, it.removeAt(from))
+      }
     },
     onMoveComplete = {
       eventSink.invoke(ServicesScreenContract.Event.ItemsReordered(items))
@@ -69,21 +66,27 @@ internal fun ServicesScreen(
   )
 
   LazyColumn(
-    modifier = Modifier.reorderableContainer(reorderableState).padding(bottom = 24.dp),
+    modifier = modifier.reorderableContainer(reorderableState).padding(bottom = 24.dp),
+    verticalArrangement = Arrangement.spacedBy(8.dp),
     state = listState,
   ) {
     reorderableItems(
       items = items,
       state = reorderableState,
-      content = { modifier, source ->
-        ServiceItem(source, modifier)
+      key = { source -> source.kind },
+      content = { itemModifier, dragHandleModifier, source ->
+        ServiceItem(source, itemModifier, dragHandleModifier)
       },
     )
   }
 }
 
 @Composable
-private fun ServiceItem(source: NewsSource, modifier: Modifier) {
+private fun ServiceItem(
+  source: NewsSource,
+  modifier: Modifier,
+  dragHandleModifier: Modifier,
+) {
   Row(
     verticalAlignment = Alignment.CenterVertically,
     modifier = modifier
@@ -111,12 +114,11 @@ private fun ServiceItem(source: NewsSource, modifier: Modifier) {
 
     Spacer(Modifier.weight(1f))
 
-    IconButton(onClick = { }) {
-      Icon(
-        imageVector = Icons.Filled.DragIndicator,
-        tint = MaterialTheme.colorScheme.primary,
-        contentDescription = null,
-      )
-    }
+    Icon(
+      modifier = dragHandleModifier,
+      imageVector = Icons.Filled.DragHandle,
+      tint = MaterialTheme.colorScheme.primary,
+      contentDescription = null,
+    )
   }
 }
