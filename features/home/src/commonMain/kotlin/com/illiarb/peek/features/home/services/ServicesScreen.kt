@@ -9,13 +9,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DragHandle
-import androidx.compose.material.icons.filled.DragIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,13 +50,10 @@ internal fun ServicesScreen(
   var items by remember {
     mutableStateOf(state.sources.content.toImmutableList())
   }
-  val itemsCount by remember {
-    derivedStateOf { items.size }
-  }
   val listState = rememberLazyListState()
   val reorderableState = rememberReorderableState(
     listState = listState,
-    draggableItemsCount = itemsCount,
+    draggableItemsCount = items.size,
     onMove = { from, to ->
       items = items.toMutableList()
         .apply { add(to, removeAt(from)) }
@@ -79,15 +73,19 @@ internal fun ServicesScreen(
       items = items,
       state = reorderableState,
       key = { source -> source.kind },
-      content = { modifier, source ->
-        ServiceItem(source, modifier)
+      content = { itemModifier, dragHandleModifier, source ->
+        ServiceItem(source, itemModifier, dragHandleModifier)
       },
     )
   }
 }
 
 @Composable
-private fun ServiceItem(source: NewsSource, modifier: Modifier) {
+private fun ServiceItem(
+  source: NewsSource,
+  modifier: Modifier,
+  dragHandleModifier: Modifier,
+) {
   Row(
     verticalAlignment = Alignment.CenterVertically,
     modifier = modifier
@@ -115,12 +113,11 @@ private fun ServiceItem(source: NewsSource, modifier: Modifier) {
 
     Spacer(Modifier.weight(1f))
 
-    IconButton(onClick = { }) {
-      Icon(
-        imageVector = Icons.Filled.DragHandle,
-        tint = MaterialTheme.colorScheme.primary,
-        contentDescription = null,
-      )
-    }
+    Icon(
+      modifier = dragHandleModifier,
+      imageVector = Icons.Filled.DragHandle,
+      tint = MaterialTheme.colorScheme.primary,
+      contentDescription = null,
+    )
   }
 }
