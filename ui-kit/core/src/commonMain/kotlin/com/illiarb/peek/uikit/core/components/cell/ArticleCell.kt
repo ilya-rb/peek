@@ -1,6 +1,6 @@
 package com.illiarb.peek.uikit.core.components.cell
 
-import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,7 +29,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,7 +38,6 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.illiarb.peek.uikit.core.components.popup.ShareAction
 import com.illiarb.peek.uikit.core.components.popup.SummarizeAction
-import kotlinx.coroutines.launch
 
 @Composable
 public fun ArticleCell(
@@ -144,35 +142,14 @@ private fun ArticleActions(
   onShareClick: () -> Unit,
 ) {
   var moreMenuExpanded by remember { mutableStateOf(false) }
-  val bookmarkBounce = remember { Animatable(1f) }
-  val coroutineScope = rememberCoroutineScope()
 
   Column(
     verticalArrangement = Arrangement.SpaceAround, modifier = Modifier.fillMaxHeight()
   ) {
-    IconButton(
-      onClick = {
-        coroutineScope.launch {
-          bookmarkBounce.animateTo(1.2f, animationSpec = tween(100))
-          bookmarkBounce.animateTo(1f, animationSpec = tween(200))
-        }
-        onBookmarkClick()
-      },
-      modifier = Modifier.graphicsLayer(
-        scaleX = bookmarkBounce.value,
-        scaleY = bookmarkBounce.value
-      )
-    ) {
-      Icon(
-        imageVector = if (articleSaved) {
-          Icons.Filled.Bookmark
-        } else {
-          Icons.Filled.BookmarkBorder
-        },
-        tint = MaterialTheme.colorScheme.primary,
-        contentDescription = null,
-      )
-    }
+    BookmarkButton(
+      saved = articleSaved,
+      onClick = onBookmarkClick,
+    )
 
     ArticlePopupMenu(
       expanded = moreMenuExpanded,
@@ -191,6 +168,33 @@ private fun ArticleActions(
 }
 
 @Composable
+private fun BookmarkButton(
+  saved: Boolean,
+  onClick: () -> Unit,
+) {
+  var bouncing by remember { mutableStateOf(false) }
+  val scale by animateFloatAsState(
+    targetValue = if (bouncing) 1.2f else 1f,
+    animationSpec = tween(durationMillis = if (bouncing) 100 else 200),
+    finishedListener = { if (bouncing) bouncing = false },
+  )
+
+  IconButton(
+    onClick = {
+      bouncing = true
+      onClick()
+    },
+    modifier = Modifier.graphicsLayer(scaleX = scale, scaleY = scale)
+  ) {
+    Icon(
+      imageVector = if (saved) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
+      tint = MaterialTheme.colorScheme.primary,
+      contentDescription = null,
+    )
+  }
+}
+
+@Composable
 private fun ArticlePopupMenu(
   onMenuClick: () -> Unit,
   onDismiss: () -> Unit,
@@ -199,21 +203,24 @@ private fun ArticlePopupMenu(
   onShareClick: () -> Unit,
 ) {
   Box {
-    val iconColors = IconButtonDefaults.iconButtonColors().let {
-      if (expanded) {
-        it.copy(containerColor = MaterialTheme.colorScheme.onPrimaryFixedVariant)
-      } else {
-        it
+    val iconColors = if (expanded) {
+      IconButtonDefaults.iconButtonColors(
+        containerColor = MaterialTheme.colorScheme.onPrimaryFixedVariant
+      )
+    } else {
+      null
+    }
+
+    if (iconColors != null) {
+      IconButton(onClick = onMenuClick, colors = iconColors) {
+        MoreIcon()
+      }
+    } else {
+      IconButton(onClick = onMenuClick) {
+        MoreIcon()
       }
     }
 
-    IconButton(onMenuClick, colors = iconColors) {
-      Icon(
-        imageVector = Icons.Filled.MoreHoriz,
-        tint = MaterialTheme.colorScheme.primary,
-        contentDescription = null,
-      )
-    }
     DropdownMenu(
       expanded = expanded,
       onDismissRequest = onDismiss,
@@ -223,4 +230,13 @@ private fun ArticlePopupMenu(
       ShareAction(onClick = onShareClick)
     }
   }
+}
+
+@Composable
+private fun MoreIcon() {
+  Icon(
+    imageVector = Icons.Filled.MoreHoriz,
+    tint = MaterialTheme.colorScheme.primary,
+    contentDescription = null,
+  )
 }
