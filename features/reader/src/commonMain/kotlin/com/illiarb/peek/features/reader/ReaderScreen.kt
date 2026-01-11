@@ -256,9 +256,11 @@ private fun RemoveBookmarkConfirmationSheet(
 ) {
   Column(
     horizontalAlignment = Alignment.CenterHorizontally,
+    verticalArrangement = Arrangement.spacedBy(16.dp),
     modifier = Modifier
       .fillMaxWidth()
-      .navigationBarsPadding(),
+      .navigationBarsPadding()
+      .padding(horizontal = 16.dp)
   ) {
     Text(
       text = stringResource(Res.string.reader_remove_bookmark_title),
@@ -266,10 +268,7 @@ private fun RemoveBookmarkConfirmationSheet(
     )
     Row(
       horizontalArrangement = Arrangement.spacedBy(16.dp),
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(top = 16.dp)
-        .padding(horizontal = 16.dp),
+      modifier = Modifier.fillMaxWidth(),
     ) {
       OutlinedButton(
         onClick = onCancel,
