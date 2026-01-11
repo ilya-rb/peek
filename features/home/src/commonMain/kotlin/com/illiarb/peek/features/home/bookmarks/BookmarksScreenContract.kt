@@ -5,7 +5,7 @@ import androidx.compose.runtime.Immutable
 import com.illiarb.peek.api.PeekApiService
 import com.illiarb.peek.api.domain.Article
 import com.illiarb.peek.core.arch.di.UiScope
-import com.illiarb.peek.core.arch.message.MessageDispatcher
+import com.illiarb.peek.uikit.messages.MessageDispatcher
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.home.articles.ArticlesUi
 import com.illiarb.peek.features.home.bookmarks.BookmarksScreenContract.State

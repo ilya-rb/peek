@@ -48,6 +48,7 @@ kotlin {
       implementation(projects.peekApi)
       implementation(projects.uiKit.core)
       implementation(projects.uiKit.imageLoader)
+      implementation(projects.uiKit.messages)
       implementation(projects.uiKit.resources)
     }
   }

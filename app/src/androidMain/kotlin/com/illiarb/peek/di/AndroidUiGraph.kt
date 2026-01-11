@@ -2,8 +2,8 @@ package com.illiarb.peek.di
 
 import android.app.Activity
 import com.illiarb.peek.core.arch.di.UiScope
-import com.illiarb.peek.core.arch.message.MessageDispatcher
-import com.illiarb.peek.core.arch.message.MessageProvider
+import com.illiarb.peek.uikit.messages.MessageDispatcher
+import com.illiarb.peek.uikit.messages.MessageProvider
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.ui.Ui

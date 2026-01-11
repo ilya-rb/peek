@@ -7,18 +7,30 @@ import androidx.compose.runtime.setValue
 import com.illiarb.peek.api.PeekApiService
 import com.illiarb.peek.api.domain.Article
 import com.illiarb.peek.api.domain.NewsSourceKind
-import com.illiarb.peek.core.arch.message.MessageDispatcher
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.core.data.AsyncDataStore
+import com.illiarb.peek.core.data.mapContent
 import com.illiarb.peek.features.home.HomeScreenContract.ArticlesResult
 import com.illiarb.peek.features.home.HomeScreenContract.Event
-import com.illiarb.peek.features.home.HomeScreenContract.State.BookmarkMessage
+import com.illiarb.peek.features.home.HomeScreenContract.NewsSource
 import com.illiarb.peek.features.home.articles.ArticlesUi
 import com.illiarb.peek.features.navigation.map.BookmarksScreen
 import com.illiarb.peek.features.navigation.map.ReaderScreen
 import com.illiarb.peek.features.navigation.map.SettingsScreen
 import com.illiarb.peek.features.navigation.map.ShareScreen
 import com.illiarb.peek.features.navigation.map.SummaryScreen
+import com.illiarb.peek.uikit.messages.Message
+import com.illiarb.peek.uikit.messages.MessageDispatcher
+import com.illiarb.peek.uikit.messages.MessageType
+import com.illiarb.peek.uikit.resources.Res
+import com.illiarb.peek.uikit.resources.bookmarks_action_removed
+import com.illiarb.peek.uikit.resources.bookmarks_action_saved
+import com.illiarb.peek.uikit.resources.dou_logo
+import com.illiarb.peek.uikit.resources.ft_logo
+import com.illiarb.peek.uikit.resources.hn_logo
+import com.illiarb.peek.uikit.resources.service_dou_name
+import com.illiarb.peek.uikit.resources.service_ft_name
+import com.illiarb.peek.uikit.resources.service_hacker_news_name
 import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
@@ -26,6 +38,8 @@ import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import com.slack.circuit.runtime.presenter.Presenter
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.getString
 
 internal class HomeScreenPresenter(
   private val navigator: Navigator,
@@ -44,9 +58,6 @@ internal class HomeScreenPresenter(
     var servicesOrderToShow by rememberRetained {
       mutableStateOf<Unit?>(null)
     }
-    var bookmarkMessage by rememberRetained {
-      mutableStateOf<BookmarkMessage?>(value = null)
-    }
     var contentTriggers by rememberRetained {
       mutableStateOf(
         HomeScreenContract.ContentTriggers(
@@ -60,22 +71,32 @@ internal class HomeScreenPresenter(
       mutableStateOf(false)
     }
 
-    val newsSources by produceRetainedState(emptyList<NewsSourceKind>().toImmutableList()) {
-      peekApiService.collectAvailableSources().collect {
-        if (it is Async.Content) {
-          val existingIndex = contentTriggers.selectedNewsSourceIndex
-          val newValue = it.content.map { source -> source.kind }.toImmutableList()
-
-          contentTriggers = if (existingIndex == -1) {
-            contentTriggers.copy(selectedNewsSourceIndex = 0)
-          } else {
-            contentTriggers.copy(
-              selectedNewsSourceIndex = newValue.indexOf(value[existingIndex])
+    val newsSources by produceRetainedState(emptyList<NewsSource>().toImmutableList()) {
+      peekApiService.collectAvailableSources()
+        .mapContent { sources ->
+          sources.map { source ->
+            NewsSource(
+              kind = source.kind,
+              name = source.kind.name(),
+              icon = source.kind.icon(),
             )
           }
-          value = newValue
         }
-      }
+        .collect {
+          if (it is Async.Content) {
+            val existingIndex = contentTriggers.selectedNewsSourceIndex
+            val newValue = it.content.toImmutableList()
+
+            contentTriggers = if (existingIndex == -1) {
+              contentTriggers.copy(selectedNewsSourceIndex = 0)
+            } else {
+              contentTriggers.copy(
+                selectedNewsSourceIndex = newValue.indexOf(value[existingIndex])
+              )
+            }
+            value = newValue
+          }
+        }
     }
 
     val articles by produceRetainedState(
@@ -88,7 +109,7 @@ internal class HomeScreenPresenter(
       val source = newsSources.getOrNull(contentTriggers.selectedNewsSourceIndex)
       if (source != null) {
         peekApiService.collectLatestNewsFrom(
-          kind = source,
+          kind = source.kind,
           strategy = if (contentRefreshing) {
             AsyncDataStore.LoadStrategy.ForceReload
           } else {
@@ -124,7 +145,6 @@ internal class HomeScreenPresenter(
       contentRefreshing = contentRefreshing,
       servicesOrderToShow = servicesOrderToShow,
       articles = articles.articles,
-      bookmarkMessage = bookmarkMessage,
       eventSink = { event ->
         when (event) {
           is Event.SettingsClicked -> navigator.goTo(SettingsScreen)
@@ -163,10 +183,6 @@ internal class HomeScreenPresenter(
             navigator.goTo(BookmarksScreen)
           }
 
-          is Event.BookmarkToastResult -> {
-            bookmarkMessage = null
-          }
-
           is Event.RefreshTriggered -> {
             contentRefreshing = true
             contentTriggers = contentTriggers.copy(
@@ -190,12 +206,16 @@ internal class HomeScreenPresenter(
                   contentTriggers = contentTriggers.copy(
                     articleBookmarked = !contentTriggers.articleBookmarked
                   )
-                  val message = if (saved) "Added to bookmarks" else "Removed from bookmarks"
+                  val message = if (saved) {
+                    getString(Res.string.bookmarks_action_saved)
+                  } else {
+                    getString(Res.string.bookmarks_action_removed)
+                  }
 
                   messageDispatcher.sendMessage(
-                    MessageDispatcher.Message(
+                    Message(
                       content = message,
-                      type = MessageDispatcher.Message.MessageType.SUCCESS
+                      type = MessageType.SUCCESS,
                     )
                   )
                 }
@@ -216,6 +236,24 @@ internal class HomeScreenPresenter(
             )
           }
         }
+      }
+    )
+  }
+
+  private fun NewsSourceKind.icon(): DrawableResource {
+    return when (this) {
+      NewsSourceKind.HackerNews -> Res.drawable.hn_logo
+      NewsSourceKind.Dou -> Res.drawable.dou_logo
+      NewsSourceKind.Ft -> Res.drawable.ft_logo
+    }
+  }
+
+  private suspend fun NewsSourceKind.name(): String {
+    return getString(
+      when (this) {
+        NewsSourceKind.HackerNews -> Res.string.service_hacker_news_name
+        NewsSourceKind.Dou -> Res.string.service_dou_name
+        NewsSourceKind.Ft -> Res.string.service_ft_name
       }
     )
   }

@@ -5,12 +5,12 @@ import com.illiarb.peek.api.PeekApiService
 import com.illiarb.peek.api.domain.Article
 import com.illiarb.peek.api.domain.NewsSourceKind
 import com.illiarb.peek.core.arch.di.UiScope
-import com.illiarb.peek.core.arch.message.MessageDispatcher
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.home.HomeScreenContract.State
 import com.illiarb.peek.features.home.articles.ArticlesUi
 import com.illiarb.peek.features.navigation.map.HomeScreen
 import com.illiarb.peek.features.navigation.map.SummaryScreen
+import com.illiarb.peek.uikit.messages.MessageDispatcher
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
@@ -22,6 +22,7 @@ import com.slack.circuit.runtime.ui.ui
 import dev.zacsweers.metro.ContributesIntoSet
 import dev.zacsweers.metro.Inject
 import kotlinx.collections.immutable.ImmutableList
+import org.jetbrains.compose.resources.DrawableResource
 import kotlin.time.Instant
 
 internal interface HomeScreenContract {
@@ -30,21 +31,20 @@ internal interface HomeScreenContract {
   data class State(
     val articles: Async<ImmutableList<Article>>,
     val articlesLastUpdatedTime: Instant?,
-    val newsSources: ImmutableList<NewsSourceKind>,
+    val newsSources: ImmutableList<NewsSource>,
     val selectedNewsSourceIndex: Int,
     val articleSummaryToShow: Article?,
     val servicesOrderToShow: Unit?,
-    val bookmarkMessage: BookmarkMessage?,
     val contentRefreshing: Boolean,
     val eventSink: (Event) -> Unit,
     val articlesEventSink: (ArticlesUi) -> Unit,
-  ) : CircuitUiState {
+  ) : CircuitUiState
 
-    enum class BookmarkMessage {
-      ADDED,
-      REMOVED,
-    }
-  }
+  data class NewsSource(
+    val icon: DrawableResource,
+    val name: String,
+    val kind: NewsSourceKind,
+  )
 
   data class ContentTriggers(
     val selectedNewsSourceIndex: Int,
@@ -54,11 +54,10 @@ internal interface HomeScreenContract {
 
   sealed interface Event : CircuitUiEvent {
     data class SummaryResult(val result: SummaryScreen.Result) : Event
-    data class TabClicked(val source: NewsSourceKind) : Event
+    data class TabClicked(val source: NewsSource) : Event
     data object ErrorRetryClicked : Event
     data object SettingsClicked : Event
     data object BookmarksClicked : Event
-    data object BookmarkToastResult : Event
     data object ReorderServicesClicked : Event
     data object ReorderServicesClosed : Event
     data object RefreshTriggered : Event
