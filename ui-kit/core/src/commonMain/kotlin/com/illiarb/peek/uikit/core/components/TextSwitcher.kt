@@ -29,12 +29,15 @@ public fun TextSwitcher(
   switchEvery: Duration,
   containerHeightDp: Int,
   modifier: Modifier = Modifier,
+  enabled: Boolean = true,
   durationMillis: Int = 300,
   easing: Easing = FastOutSlowInEasing,
 ) {
   var showFirst by remember { mutableStateOf(true) }
 
-  LaunchedEffect(Unit) {
+  LaunchedEffect(enabled) {
+    if (!enabled) return@LaunchedEffect
+
     while (true) {
       delay(switchEvery.inWholeMilliseconds)
       showFirst = !showFirst

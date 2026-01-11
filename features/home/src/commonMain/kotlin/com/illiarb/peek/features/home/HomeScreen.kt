@@ -76,25 +76,23 @@ internal fun HomeScreen(state: HomeScreenContract.State, modifier: Modifier = Mo
   val hazeState = rememberHazeState()
   val hazeStyle = HazeMaterials.thin(MaterialTheme.colorScheme.surface)
 
-  when {
-    state.articleSummaryToShow != null -> {
-      OverlayEffect(Unit) {
-        val result = showScreenOverlay(
-          SummaryScreen(state.articleSummaryToShow.url, SummaryScreen.Context.HOME),
-          onDismiss = { SummaryScreen.Result.Close },
-        )
-        eventSink.invoke(Event.SummaryResult(result))
-      }
+  state.articleSummaryToShow?.let { article ->
+    OverlayEffect(article) {
+      val result = showScreenOverlay(
+        SummaryScreen(article.url, SummaryScreen.Context.HOME),
+        onDismiss = { SummaryScreen.Result.Close },
+      )
+      eventSink.invoke(Event.SummaryResult(result))
     }
+  }
 
-    state.servicesOrderToShow != null -> {
-      OverlayEffect(Unit) {
-        showScreenOverlay(
-          ServicesScreen,
-          onDismiss = { ServicesScreen.Result }
-        )
-        eventSink.invoke(Event.ReorderServicesClosed)
-      }
+  state.servicesOrderToShow?.let {
+    OverlayEffect(ServicesScreen) {
+      showScreenOverlay(
+        ServicesScreen,
+        onDismiss = { ServicesScreen.Result }
+      )
+      eventSink.invoke(Event.ReorderServicesClosed)
     }
   }
 
@@ -107,6 +105,8 @@ internal fun HomeScreen(state: HomeScreenContract.State, modifier: Modifier = Mo
         .nestedScroll(bottomBarBehavior.nestedScrollConnection)
         .nestedScroll(topBarBehavior.nestedScrollConnection),
       topBar = {
+        val topBarFullyVisible = topBarBehavior.state.collapsedFraction == 0f
+
         TopAppBar(
           scrollBehavior = topBarBehavior,
           colors = TopAppBarDefaults.topAppBarColors(
@@ -114,7 +114,10 @@ internal fun HomeScreen(state: HomeScreenContract.State, modifier: Modifier = Mo
           ),
           modifier = Modifier.hazeEffect(state = hazeState, style = hazeStyle),
           title = {
-            TopBarTitle(state)
+            TopBarTitle(
+              state = state,
+              textSwitcherEnabled = topBarFullyVisible,
+            )
           },
           actions = {
             TopBarActions(eventSink)
@@ -132,7 +135,10 @@ internal fun HomeScreen(state: HomeScreenContract.State, modifier: Modifier = Mo
 }
 
 @Composable
-private fun TopBarTitle(state: HomeScreenContract.State) {
+private fun TopBarTitle(
+  state: HomeScreenContract.State,
+  textSwitcherEnabled: Boolean,
+) {
   if (state.newsSources.isEmpty()) {
     return
   }
@@ -161,6 +167,7 @@ private fun TopBarTitle(state: HomeScreenContract.State) {
     },
     containerHeightDp = TopAppBarDefaults.TopAppBarExpandedHeight.value.toInt(),
     switchEvery = 5.seconds,
+    enabled = textSwitcherEnabled,
   )
 }
 

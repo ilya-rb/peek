@@ -70,9 +70,31 @@ android {
     }
   }
 
+  signingConfigs {
+
+    getByName("debug") {
+      storeFile = rootProject.file("release/app-debug.jks")
+      storePassword = "android"
+      keyAlias = "androiddebugkey"
+      keyPassword = "android"
+    }
+
+    if (rootProject.file("relase/app-release.jks").exists()) {
+      create("release") {
+        storeFile = rootProject.file("release/app-release.jks")
+        storePassword = properties["PEEK_RELEASE_KEYSTORE_PWD"]?.toString().orEmpty()
+        keyAlias = "peek"
+        keyPassword = properties["PEEK_RELEASE_KEY_PWD"]?.toString().orEmpty()
+      }
+    }
+  }
+
   buildTypes {
     getByName("release") {
-      isMinifyEnabled = false
+      isMinifyEnabled = true
+      isShrinkResources = true
+      signingConfig = signingConfigs.findByName("release") ?: signingConfigs["debug"]
+      proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
     }
   }
 }
