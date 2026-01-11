@@ -46,11 +46,5 @@
 # Ktor
 -dontwarn org.slf4j.**
 
-# Compose
--keep class androidx.compose.** { *; }
--keepclasseswithmembers class * {
-    @androidx.compose.runtime.Composable *;
-}
-
 # Circuit
 -dontwarn androidx.compose.animation.AnimatedContentScope
