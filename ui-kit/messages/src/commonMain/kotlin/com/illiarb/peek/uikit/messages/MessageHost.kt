@@ -2,7 +2,8 @@ package com.illiarb.peek.uikit.messages
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
-import androidx.compose.animation.core.EaseOutCubic
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -35,13 +36,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 
-private const val MESSAGE_DISPLAY_DURATION_MS = 3000L
-private const val MESSAGE_ENTER_DURATION_MS = 400
-private const val MESSAGE_SETTLE_DURATION_MS = 150
-private const val MESSAGE_EXIT_DURATION_MS = 350
-private const val MESSAGE_OVERSHOOT_OFFSET = -30f
-private const val MESSAGE_EXIT_BOUNCE_OFFSET = -20f
-
 @Composable
 public fun MessageHost(messageProvider: MessageProvider) {
   val overlayHost = LocalOverlayHost.current
@@ -60,11 +54,12 @@ private class MessageOverlay(private val message: Message) : Overlay<Unit> {
 
   @Composable
   override fun Content(navigator: OverlayNavigator<Unit>) {
-    val offsetY = remember { Animatable(200f) }
+    val offsetY = remember { Animatable(MESSAGE_INITIAL_OFFSET) }
     val alpha = remember { Animatable(0f) }
 
     LaunchedEffect(Unit) {
       animateToast(alpha, offsetY)
+
       navigator.finish(Unit)
     }
 
@@ -82,39 +77,41 @@ private class MessageOverlay(private val message: Message) : Overlay<Unit> {
       )
     }
   }
-}
 
-private suspend fun CoroutineScope.animateToast(
-  alpha: Animatable<Float, AnimationVector1D>,
-  offset: Animatable<Float, AnimationVector1D>,
-) {
-  // Enter animation: slide up with overshoot
-  launch {
-    alpha.animateTo(1f, tween(MESSAGE_ENTER_DURATION_MS))
+  private suspend fun CoroutineScope.animateToast(
+    alpha: Animatable<Float, AnimationVector1D>,
+    offset: Animatable<Float, AnimationVector1D>,
+  ) {
+    launch {
+      alpha.animateTo(1f, tween(MESSAGE_FADE_DURATION_MS))
+    }
+    offset.animateTo(
+      targetValue = 0f,
+      animationSpec = spring(
+        dampingRatio = Spring.DampingRatioMediumBouncy,
+        stiffness = Spring.StiffnessLow,
+      ),
+    )
+
+    delay(MESSAGE_DISPLAY_DURATION_MS)
+
+    launch {
+      alpha.animateTo(0f, tween(MESSAGE_FADE_DURATION_MS))
+    }
+    offset.animateTo(
+      targetValue = MESSAGE_INITIAL_OFFSET,
+      animationSpec = spring(
+        dampingRatio = Spring.DampingRatioNoBouncy,
+        stiffness = Spring.StiffnessMedium
+      ),
+    )
   }
-  offset.animateTo(
-    targetValue = MESSAGE_OVERSHOOT_OFFSET,
-    animationSpec = tween(MESSAGE_ENTER_DURATION_MS),
-  )
-  offset.animateTo(
-    targetValue = 0f,
-    animationSpec = tween(MESSAGE_SETTLE_DURATION_MS, easing = EaseOutCubic),
-  )
 
-  delay(MESSAGE_DISPLAY_DURATION_MS)
-
-  // Exit animation: slight bounce up, then slide down
-  offset.animateTo(
-    targetValue = MESSAGE_EXIT_BOUNCE_OFFSET,
-    animationSpec = tween(100),
-  )
-  launch {
-    alpha.animateTo(0f, tween(MESSAGE_EXIT_DURATION_MS))
+  companion object {
+    private const val MESSAGE_DISPLAY_DURATION_MS = 3000L
+    private const val MESSAGE_FADE_DURATION_MS = 250
+    private const val MESSAGE_INITIAL_OFFSET = 200f
   }
-  offset.animateTo(
-    targetValue = 200f,
-    animationSpec = tween(MESSAGE_EXIT_DURATION_MS),
-  )
 }
 
 @Composable
