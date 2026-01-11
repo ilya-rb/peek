@@ -7,8 +7,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.illiarb.peek.api.PeekApiService
 import com.illiarb.peek.api.domain.Article
-import com.illiarb.peek.core.arch.message.MessageDispatcher
-import com.illiarb.peek.core.arch.message.MessageDispatcher.Message
+import com.illiarb.peek.uikit.messages.Message
+import com.illiarb.peek.uikit.messages.MessageDispatcher
+import com.illiarb.peek.uikit.messages.MessageType
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.core.data.mapContent
 import com.illiarb.peek.core.types.Url
@@ -64,7 +65,7 @@ internal class BookmarksPresenter(
                 messageDispatcher.sendMessage(
                   Message(
                     content = getString(Res.string.bookmarks_action_removed),
-                    type = Message.MessageType.SUCCESS,
+                    type = MessageType.SUCCESS,
                   )
                 )
               }

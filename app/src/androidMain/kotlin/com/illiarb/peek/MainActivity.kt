@@ -4,22 +4,18 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.addCallback
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
 import com.illiarb.peek.core.appinfo.AppConfiguration
 import com.illiarb.peek.core.arch.ActivityKey
 import com.illiarb.peek.core.arch.di.AppScope
-import com.illiarb.peek.core.arch.message.MessageDispatcher
 import com.illiarb.peek.features.navigation.map.HomeScreen
 import com.illiarb.peek.features.navigation.map.OpenUrlScreen
 import com.illiarb.peek.features.navigation.map.ShareScreen
@@ -28,6 +24,7 @@ import com.illiarb.peek.features.settings.data.SettingsService.Settings
 import com.illiarb.peek.links.UrlLauncher
 import com.illiarb.peek.navigation.ScreenNavDecoration
 import com.illiarb.peek.uikit.core.theme.UiKitTheme
+import com.illiarb.peek.uikit.messages.MessageHost
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
@@ -71,9 +68,6 @@ internal class MainActivity(
         .observeSettings()
         .collectAsRetainedState(Settings.defaults())
 
-      val message by uiGraph.messageProvider.messages
-        .collectAsState(null)
-
       setSingletonImageLoaderFactory { imageLoader }
 
       UiKitTheme(
@@ -94,12 +88,6 @@ internal class MainActivity(
           }
         }
 
-        message?.let {
-          SideEffect {
-            showToast(it)
-          }
-        }
-
         CircuitCompositionLocals(uiGraph.circuit) {
           ContentWithOverlays {
             NavigableCircuitContent(
@@ -107,6 +95,7 @@ internal class MainActivity(
               backStack = backStack,
               decoratorFactory = ScreenNavDecoration.Companion,
             )
+            MessageHost(messageProvider = uiGraph.messageProvider)
           }
         }
       }
@@ -131,9 +120,5 @@ internal class MainActivity(
     startActivity(chooser)
 
     return true
-  }
-
-  private fun showToast(message: MessageDispatcher.Message) {
-    Toast.makeText(this, message.content, Toast.LENGTH_LONG).show()
   }
 }

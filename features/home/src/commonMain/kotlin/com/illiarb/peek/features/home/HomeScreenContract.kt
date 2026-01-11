@@ -5,7 +5,7 @@ import com.illiarb.peek.api.PeekApiService
 import com.illiarb.peek.api.domain.Article
 import com.illiarb.peek.api.domain.NewsSourceKind
 import com.illiarb.peek.core.arch.di.UiScope
-import com.illiarb.peek.core.arch.message.MessageDispatcher
+import com.illiarb.peek.uikit.messages.MessageDispatcher
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.home.HomeScreenContract.State
 import com.illiarb.peek.features.home.articles.ArticlesUi
@@ -22,6 +22,7 @@ import com.slack.circuit.runtime.ui.ui
 import dev.zacsweers.metro.ContributesIntoSet
 import dev.zacsweers.metro.Inject
 import kotlinx.collections.immutable.ImmutableList
+import org.jetbrains.compose.resources.DrawableResource
 import kotlin.time.Instant
 
 internal interface HomeScreenContract {
@@ -30,7 +31,7 @@ internal interface HomeScreenContract {
   data class State(
     val articles: Async<ImmutableList<Article>>,
     val articlesLastUpdatedTime: Instant?,
-    val newsSources: ImmutableList<NewsSourceKind>,
+    val newsSources: ImmutableList<NewsSource>,
     val selectedNewsSourceIndex: Int,
     val articleSummaryToShow: Article?,
     val servicesOrderToShow: Unit?,
@@ -46,6 +47,12 @@ internal interface HomeScreenContract {
     }
   }
 
+  data class NewsSource(
+    val icon: DrawableResource,
+    val name: String,
+    val kind: NewsSourceKind,
+  )
+
   data class ContentTriggers(
     val selectedNewsSourceIndex: Int,
     val articleBookmarked: Boolean,
@@ -54,7 +61,7 @@ internal interface HomeScreenContract {
 
   sealed interface Event : CircuitUiEvent {
     data class SummaryResult(val result: SummaryScreen.Result) : Event
-    data class TabClicked(val source: NewsSourceKind) : Event
+    data class TabClicked(val source: NewsSource) : Event
     data object ErrorRetryClicked : Event
     data object SettingsClicked : Event
     data object BookmarksClicked : Event

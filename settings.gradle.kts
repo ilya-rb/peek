@@ -43,6 +43,7 @@ include(
   ":peek-api",
   ":ui-kit:core",
   ":ui-kit:image-loader",
+  ":ui-kit:messages",
   ":ui-kit:resources",
   "features:home",
   "features:navigation-map",

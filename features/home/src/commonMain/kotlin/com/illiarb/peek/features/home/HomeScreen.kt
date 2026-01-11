@@ -29,9 +29,9 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
-import com.illiarb.peek.api.domain.NewsSourceKind
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.home.HomeScreenContract.Event
+import com.illiarb.peek.features.home.HomeScreenContract.NewsSource
 import com.illiarb.peek.features.home.articles.ArticlesContent
 import com.illiarb.peek.features.home.articles.ArticlesEmpty
 import com.illiarb.peek.features.home.articles.ArticlesLoading
@@ -47,13 +47,7 @@ import com.illiarb.peek.uikit.core.components.text.DateFormats
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_action_bookmarks
 import com.illiarb.peek.uikit.resources.acsb_action_settings
-import com.illiarb.peek.uikit.resources.dou_logo
-import com.illiarb.peek.uikit.resources.ft_logo
-import com.illiarb.peek.uikit.resources.hn_logo
 import com.illiarb.peek.uikit.resources.home_screen_title
-import com.illiarb.peek.uikit.resources.service_dou_name
-import com.illiarb.peek.uikit.resources.service_ft_name
-import com.illiarb.peek.uikit.resources.service_hacker_news_name
 import com.slack.circuit.overlay.OverlayEffect
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
@@ -144,18 +138,14 @@ private fun TopBarTitle(
   }
 
   val selectedSource = state.newsSources[state.selectedNewsSourceIndex]
-  val name = when (selectedSource) {
-    NewsSourceKind.Dou -> stringResource(Res.string.service_dou_name)
-    NewsSourceKind.HackerNews -> stringResource(Res.string.service_hacker_news_name)
-    NewsSourceKind.Ft -> stringResource(Res.string.service_ft_name)
-  }
+
   TextSwitcher(
     first = { modifier ->
       Text(stringResource(Res.string.home_screen_title), modifier)
     },
     second = { modifier ->
       Column(modifier) {
-        Text(name, style = MaterialTheme.typography.bodyLarge)
+        Text(selectedSource.name, style = MaterialTheme.typography.bodyLarge)
         state.articlesLastUpdatedTime?.let { time ->
           Text(
             text = DateFormats.formatTimestamp(Clock.System.now() - time),
@@ -272,9 +262,9 @@ private fun ScreenContent(
 @Composable
 private fun NewsSourcesContent(
   modifier: Modifier = Modifier,
-  newsSources: ImmutableList<NewsSourceKind>,
+  newsSources: ImmutableList<NewsSource>,
   selectedTabIndex: Int,
-  onTabClick: (NewsSourceKind) -> Unit,
+  onTabClick: (NewsSource) -> Unit,
 ) {
   HorizontalList(
     modifier = modifier,
@@ -282,11 +272,7 @@ private fun NewsSourcesContent(
     keyProvider = { _, source -> source.name },
     itemContent = { index, source ->
       SelectableCircleAvatar(
-        image = when (source) {
-          NewsSourceKind.HackerNews -> Res.drawable.hn_logo
-          NewsSourceKind.Dou -> Res.drawable.dou_logo
-          NewsSourceKind.Ft -> Res.drawable.ft_logo
-        },
+        image = source.icon,
         state = if (index == selectedTabIndex) {
           AvatarState.Selected
         } else {
