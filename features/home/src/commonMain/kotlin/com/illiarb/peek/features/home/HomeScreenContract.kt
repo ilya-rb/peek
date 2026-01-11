@@ -5,12 +5,12 @@ import com.illiarb.peek.api.PeekApiService
 import com.illiarb.peek.api.domain.Article
 import com.illiarb.peek.api.domain.NewsSourceKind
 import com.illiarb.peek.core.arch.di.UiScope
-import com.illiarb.peek.uikit.messages.MessageDispatcher
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.home.HomeScreenContract.State
 import com.illiarb.peek.features.home.articles.ArticlesUi
 import com.illiarb.peek.features.navigation.map.HomeScreen
 import com.illiarb.peek.features.navigation.map.SummaryScreen
+import com.illiarb.peek.uikit.messages.MessageDispatcher
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
@@ -35,17 +35,10 @@ internal interface HomeScreenContract {
     val selectedNewsSourceIndex: Int,
     val articleSummaryToShow: Article?,
     val servicesOrderToShow: Unit?,
-    val bookmarkMessage: BookmarkMessage?,
     val contentRefreshing: Boolean,
     val eventSink: (Event) -> Unit,
     val articlesEventSink: (ArticlesUi) -> Unit,
-  ) : CircuitUiState {
-
-    enum class BookmarkMessage {
-      ADDED,
-      REMOVED,
-    }
-  }
+  ) : CircuitUiState
 
   data class NewsSource(
     val icon: DrawableResource,
@@ -65,7 +58,6 @@ internal interface HomeScreenContract {
     data object ErrorRetryClicked : Event
     data object SettingsClicked : Event
     data object BookmarksClicked : Event
-    data object BookmarkToastResult : Event
     data object ReorderServicesClicked : Event
     data object ReorderServicesClosed : Event
     data object RefreshTriggered : Event
