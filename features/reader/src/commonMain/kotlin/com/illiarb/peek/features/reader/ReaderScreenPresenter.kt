@@ -25,6 +25,7 @@ internal class ReaderScreenPresenter(
 ) : Presenter<ReaderScreenContract.State> {
 
   @Composable
+  @Suppress("CyclomaticComplexMethod")
   override fun present(): ReaderScreenContract.State {
     val article by produceRetainedState<Async<Article>>(initialValue = Async.Loading) {
       peekApiService.collectArticleByUrl(screen.url).collect {
