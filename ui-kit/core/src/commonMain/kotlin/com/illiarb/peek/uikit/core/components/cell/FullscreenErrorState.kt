@@ -7,15 +7,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Error
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.illiarb.peek.uikit.core.components.LocalLottieAnimation
-import com.illiarb.peek.uikit.core.components.LottieAnimationType
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.common_error_default_action
 import com.illiarb.peek.uikit.resources.common_error_default_title
@@ -44,9 +45,11 @@ public fun FullscreenErrorState(
         .clip(shape = RoundedCornerShape(size = 24.dp))
         .background(MaterialTheme.colorScheme.surfaceContainer),
     ) {
-      LocalLottieAnimation(
-        modifier = Modifier.size(150.dp),
-        animationType = LottieAnimationType.ERROR,
+      Icon(
+        modifier = Modifier.size(120.dp).padding(top = 24.dp),
+        imageVector = Icons.Outlined.Error,
+        contentDescription = null,
+        tint = MaterialTheme.colorScheme.error,
       )
     }
   }

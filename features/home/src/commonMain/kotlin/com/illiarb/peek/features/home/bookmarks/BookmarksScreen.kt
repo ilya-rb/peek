@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.CollectionsBookmark
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,8 +34,6 @@ import com.illiarb.peek.features.home.articles.ArticlesUi
 import com.illiarb.peek.features.home.bookmarks.BookmarksScreenContract.Event
 import com.illiarb.peek.features.navigation.map.SummaryScreen
 import com.illiarb.peek.features.navigation.map.showScreenOverlay
-import com.illiarb.peek.uikit.core.components.LocalLottieAnimation
-import com.illiarb.peek.uikit.core.components.LottieAnimationType
 import com.illiarb.peek.uikit.core.components.cell.EmptyState
 import com.illiarb.peek.uikit.core.components.cell.FullscreenErrorState
 import com.illiarb.peek.uikit.resources.Res
@@ -152,9 +151,11 @@ private fun BookmarksEmpty(
         .clip(shape = RoundedCornerShape(size = 24.dp))
         .background(MaterialTheme.colorScheme.surfaceContainer),
     ) {
-      LocalLottieAnimation(
-        modifier = Modifier.size(200.dp),
-        animationType = LottieAnimationType.ARTICLES_EMPTY,
+      Icon(
+        modifier = Modifier.size(120.dp).padding(top = 24.dp),
+        imageVector = Icons.Outlined.CollectionsBookmark,
+        contentDescription = null,
+        tint = MaterialTheme.colorScheme.onSurface,
       )
     }
   }
