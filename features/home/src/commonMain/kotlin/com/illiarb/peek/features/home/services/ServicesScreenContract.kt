@@ -5,6 +5,7 @@ import com.illiarb.peek.api.PeekApiService
 import com.illiarb.peek.api.domain.NewsSource
 import com.illiarb.peek.core.arch.di.UiScope
 import com.illiarb.peek.core.data.Async
+import com.illiarb.peek.features.home.services.ServicesScreenContract.State
 import com.illiarb.peek.features.navigation.map.ServicesScreen
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiEvent
@@ -29,10 +30,13 @@ internal interface ServicesScreenContract {
   sealed interface Event : CircuitUiEvent {
     data class ItemsReordered(val items: List<NewsSource>) : Event
   }
+}
+
+public interface ServicesScreenComponent {
 
   @Inject
   @ContributesIntoSet(UiScope::class)
-  class ScreenFactory : Ui.Factory {
+  public class ScreenFactory : Ui.Factory {
     override fun create(screen: Screen, context: CircuitContext): Ui<*>? {
       return if (screen is ServicesScreen) {
         ui<State> { state, modifier -> ServicesScreen(state, modifier) }
@@ -44,7 +48,7 @@ internal interface ServicesScreenContract {
 
   @Inject
   @ContributesIntoSet(UiScope::class)
-  class PresenterFactory(
+  public class PresenterFactory(
     private val peekApiService: PeekApiService,
   ) : Presenter.Factory {
 

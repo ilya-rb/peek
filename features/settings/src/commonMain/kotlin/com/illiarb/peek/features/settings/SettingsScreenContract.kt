@@ -5,6 +5,7 @@ import com.illiarb.peek.core.appinfo.AppConfiguration
 import com.illiarb.peek.core.appinfo.DebugConfig
 import com.illiarb.peek.core.arch.di.UiScope
 import com.illiarb.peek.features.navigation.map.SettingsScreen
+import com.illiarb.peek.features.settings.SettingsScreenContract.State
 import com.illiarb.peek.features.settings.data.SettingsService
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiState
@@ -36,10 +37,13 @@ internal interface SettingsScreenContract {
     data class ArticleRetentionDaysChanged(val days: Int) : Event
     data class NetworkDelayChanged(val checked: Boolean) : Event
   }
+}
+
+public interface SettingsScreenComponent {
 
   @Inject
   @ContributesIntoSet(UiScope::class)
-  class ScreenFactory : Ui.Factory {
+  public class ScreenFactory : Ui.Factory {
     override fun create(screen: Screen, context: CircuitContext): Ui<*>? {
       return if (screen is SettingsScreen) {
         ui<State> { state, modifier -> SettingsScreen(state, modifier) }
@@ -51,7 +55,7 @@ internal interface SettingsScreenContract {
 
   @Inject
   @ContributesIntoSet(UiScope::class)
-  class PresenterFactory(
+  public class PresenterFactory(
     private val settingsService: SettingsService,
     private val appConfiguration: AppConfiguration,
   ) : Presenter.Factory {

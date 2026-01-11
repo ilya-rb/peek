@@ -7,6 +7,7 @@ import com.illiarb.peek.api.domain.NewsSourceKind
 import com.illiarb.peek.core.arch.di.UiScope
 import com.illiarb.peek.core.arch.message.MessageDispatcher
 import com.illiarb.peek.core.data.Async
+import com.illiarb.peek.features.home.HomeScreenContract.State
 import com.illiarb.peek.features.home.articles.ArticlesUi
 import com.illiarb.peek.features.navigation.map.HomeScreen
 import com.illiarb.peek.features.navigation.map.SummaryScreen
@@ -68,10 +69,13 @@ internal interface HomeScreenContract {
     val articles: Async<ImmutableList<Article>>,
     val lastUpdated: Instant?,
   )
+}
+
+public interface HomeScreenComponent {
 
   @Inject
   @ContributesIntoSet(UiScope::class)
-  class ScreenFactory : Ui.Factory {
+  public class ScreenFactory : Ui.Factory {
     override fun create(screen: Screen, context: CircuitContext): Ui<*>? {
       return if (screen is HomeScreen) {
         ui<State> { state, modifier -> HomeScreen(state, modifier) }
@@ -83,7 +87,7 @@ internal interface HomeScreenContract {
 
   @Inject
   @ContributesIntoSet(UiScope::class)
-  class PresenterFactory(
+  public class PresenterFactory(
     private val peekApiService: PeekApiService,
     private val messageDispatcher: MessageDispatcher,
   ) : Presenter.Factory {
