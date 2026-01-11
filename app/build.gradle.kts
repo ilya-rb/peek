@@ -81,7 +81,7 @@ android {
 
     if (rootProject.file("relase/app-release.jks").exists()) {
       create("release") {
-        storeFile = rootProject.file("releaase/app-release.jks")
+        storeFile = rootProject.file("release/app-release.jks")
         storePassword = properties["PEEK_RELEASE_KEYSTORE_PWD"]?.toString().orEmpty()
         keyAlias = "peek"
         keyPassword = properties["PEEK_RELEASE_KEY_PWD"]?.toString().orEmpty()
