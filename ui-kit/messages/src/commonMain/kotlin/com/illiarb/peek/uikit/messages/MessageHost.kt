@@ -82,7 +82,7 @@ private class MessageOverlay(private val message: Message) : Overlay<Unit> {
     alpha: Animatable<Float, AnimationVector1D>,
     offset: Animatable<Float, AnimationVector1D>,
   ) {
-    launch {
+    val alphaIn = launch {
       alpha.animateTo(1f, tween(MESSAGE_FADE_DURATION_MS))
     }
     offset.animateTo(
@@ -92,10 +92,11 @@ private class MessageOverlay(private val message: Message) : Overlay<Unit> {
         stiffness = Spring.StiffnessLow,
       ),
     )
+    alphaIn.join()
 
     delay(MESSAGE_DISPLAY_DURATION_MS)
 
-    launch {
+    val alphaOut = launch {
       alpha.animateTo(0f, tween(MESSAGE_FADE_DURATION_MS))
     }
     offset.animateTo(
@@ -105,6 +106,7 @@ private class MessageOverlay(private val message: Message) : Overlay<Unit> {
         stiffness = Spring.StiffnessMedium
       ),
     )
+    alphaOut.join()
   }
 
   companion object {
