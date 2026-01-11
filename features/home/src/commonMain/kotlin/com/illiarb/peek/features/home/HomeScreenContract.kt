@@ -21,7 +21,6 @@ import com.slack.circuit.runtime.ui.ui
 import dev.zacsweers.metro.ContributesIntoSet
 import dev.zacsweers.metro.Inject
 import kotlinx.collections.immutable.ImmutableList
-import kotlin.time.Duration
 import kotlin.time.Instant
 
 internal interface HomeScreenContract {
@@ -63,6 +62,12 @@ internal interface HomeScreenContract {
     data object ReorderServicesClosed : Event
     data object RefreshTriggered : Event
   }
+
+  @Immutable
+  data class ArticlesResult(
+    val articles: Async<ImmutableList<Article>>,
+    val lastUpdated: Instant?,
+  )
 
   @Inject
   @ContributesIntoSet(UiScope::class)
