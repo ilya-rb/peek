@@ -1,26 +1,37 @@
 package com.illiarb.peek.features.reader
 
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
@@ -33,6 +44,7 @@ import com.illiarb.peek.api.domain.Article
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.navigation.map.ReaderScreen
 import com.illiarb.peek.features.navigation.map.SummaryScreen
+import com.illiarb.peek.features.navigation.map.showOverlay
 import com.illiarb.peek.features.navigation.map.showScreenOverlay
 import com.illiarb.peek.features.reader.ReaderScreenContract.Event
 import com.illiarb.peek.uikit.core.components.TopAppBarTitleLoading
@@ -46,6 +58,9 @@ import com.illiarb.peek.uikit.core.configuration.getScreenWidth
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_action_more
 import com.illiarb.peek.uikit.resources.acsb_navigation_back
+import com.illiarb.peek.uikit.resources.common_action_cancel
+import com.illiarb.peek.uikit.resources.reader_remove_bookmark_confirm
+import com.illiarb.peek.uikit.resources.reader_remove_bookmark_title
 import com.slack.circuit.overlay.OverlayEffect
 import org.jetbrains.compose.resources.stringResource
 
@@ -67,13 +82,41 @@ internal fun ReaderScreen(
     0f
   }
 
-  if (state.summaryShowing) {
+  val isScrolledToEnd by remember {
+    derivedStateOf {
+      contentScrollState.maxValue > 0 && contentScrollState.value >= contentScrollState.maxValue
+    }
+  }
+
+  LaunchedEffect(isScrolledToEnd) {
+    if (isScrolledToEnd) {
+      eventSink.invoke(Event.ScrolledToEnd)
+    }
+  }
+
+  if (state.showSummary) {
     OverlayEffect(Unit) {
       showScreenOverlay<SummaryScreen, SummaryScreen.Result>(
         screen = SummaryScreen(url = screen.url, context = SummaryScreen.Context.READER),
         onDismiss = { SummaryScreen.Result.Close }
       )
       eventSink.invoke(Event.SummarizeResult)
+    }
+  }
+
+  if (state.showRemoveBookmarkConfirmation) {
+    OverlayEffect(Unit) {
+      val result = showOverlay(
+        input = Unit,
+        content = { _, navigator ->
+          RemoveBookmarkConfirmationSheet(
+            onConfirm = { navigator.finish(true) },
+            onCancel = { navigator.finish(false) },
+          )
+        },
+        onDismiss = { false },
+      )
+      eventSink.invoke(Event.RemoveBookmarkResult(result))
     }
   }
 
@@ -128,7 +171,7 @@ private fun ReaderActions(state: ReaderScreenContract.State) {
     }
 
     DropdownMenu(
-      expanded = state.topBarPopupShowing,
+      expanded = state.showTopBarPopup,
       onDismissRequest = { eventSink.invoke(Event.TopBarMenuDismissed) },
     ) {
       OpenInBrowserAction {
@@ -203,5 +246,42 @@ private fun Modifier.withProgressLine(progress: Float): Modifier {
         y = this.size.height - progressSize,
       )
     )
+  }
+}
+
+@Composable
+private fun RemoveBookmarkConfirmationSheet(
+  onConfirm: () -> Unit,
+  onCancel: () -> Unit,
+) {
+  Column(
+    horizontalAlignment = Alignment.CenterHorizontally,
+    verticalArrangement = Arrangement.spacedBy(16.dp),
+    modifier = Modifier
+      .fillMaxWidth()
+      .navigationBarsPadding()
+      .padding(horizontal = 16.dp)
+  ) {
+    Text(
+      text = stringResource(Res.string.reader_remove_bookmark_title),
+      style = MaterialTheme.typography.titleMedium,
+    )
+    Row(
+      horizontalArrangement = Arrangement.spacedBy(16.dp),
+      modifier = Modifier.fillMaxWidth(),
+    ) {
+      OutlinedButton(
+        onClick = onCancel,
+        modifier = Modifier.weight(1f),
+      ) {
+        Text(stringResource(Res.string.common_action_cancel))
+      }
+      Button(
+        onClick = onConfirm,
+        modifier = Modifier.weight(1f),
+      ) {
+        Text(stringResource(Res.string.reader_remove_bookmark_confirm))
+      }
+    }
   }
 }

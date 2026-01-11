@@ -22,8 +22,9 @@ internal interface ReaderScreenContract {
   @Stable
   data class State(
     val article: Async<Article>,
-    val topBarPopupShowing: Boolean,
-    val summaryShowing: Boolean,
+    val showTopBarPopup: Boolean,
+    val showSummary: Boolean,
+    val showRemoveBookmarkConfirmation: Boolean,
     val eventSink: (Event) -> Unit,
   ) : CircuitUiState
 
@@ -34,10 +35,11 @@ internal interface ReaderScreenContract {
     data object TopBarMenuDismissed : Event
     data object ErrorRetryClicked : Event
     data object SummarizeResult : Event
-
+    data object ScrolledToEnd : Event
     data object TopBarOpenInBrowser : Event, TopBarMenuAction
     data object TopBarSummarize : Event, TopBarMenuAction
     data object TopBarShare : Event, TopBarMenuAction
+    data class RemoveBookmarkResult(val remove: Boolean) : Event
 
     interface TopBarMenuAction
   }

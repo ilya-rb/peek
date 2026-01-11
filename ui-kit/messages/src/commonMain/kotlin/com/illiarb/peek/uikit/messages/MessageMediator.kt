@@ -16,7 +16,7 @@ public class MessageMediator : MessageDispatcher, MessageProvider {
 
   private val _messages = MutableSharedFlow<Message>(extraBufferCapacity = 1)
 
-  override val messages: Flow<Message?> = _messages
+  override val messages: Flow<Message> = _messages
 
   override fun sendMessage(message: Message) {
     _messages.tryEmit(message)

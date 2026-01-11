@@ -2,4 +2,6 @@
   <string name="reader_action_open_in_browser">Open in browser</string>
   <string name="reader_action_summarize">Summarize</string>
   <string name="reader_action_share">Share</string>
+  <string name="reader_remove_bookmark_title">Remove from bookmarks?</string>
+  <string name="reader_remove_bookmark_confirm">Remove</string>
 </resources>

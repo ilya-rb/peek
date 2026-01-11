@@ -33,7 +33,6 @@ import com.slack.circuit.overlay.Overlay
 import com.slack.circuit.overlay.OverlayNavigator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 
 @Composable
@@ -42,7 +41,7 @@ public fun MessageHost(messageProvider: MessageProvider) {
   val scope = rememberCoroutineScope()
 
   LaunchedEffect(messageProvider) {
-    messageProvider.messages.filterNotNull().collect { message ->
+    messageProvider.messages.collect { message ->
       scope.launch {
         overlayHost.show(MessageOverlay(message))
       }
