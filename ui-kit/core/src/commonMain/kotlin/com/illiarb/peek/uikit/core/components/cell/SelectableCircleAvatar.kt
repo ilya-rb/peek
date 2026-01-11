@@ -33,15 +33,9 @@ import org.jetbrains.compose.resources.vectorResource
 public fun SelectableCircleAvatar(
   modifier: Modifier = Modifier,
   image: DrawableResource,
-  state: AvatarState= AvatarState.Default,
+  state: AvatarState = AvatarState.Default,
   onClick: () -> Unit,
 ) {
-  val colors = listOf(
-    MaterialTheme.colorScheme.primary,
-    MaterialTheme.colorScheme.primaryContainer,
-    MaterialTheme.colorScheme.onPrimary,
-    MaterialTheme.colorScheme.primary,
-  )
   val alpha: Float by animateFloatAsState(
     when (state) {
       AvatarState.Default, AvatarState.Selected -> 1f
@@ -55,15 +49,6 @@ public fun SelectableCircleAvatar(
     }
   )
   val borderWidth = 2.dp
-  val infiniteTransition = rememberInfiniteTransition()
-  val angle by infiniteTransition.animateFloat(
-    initialValue = 0f,
-    targetValue = 360f,
-    animationSpec = infiniteRepeatable(
-      animation = tween(durationMillis = 1500),
-      repeatMode = RepeatMode.Restart,
-    ),
-  )
 
   Image(
     imageVector = vectorResource(image),
@@ -73,16 +58,36 @@ public fun SelectableCircleAvatar(
       .size(48.dp)
       .padding(borderWidth)
       .graphicsLayer(alpha = alpha, scaleX = scale, scaleY = scale)
-      .let {
+      .then(
         if (state == AvatarState.Selected) {
-          it.selectedBorder(colors, borderWidth, angle)
+          Modifier.animatedSelectedBorder(borderWidth)
         } else {
-          it
+          Modifier
         }
-      }
+      )
       .clip(CircleShape)
       .clickable(onClick = onClick)
   )
+}
+
+@Composable
+private fun Modifier.animatedSelectedBorder(borderWidth: Dp): Modifier {
+  val colors = listOf(
+    MaterialTheme.colorScheme.primary,
+    MaterialTheme.colorScheme.primaryContainer,
+    MaterialTheme.colorScheme.onPrimary,
+    MaterialTheme.colorScheme.primary,
+  )
+  val infiniteTransition = rememberInfiniteTransition()
+  val angle by infiniteTransition.animateFloat(
+    initialValue = 0f,
+    targetValue = 360f,
+    animationSpec = infiniteRepeatable(
+      animation = tween(durationMillis = 1500),
+      repeatMode = RepeatMode.Restart,
+    ),
+  )
+  return this.selectedBorder(colors, borderWidth, angle)
 }
 
 public enum class AvatarState {
