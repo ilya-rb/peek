@@ -33,7 +33,7 @@ public fun EmptyState(
     Text(
       text = title,
       modifier = Modifier.padding(
-        top = 24.dp,
+        top = 16.dp,
         bottom = if (buttonText == null) 24.dp else 0.dp
       ),
       style = MaterialTheme.typography.titleLarge,
