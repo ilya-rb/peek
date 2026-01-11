@@ -3,6 +3,7 @@ package com.illiarb.peek.features.reader
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import com.illiarb.peek.api.PeekApiService
 import com.illiarb.peek.api.domain.Article
@@ -15,6 +16,7 @@ import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
+import kotlinx.coroutines.launch
 
 internal class ReaderScreenPresenter(
   private val navigator: Navigator,
@@ -29,16 +31,26 @@ internal class ReaderScreenPresenter(
         value = it
       }
     }
-    var topBarPopupShowing by rememberRetained { mutableStateOf(false) }
-    var summaryShowing by rememberRetained { mutableStateOf(false) }
+    var showTopBarPopup by rememberRetained { mutableStateOf(false) }
+    var showSummary by rememberRetained { mutableStateOf(false) }
+
+    var showRemoveBookmarkConfirmation by rememberRetained {
+      mutableStateOf(false)
+    }
+    var removeBookmarkConfirmationShown by rememberRetained {
+      mutableStateOf(false)
+    }
+
+    val scope = rememberCoroutineScope()
 
     return ReaderScreenContract.State(
       article = article,
-      topBarPopupShowing = topBarPopupShowing,
-      summaryShowing = summaryShowing,
+      showTopBarPopup = showTopBarPopup,
+      showSummary = showSummary,
+      showRemoveBookmarkConfirmation = showRemoveBookmarkConfirmation,
     ) { event ->
       if (event is Event.TopBarMenuAction) {
-        topBarPopupShowing = false
+        showTopBarPopup = false
       }
 
       when (event) {
@@ -47,15 +59,15 @@ internal class ReaderScreenPresenter(
         }
 
         is Event.TopBarMenuClicked -> {
-          topBarPopupShowing = true
+          showTopBarPopup = true
         }
 
         is Event.TopBarMenuDismissed -> {
-          topBarPopupShowing = false
+          showTopBarPopup = false
         }
 
         is Event.SummarizeResult -> {
-          summaryShowing = false
+          showSummary = false
         }
 
         is Event.ErrorRetryClicked -> Unit
@@ -66,7 +78,7 @@ internal class ReaderScreenPresenter(
         }
 
         is Event.TopBarSummarize -> {
-          summaryShowing = true
+          showSummary = true
         }
 
         is Event.TopBarOpenInBrowser -> {
@@ -74,6 +86,25 @@ internal class ReaderScreenPresenter(
           require(content is Async.Content)
 
           navigator.goTo(OpenUrlScreen(content.content.url))
+        }
+
+        is Event.ScrolledToEnd -> {
+          val content = article.contentOrNull()
+          if (content != null && content.saved && !removeBookmarkConfirmationShown) {
+            removeBookmarkConfirmationShown = true
+            showRemoveBookmarkConfirmation = true
+          }
+        }
+
+        is Event.RemoveBookmarkResult -> {
+          showRemoveBookmarkConfirmation = false
+
+          val content = article.contentOrNull()
+          if (content != null && event.remove) {
+            scope.launch {
+              peekApiService.saveArticle(content.copy(saved = false))
+            }
+          }
         }
       }
     }

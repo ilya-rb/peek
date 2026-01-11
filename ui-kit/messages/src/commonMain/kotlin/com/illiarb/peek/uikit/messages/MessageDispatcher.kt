@@ -5,14 +5,12 @@ import kotlinx.coroutines.flow.Flow
 
 @Stable
 public interface MessageDispatcher {
-
   public fun sendMessage(message: Message)
 }
 
 @Stable
 public interface MessageProvider {
-
-  public val messages: Flow<Message?>
+  public val messages: Flow<Message>
 }
 
 public enum class MessageType {

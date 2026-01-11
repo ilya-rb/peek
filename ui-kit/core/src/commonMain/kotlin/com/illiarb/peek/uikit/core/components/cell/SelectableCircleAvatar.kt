@@ -1,10 +1,12 @@
 package com.illiarb.peek.uikit.core.components.cell
 
 import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -36,17 +38,23 @@ public fun SelectableCircleAvatar(
   state: AvatarState = AvatarState.Default,
   onClick: () -> Unit,
 ) {
+  val animationSpec = spring<Float>(
+    dampingRatio = Spring.DampingRatioMediumBouncy,
+    stiffness = Spring.StiffnessLow,
+  )
   val alpha: Float by animateFloatAsState(
-    when (state) {
+    targetValue = when (state) {
       AvatarState.Default, AvatarState.Selected -> 1f
       AvatarState.Unselected -> 0.5f
-    }
+    },
+    animationSpec = animationSpec,
   )
   val scale: Float by animateFloatAsState(
-    when (state) {
+    targetValue = when (state) {
       AvatarState.Default, AvatarState.Selected -> 1f
       AvatarState.Unselected -> 0.8f
-    }
+    },
+    animationSpec = animationSpec,
   )
   val borderWidth = 2.dp
 
