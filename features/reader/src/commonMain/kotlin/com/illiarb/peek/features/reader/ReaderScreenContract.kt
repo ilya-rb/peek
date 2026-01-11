@@ -6,6 +6,7 @@ import com.illiarb.peek.api.domain.Article
 import com.illiarb.peek.core.arch.di.UiScope
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.navigation.map.ReaderScreen
+import com.illiarb.peek.features.reader.ReaderScreenContract.State
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
@@ -40,10 +41,13 @@ internal interface ReaderScreenContract {
 
     interface TopBarMenuAction
   }
+}
+
+public interface ReaderScreenComponent {
 
   @Inject
   @ContributesIntoSet(UiScope::class)
-  class ScreenFactory : Ui.Factory {
+  public class ScreenFactory : Ui.Factory {
     override fun create(screen: Screen, context: CircuitContext): Ui<*>? {
       return if (screen is ReaderScreen) {
         ui<State> { state, modifier -> ReaderScreen(modifier, screen, state) }
@@ -55,7 +59,7 @@ internal interface ReaderScreenContract {
 
   @Inject
   @ContributesIntoSet(UiScope::class)
-  class PresenterFactory(
+  public class PresenterFactory(
     private val peekApiService: PeekApiService,
   ) : Presenter.Factory {
 

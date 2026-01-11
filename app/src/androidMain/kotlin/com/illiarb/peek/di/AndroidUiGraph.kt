@@ -8,6 +8,7 @@ import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.ui.Ui
 import dev.zacsweers.metro.GraphExtension
+import dev.zacsweers.metro.Multibinds
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
 
@@ -17,6 +18,12 @@ internal interface AndroidUiGraph : UiGraph {
   val messageDispatcher: MessageDispatcher
   val messageProvider: MessageProvider
   val circuit: Circuit
+
+  @Multibinds
+  fun presenterFactories(): Set<Presenter.Factory>
+
+  @Multibinds
+  fun uiFactories(): Set<Ui.Factory>
 
   @Provides
   @SingleIn(UiScope::class)

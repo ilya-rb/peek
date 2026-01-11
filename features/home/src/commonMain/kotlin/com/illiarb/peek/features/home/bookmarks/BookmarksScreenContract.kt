@@ -8,6 +8,7 @@ import com.illiarb.peek.core.arch.di.UiScope
 import com.illiarb.peek.core.arch.message.MessageDispatcher
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.home.articles.ArticlesUi
+import com.illiarb.peek.features.home.bookmarks.BookmarksScreenContract.State
 import com.illiarb.peek.features.navigation.map.BookmarksScreen
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiState
@@ -41,10 +42,13 @@ internal interface BookmarksScreenContract {
     val articleBookmarked: Boolean,
     val contentForceRefresh: Boolean,
   )
+}
+
+public interface BookmarksScreenComponent {
 
   @Inject
   @ContributesIntoSet(UiScope::class)
-  class ScreenFactory : Ui.Factory {
+  public class ScreenFactory : Ui.Factory {
     override fun create(screen: Screen, context: CircuitContext): Ui<*>? {
       return if (screen is BookmarksScreen) {
         ui<State> { state, modifier -> BookmarksScreen(state, modifier) }
@@ -56,7 +60,7 @@ internal interface BookmarksScreenContract {
 
   @Inject
   @ContributesIntoSet(UiScope::class)
-  class PresenterFactory(
+  public class PresenterFactory(
     private val peekApiService: PeekApiService,
     private val messageDispatcher: MessageDispatcher,
   ) : Presenter.Factory {

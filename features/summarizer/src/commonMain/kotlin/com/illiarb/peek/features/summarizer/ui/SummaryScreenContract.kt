@@ -8,6 +8,7 @@ import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.navigation.map.SummaryScreen
 import com.illiarb.peek.features.summarizer.SummarizerService
 import com.illiarb.peek.features.summarizer.domain.ArticleSummary
+import com.illiarb.peek.features.summarizer.ui.SummaryScreenContract.State
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
@@ -38,10 +39,13 @@ internal interface SummaryScreenContract {
     data object ErrorRetryClicked : Event
     data class OpenInReaderClick(val article: Article) : Event
   }
+}
+
+public interface SummaryScreenComponent {
 
   @Inject
   @ContributesIntoSet(UiScope::class)
-  class ScreenFactory : Ui.Factory {
+  public class ScreenFactory : Ui.Factory {
     override fun create(screen: Screen, context: CircuitContext): Ui<*>? {
       return if (screen is SummaryScreen) {
         ui<State> { state, modifier -> SummaryScreen(state, screen, modifier) }
@@ -53,7 +57,7 @@ internal interface SummaryScreenContract {
 
   @Inject
   @ContributesIntoSet(UiScope::class)
-  class PresenterFactory(
+  public class PresenterFactory(
     private val peekApiService: PeekApiService,
     private val summarizerService: SummarizerService,
   ) : Presenter.Factory {
