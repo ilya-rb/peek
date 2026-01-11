@@ -1,17 +1,16 @@
 package com.illiarb.peek.features.home
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.illiarb.peek.api.PeekApiService
 import com.illiarb.peek.api.domain.Article
-import com.illiarb.peek.api.domain.ArticlesOfKind
 import com.illiarb.peek.api.domain.NewsSourceKind
 import com.illiarb.peek.core.arch.message.MessageDispatcher
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.core.data.AsyncDataStore
+import com.illiarb.peek.features.home.HomeScreenContract.ArticlesResult
 import com.illiarb.peek.features.home.HomeScreenContract.Event
 import com.illiarb.peek.features.home.HomeScreenContract.State.BookmarkMessage
 import com.illiarb.peek.features.home.articles.ArticlesUi
@@ -79,8 +78,11 @@ internal class HomeScreenPresenter(
       }
     }
 
-    val articlesOfKind by produceRetainedState<Async<ArticlesOfKind>>(
-      initialValue = Async.Loading,
+    val articles by produceRetainedState(
+      initialValue = ArticlesResult(
+        articles = Async.Loading,
+        lastUpdated = null
+      ),
       key1 = contentTriggers,
     ) {
       val source = newsSources.getOrNull(contentTriggers.selectedNewsSourceIndex)
@@ -92,35 +94,36 @@ internal class HomeScreenPresenter(
           } else {
             null
           }
-        ).collect {
-          contentRefreshing = if (it is Async.Content<*>) {
-            it.contentRefreshing
+        ).collect { async ->
+          contentRefreshing = if (async is Async.Content<*>) {
+            async.contentRefreshing
           } else {
             false
           }
-          value = it
+          value = when (async) {
+            is Async.Loading -> ArticlesResult(Async.Loading, null)
+            is Async.Error -> ArticlesResult(Async.Error(async.error), null)
+            is Async.Content -> ArticlesResult(
+              articles = Async.Content(
+                content = async.content.articles.toImmutableList(),
+                contentRefreshing = async.contentRefreshing,
+                suppressedError = async.suppressedError,
+              ),
+              lastUpdated = async.content.lastUpdated,
+            )
+          }
         }
       }
-    }
-
-    val articles by derivedStateOf {
-      articlesOfKind.map {
-        it.articles.toImmutableList()
-      }
-    }
-
-    val articlesLastUpdatedTime by derivedStateOf {
-      articlesOfKind.contentOrNull()?.lastUpdated
     }
 
     return HomeScreenContract.State(
       newsSources = newsSources,
       selectedNewsSourceIndex = contentTriggers.selectedNewsSourceIndex,
       articleSummaryToShow = articleSummaryToShow,
-      articlesLastUpdatedTime = articlesLastUpdatedTime,
+      articlesLastUpdatedTime = articles.lastUpdated,
       contentRefreshing = contentRefreshing,
       servicesOrderToShow = servicesOrderToShow,
-      articles = articles,
+      articles = articles.articles,
       bookmarkMessage = bookmarkMessage,
       eventSink = { event ->
         when (event) {

@@ -76,25 +76,23 @@ internal fun HomeScreen(state: HomeScreenContract.State, modifier: Modifier = Mo
   val hazeState = rememberHazeState()
   val hazeStyle = HazeMaterials.thin(MaterialTheme.colorScheme.surface)
 
-  when {
-    state.articleSummaryToShow != null -> {
-      OverlayEffect(Unit) {
-        val result = showScreenOverlay(
-          SummaryScreen(state.articleSummaryToShow.url, SummaryScreen.Context.HOME),
-          onDismiss = { SummaryScreen.Result.Close },
-        )
-        eventSink.invoke(Event.SummaryResult(result))
-      }
+  state.articleSummaryToShow?.let { article ->
+    OverlayEffect(article) {
+      val result = showScreenOverlay(
+        SummaryScreen(article.url, SummaryScreen.Context.HOME),
+        onDismiss = { SummaryScreen.Result.Close },
+      )
+      eventSink.invoke(Event.SummaryResult(result))
     }
+  }
 
-    state.servicesOrderToShow != null -> {
-      OverlayEffect(Unit) {
-        showScreenOverlay(
-          ServicesScreen,
-          onDismiss = { ServicesScreen.Result }
-        )
-        eventSink.invoke(Event.ReorderServicesClosed)
-      }
+  state.servicesOrderToShow?.let {
+    OverlayEffect(ServicesScreen) {
+      showScreenOverlay(
+        ServicesScreen,
+        onDismiss = { ServicesScreen.Result }
+      )
+      eventSink.invoke(Event.ReorderServicesClosed)
     }
   }
 

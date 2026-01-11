@@ -24,15 +24,11 @@ import com.illiarb.peek.uikit.core.components.LottieAnimationType
 import com.illiarb.peek.uikit.core.components.cell.ArticleCell
 import com.illiarb.peek.uikit.core.components.cell.ArticleLoadingCell
 import com.illiarb.peek.uikit.core.components.cell.EmptyState
-import com.illiarb.peek.uikit.core.components.text.DateFormats
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.bookmarks_stale_badge
 import com.illiarb.peek.uikit.resources.home_articles_empty_action
 import com.illiarb.peek.uikit.resources.home_articles_empty_title
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.format
-import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
 
 internal sealed interface ArticlesUi {
@@ -107,7 +103,7 @@ internal fun ArticlesContent(
         }
         ArticleCell(
           title = article.title,
-          caption = article.date.toLocalDateTime(TimeZone.UTC).format(DateFormats.default),
+          caption = article.dateFormatted,
           saved = article.saved,
           badge = badge,
           onClick = {
