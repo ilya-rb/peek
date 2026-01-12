@@ -12,6 +12,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.illiarb.peek.core.arch.AndroidAppInitializer
 import com.illiarb.peek.core.arch.AppInitializer
+import com.illiarb.peek.core.arch.di.AppCoroutineScope
 import com.illiarb.peek.core.arch.di.AppScope
 import com.illiarb.peek.core.workscheduler.WorkConfiguration.PeriodicWorkConfiguration
 import dev.zacsweers.metro.ContributesIntoSet
@@ -19,7 +20,6 @@ import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.Provider
 import dev.zacsweers.metro.binding
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlin.time.toJavaDuration
 
@@ -28,9 +28,8 @@ import kotlin.time.toJavaDuration
 @Suppress("unused")
 public class AndroidWorkScheduler(
   private val workerProviders: Map<String, Provider<Worker>>,
+  @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
 ) : WorkScheduler, AndroidAppInitializer {
-
-  private val coroutineScope = CoroutineScope(SupervisorJob())
 
   override val key: String = "AndroidWorkScheduler"
 
@@ -42,14 +41,14 @@ public class AndroidWorkScheduler(
         .build()
     )
 
-    val startupWorkers = workerProviders.filter { it.value().startupWorker }
+    val startupWorkers = workerProviders.filter { it.value().scheduleOnStartup }
     if (startupWorkers.isEmpty()) {
       return
     }
 
     val workManager = WorkManager.getInstance(context)
 
-    coroutineScope.launch {
+    appCoroutineScope.launch {
       startupWorkers.forEach { provider ->
         when (val config = provider.value().config()) {
           is PeriodicWorkConfiguration -> {

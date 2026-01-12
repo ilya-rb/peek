@@ -4,9 +4,7 @@ public interface WorkScheduler
 
 public interface Worker {
 
-  public val key: String
-
-  public val startupWorker: Boolean
+  public val scheduleOnStartup: Boolean
 
   public suspend fun config(): WorkConfiguration
 

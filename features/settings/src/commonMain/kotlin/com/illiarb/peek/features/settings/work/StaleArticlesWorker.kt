@@ -20,9 +20,7 @@ public class StaleArticlesWorker(
   private val settingsService: SettingsService,
 ) : Worker {
 
-  override val key: String = "StaleArticlesWorker"
-
-  override val startupWorker: Boolean = true
+  override val scheduleOnStartup: Boolean = true
 
   override suspend fun doWork(): Worker.Result {
     val settings = settingsService.getSettings().getOrElse { error ->
