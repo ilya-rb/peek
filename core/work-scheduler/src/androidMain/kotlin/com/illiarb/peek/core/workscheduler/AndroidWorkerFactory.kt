@@ -5,6 +5,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.ListenableWorker
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
+import com.illiarb.peek.core.logging.Logger
 import dev.zacsweers.metro.Provider
 
 internal class AndroidWorkerFactory(
@@ -19,9 +20,11 @@ internal class AndroidWorkerFactory(
     return object : CoroutineWorker(appContext, workerParameters) {
       override suspend fun doWork(): Result {
         val key = workerParameters.inputData.getString(KEY_WORKER_ID)
-        val worker = workerProviders[key] ?: return Result.success()
-        val result = worker().doWork()
+        val worker = workerProviders[key] ?: return Result.success().also {
+          Logger.w { "Worker with $key not found, cannot schedule" }
+        }
 
+        val result = worker().doWork()
         return when (result) {
           is Worker.Result.Failure -> Result.Failure()
           is Worker.Result.Success -> Result.success()
