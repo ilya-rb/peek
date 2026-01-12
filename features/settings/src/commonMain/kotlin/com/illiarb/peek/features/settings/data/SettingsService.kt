@@ -16,6 +16,8 @@ public interface SettingsService {
 
   public suspend fun updateSettings(settings: Settings): Result<Unit>
 
+  public suspend fun getSettings(): Result<Settings>
+
   @Serializable
   public data class Settings(
     @SerialName("darkTheme") val darkTheme: Boolean,
@@ -48,16 +50,27 @@ internal class DefaultSettingsService(
 
   override fun observeSettings(): Flow<Settings> {
     return keyValueStorage.observe(KEY_SETTINGS, Settings.serializer()).onStart {
-      keyValueStorage.get(KEY_SETTINGS, Settings.serializer()).onSuccess { cached ->
-        if (cached == null) {
-          updateSettings(Settings.defaults())
-        }
-      }
+      // Warmup storage if needed
+      getSettingsFromStorage()
     }
+  }
+
+  override suspend fun getSettings(): Result<Settings> {
+    return getSettingsFromStorage()
   }
 
   override suspend fun updateSettings(settings: Settings): Result<Unit> {
     return keyValueStorage.put(KEY_SETTINGS, settings, Settings.serializer())
+  }
+
+  private suspend fun getSettingsFromStorage(): Result<Settings> {
+    return keyValueStorage.get(KEY_SETTINGS, Settings.serializer()).onSuccess { cached ->
+      if (cached == null) {
+        updateSettings(Settings.defaults())
+      }
+    }.map {
+      it ?: Settings.defaults()
+    }
   }
 
   companion object {

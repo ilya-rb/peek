@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.builtins.serializer
 import kotlin.jvm.JvmSuppressWildcards
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Instant
 
@@ -110,6 +111,10 @@ internal class ArticlesRepository(
     return articlesDao.saveArticle(article).onSuccess {
       articlesStore.invalidateMemory(article.kind)
     }
+  }
+
+  suspend fun deleteArticlesOlderThen(duration: Duration): Result<Unit> {
+    return articlesDao.deleteArticlesOlderThen(duration)
   }
 
   private suspend fun List<Article>.toArticlesOfKind(kind: NewsSourceKind): ArticlesOfKind {

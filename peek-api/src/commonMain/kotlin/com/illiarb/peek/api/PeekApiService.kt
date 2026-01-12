@@ -7,10 +7,10 @@ import com.illiarb.peek.api.domain.NewsSourceKind
 import com.illiarb.peek.api.repository.ArticlesRepository
 import com.illiarb.peek.api.repository.NewsSourcesRepository
 import com.illiarb.peek.core.data.Async
-import com.illiarb.peek.core.data.AsyncDataStore
 import com.illiarb.peek.core.data.AsyncDataStore.LoadStrategy
 import com.illiarb.peek.core.types.Url
 import kotlinx.coroutines.flow.Flow
+import kotlin.time.Duration
 
 public interface PeekApiService {
 
@@ -28,6 +28,8 @@ public interface PeekApiService {
   public fun collectSavedArticles(): Flow<Async<List<Article>>>
 
   public suspend fun saveArticle(article: Article): Result<Unit>
+
+  public suspend fun deleteArticlesOlderThan(duration: Duration): Result<Unit>
 }
 
 internal class DefaultPeekApiService(
@@ -60,5 +62,9 @@ internal class DefaultPeekApiService(
 
   override suspend fun saveArticle(article: Article): Result<Unit> {
     return articlesRepository.saveArticle(article)
+  }
+
+  override suspend fun deleteArticlesOlderThan(duration: Duration): Result<Unit> {
+    return articlesRepository.deleteArticlesOlderThen(duration)
   }
 }

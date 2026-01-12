@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import kotlin.time.Duration
 import kotlin.time.Instant
 
 @Inject
@@ -79,6 +80,16 @@ internal class ArticlesDao(
     return withContext(appDispatchers.io) {
       suspendRunCatching {
         db.articlesQueries.savedArticlesUrls().executeAsList().map { Url(it) }
+      }
+    }
+  }
+
+  suspend fun deleteArticlesOlderThen(duration: Duration): Result<Unit> {
+    return with(appDispatchers.io) {
+      suspendRunCatching {
+        val deleted =
+          db.articlesQueries.deleteArticlesOlderThan(duration.inWholeMilliseconds).await()
+        Logger.d { "Deleted $deleted stale articles" }
       }
     }
   }

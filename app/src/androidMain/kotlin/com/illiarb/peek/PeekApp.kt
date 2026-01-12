@@ -3,6 +3,8 @@ package com.illiarb.peek
 import android.app.Application
 import android.content.Context
 import com.illiarb.peek.core.appinfo.AppEnvironmentState
+import com.illiarb.peek.core.arch.AndroidAppInitializer
+import com.illiarb.peek.core.arch.AndroidAsyncAppInitializer
 import com.illiarb.peek.di.AndroidAppGraph
 import dev.zacsweers.metro.createGraphFactory
 import io.github.aakira.napier.DebugAntilog
@@ -12,7 +14,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 internal class PeekApp : Application() {
 
@@ -33,22 +34,18 @@ internal class PeekApp : Application() {
       Napier.base(DebugAntilog())
     }
 
+    appGraph.appInitializers
+      .filterIsInstance<AndroidAppInitializer>()
+      .forEach { initializer -> initializer.initialise(this) }
+
     appScope.launch {
-      val (async, regular) = appGraph.androidAppInitializers.partition { it.async }
+      val initializers = appGraph.appInitializers.filterIsInstance<AndroidAsyncAppInitializer>()
       val dispatchers = appGraph.appDispatchers
-
-      withContext(dispatchers.main) {
-        regular.forEach {
-          it.initialise(this@PeekApp)
-        }
-      }
-
-      val jobs = async.map {
+      val jobs = initializers.map {
         async(dispatchers.default) {
           it.initialise(this@PeekApp)
         }
       }
-
       jobs.awaitAll()
     }
   }

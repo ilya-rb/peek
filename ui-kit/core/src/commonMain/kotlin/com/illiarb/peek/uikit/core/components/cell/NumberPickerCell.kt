@@ -18,6 +18,8 @@ import androidx.compose.ui.unit.dp
 import com.illiarb.peek.uikit.core.components.internal.RowCellInternal
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.common_action_cancel
+import com.illiarb.peek.uikit.resources.settings_article_retention_days_option
+import com.illiarb.peek.uikit.resources.settings_article_retention_dialog_title
 import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
 
@@ -25,7 +27,7 @@ import org.jetbrains.compose.resources.stringResource
 public fun NumberPickerCell(
   modifier: Modifier = Modifier,
   text: String,
-  subtitle: String? = null,
+  subtitle: String,
   value: Int,
   options: ImmutableList<Int>,
   onValueSelected: (Int) -> Unit,
@@ -38,13 +40,11 @@ public fun NumberPickerCell(
       Text(text = text, style = MaterialTheme.typography.bodyLarge)
     },
     subtitle = {
-      if (subtitle != null) {
-        Text(
-          text = subtitle,
-          style = MaterialTheme.typography.bodyMedium,
-          color = MaterialTheme.colorScheme.primary,
-        )
-      }
+      Text(
+        text = subtitle,
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.primary,
+      )
     },
     startIcon = {},
     endContent = {},
@@ -52,12 +52,10 @@ public fun NumberPickerCell(
 
   if (showDialog) {
     NumberPickerDialog(
-      title = text,
+      title = stringResource(Res.string.settings_article_retention_dialog_title),
       currentValue = value,
       options = options,
-      onDismiss = {
-        showDialog = false
-      },
+      onDismiss = { showDialog = false },
       onSelected = { option ->
         onValueSelected(option)
         showDialog = false
@@ -75,7 +73,12 @@ private fun NumberPickerDialog(
   onSelected: (Int) -> Unit,
 ) {
   AlertDialog(
-    title = { Text(text = title) },
+    title = {
+      Text(
+        text = title,
+        style = MaterialTheme.typography.bodyLarge,
+      )
+    },
     text = {
       Column(modifier = Modifier.fillMaxWidth()) {
         options.forEach { option ->
@@ -84,7 +87,7 @@ private fun NumberPickerDialog(
             modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
           ) {
             Text(
-              text = option.toString(),
+              text = stringResource(Res.string.settings_article_retention_days_option, option),
               style = MaterialTheme.typography.bodyLarge,
               color = if (option == currentValue) {
                 MaterialTheme.colorScheme.primary
@@ -103,7 +106,6 @@ private fun NumberPickerDialog(
       }
     },
     confirmButton = {
-
     }
   )
 }
