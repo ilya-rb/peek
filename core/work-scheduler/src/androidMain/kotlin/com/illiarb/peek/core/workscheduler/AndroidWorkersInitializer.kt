@@ -26,10 +26,10 @@ import kotlin.time.toJavaDuration
 @Inject
 @ContributesIntoSet(AppScope::class, binding = binding<AppInitializer>())
 @Suppress("unused")
-public class AndroidWorkScheduler(
+public class AndroidWorkersInitializer(
   private val workerProviders: Map<String, Provider<Worker>>,
   @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
-) : WorkScheduler, AndroidAppInitializer {
+) : AndroidAppInitializer {
 
   override val key: String = "AndroidWorkScheduler"
 
@@ -73,11 +73,9 @@ public class AndroidWorkScheduler(
       .setConstraints(
         Constraints.Builder()
           .setRequiresBatteryNotLow(batteryNotLowRequired)
-          .let {
+          .apply {
             if (connectivityRequired) {
-              it.setRequiredNetworkType(NetworkType.CONNECTED)
-            } else {
-              it
+              setRequiredNetworkType(NetworkType.CONNECTED)
             }
           }
           .build()

@@ -113,8 +113,8 @@ internal class ArticlesRepository(
     }
   }
 
-  suspend fun deleteArticlesOlderThen(duration: Duration): Result<Unit> {
-    return articlesDao.deleteArticlesOlderThen(duration)
+  suspend fun deleteArticlesOlderThan(duration: Duration): Result<Unit> {
+    return articlesDao.deleteArticlesOlderThan(duration)
   }
 
   private suspend fun List<Article>.toArticlesOfKind(kind: NewsSourceKind): ArticlesOfKind {

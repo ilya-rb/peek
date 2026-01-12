@@ -84,7 +84,7 @@ internal class ArticlesDao(
     }
   }
 
-  suspend fun deleteArticlesOlderThen(duration: Duration): Result<Unit> {
+  suspend fun deleteArticlesOlderThan(duration: Duration): Result<Unit> {
     return with(appDispatchers.io) {
       suspendRunCatching {
         val deleted =

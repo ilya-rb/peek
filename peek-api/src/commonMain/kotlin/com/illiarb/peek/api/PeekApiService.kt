@@ -65,6 +65,6 @@ internal class DefaultPeekApiService(
   }
 
   override suspend fun deleteArticlesOlderThan(duration: Duration): Result<Unit> {
-    return articlesRepository.deleteArticlesOlderThen(duration)
+    return articlesRepository.deleteArticlesOlderThan(duration)
   }
 }

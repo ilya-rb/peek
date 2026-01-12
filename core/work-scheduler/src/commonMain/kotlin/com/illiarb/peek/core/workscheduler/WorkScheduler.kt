@@ -1,7 +1,5 @@
 package com.illiarb.peek.core.workscheduler
 
-public interface WorkScheduler
-
 public interface Worker {
 
   public val scheduleOnStartup: Boolean
