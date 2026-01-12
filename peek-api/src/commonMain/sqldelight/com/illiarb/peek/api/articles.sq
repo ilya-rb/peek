@@ -29,6 +29,10 @@ setSaved:
 UPDATE articleEntity SET saved = :saved
 WHERE url = :url;
 
+deleteArticlesOlderThan:
+DELETE FROM articleEntity
+WHERE date < :cutoffDate;
+
 insert:
 INSERT OR REPLACE INTO articleEntity (
     `url`,

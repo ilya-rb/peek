@@ -18,7 +18,9 @@ kotlin {
       implementation(projects.core.coroutines)
       implementation(projects.core.data)
       implementation(projects.core.logging)
+      implementation(projects.core.workScheduler)
       implementation(projects.features.navigationMap)
+      implementation(projects.peekApi)
       implementation(projects.uiKit.core)
       implementation(projects.uiKit.resources)
     }

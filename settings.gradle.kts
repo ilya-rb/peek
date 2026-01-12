@@ -40,6 +40,7 @@ include(
   ":core:logging",
   ":core:network",
   ":core:types",
+  ":core:work-scheduler",
   ":peek-api",
   ":ui-kit:core",
   ":ui-kit:image-loader",

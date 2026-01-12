@@ -3,21 +3,21 @@ package com.illiarb.peek.init
 import android.content.Context
 import android.os.Build
 import android.os.StrictMode
+import com.illiarb.peek.core.arch.AndroidAppInitializer
+import com.illiarb.peek.core.arch.AppInitializer
 import com.illiarb.peek.core.arch.di.AppScope
 import dev.zacsweers.metro.ContributesIntoSet
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.binding
 
 @Inject
-@ContributesIntoSet(AppScope::class, binding = binding<AndroidAppInitializer>())
+@ContributesIntoSet(AppScope::class, binding = binding<AppInitializer>())
 @Suppress("unused")
 internal class StrictModeInitializer : AndroidAppInitializer {
 
-  override val async: Boolean = false
-
   override val key: String = "StrictModeInitializer"
 
-  override suspend fun initialise(context: Context) {
+  override fun initialise(context: Context) {
     StrictMode.setThreadPolicy(
       StrictMode.ThreadPolicy.Builder()
         .detectAll()

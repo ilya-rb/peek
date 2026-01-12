@@ -20,6 +20,7 @@ kotlin {
     androidMain.dependencies {
       implementation(libs.androidx.activity.compose)
       implementation(libs.androidx.browser)
+      implementation(libs.androidx.work)
       implementation(libs.circuit.core)
       implementation(libs.circuit.x.android)
       implementation(libs.circuit.x.gestureNavigation)
@@ -40,6 +41,7 @@ kotlin {
       implementation(projects.core.logging)
       implementation(projects.core.network)
       implementation(projects.core.types)
+      implementation(projects.core.workScheduler)
       implementation(projects.features.home)
       implementation(projects.features.navigationMap)
       implementation(projects.features.reader)
