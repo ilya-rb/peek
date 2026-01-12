@@ -11,7 +11,6 @@ import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.binding
 import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.minutes
 
 @Inject
 @WorkerKey("StaleArticlesWorker")
@@ -26,9 +25,10 @@ public class StaleArticlesWorker(
   override val startupWorker: Boolean = true
 
   override suspend fun doWork(): Worker.Result {
-    Logger.d { "Starting articles cleanup job" }
-
-    val settings = settingsService.getSettings().getOrThrow()
+    val settings = settingsService.getSettings().getOrElse { error ->
+      Logger.e(throwable = error)
+      return Worker.Result.Failure
+    }
 
     return peekApiService.deleteArticlesOlderThan(settings.articlesRetentionDays.days).fold(
       onSuccess = {
@@ -41,7 +41,6 @@ public class StaleArticlesWorker(
   }
 
   override suspend fun config(): WorkConfiguration {
-    val settings = settingsService.getSettings().getOrThrow()
-    return WorkConfiguration.PeriodicWorkConfiguration(16.minutes)
+    return WorkConfiguration.PeriodicWorkConfiguration(1.days)
   }
 }
