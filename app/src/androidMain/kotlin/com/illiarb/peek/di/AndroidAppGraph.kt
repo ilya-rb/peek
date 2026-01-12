@@ -46,6 +46,9 @@ internal interface AndroidAppGraph : AppGraph {
   val appInitializers: Set<AppInitializer>
   val appDispatchers: AppDispatchers
 
+  @AppCoroutineScope
+  val appCoroutineScope: CoroutineScope
+
   @Provides
   fun provideAppDispatchers(): AppDispatchers = AppDispatchers()
 

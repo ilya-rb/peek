@@ -9,8 +9,6 @@ import com.illiarb.peek.di.AndroidAppGraph
 import dev.zacsweers.metro.createGraphFactory
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
@@ -20,7 +18,6 @@ internal class PeekApp : Application() {
   private val appGraph: AndroidAppGraph by lazy {
     createGraphFactory<AndroidAppGraph.Factory>().create(this)
   }
-  private val appScope = CoroutineScope(SupervisorJob())
 
   override fun onCreate() {
     super.onCreate()
@@ -38,7 +35,7 @@ internal class PeekApp : Application() {
       .filterIsInstance<AndroidAppInitializer>()
       .forEach { initializer -> initializer.initialise(this) }
 
-    appScope.launch {
+    appGraph.appCoroutineScope.launch {
       val initializers = appGraph.appInitializers.filterIsInstance<AndroidAsyncAppInitializer>()
       val dispatchers = appGraph.appDispatchers
       val jobs = initializers.map {
