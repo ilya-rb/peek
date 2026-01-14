@@ -1,0 +1,5 @@
+---
+globs:
+alwaysApply: true
+---
+- Use this doc as instructions @AGENTS.md
