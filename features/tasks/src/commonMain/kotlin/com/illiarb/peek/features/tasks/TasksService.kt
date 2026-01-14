@@ -4,6 +4,7 @@ import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.tasks.domain.DayHistory
 import com.illiarb.peek.features.tasks.domain.Task
 import com.illiarb.peek.features.tasks.domain.TaskDraft
+import com.illiarb.peek.features.tasks.repository.TasksRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDate
 
@@ -17,5 +18,37 @@ public interface TasksService {
 
   public suspend fun toggleCompletion(taskId: String, date: LocalDate): Result<Boolean>
 
-  public fun getHabitHistory(startDate: LocalDate, endDate: LocalDate): Flow<Async<List<DayHistory>>>
+  public fun getHabitHistory(
+    startDate: LocalDate,
+    endDate: LocalDate
+  ): Flow<Async<List<DayHistory>>>
+}
+
+internal class DefaultTasksService(
+  private val repository: TasksRepository,
+) : TasksService {
+
+  override fun getTasksForDate(date: LocalDate): Flow<Async<List<Task>>> {
+    return repository.tasksForDate(date)
+  }
+
+  override suspend fun addTask(draft: TaskDraft): Result<Task> {
+    return repository.addTask(draft)
+  }
+
+  override suspend fun deleteTask(taskId: String): Result<Unit> {
+    return repository.deleteTask(taskId)
+  }
+
+  override suspend fun toggleCompletion(taskId: String, date: LocalDate): Result<Boolean> {
+    return repository.toggleCompletion(taskId, date)
+  }
+
+  override fun getHabitHistory(
+    startDate: LocalDate,
+    endDate: LocalDate,
+  ): Flow<Async<List<DayHistory>>> {
+    // TODO: Implement habit history
+    throw NotImplementedError("Habit history not implemented yet")
+  }
 }

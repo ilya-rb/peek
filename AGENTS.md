@@ -38,6 +38,9 @@ MUST be in this order:
 4. Methods: same order as properties
 5. Companion object
 
+## Project conventions
+Always use kotlin.time instead of deprecated kotlinx.time
+
 ## Architecture Patterns
 
 ### Circuit (Screen/Presenter/UI Pattern)
