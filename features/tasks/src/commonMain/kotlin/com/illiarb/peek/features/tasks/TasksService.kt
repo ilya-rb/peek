@@ -48,7 +48,6 @@ internal class DefaultTasksService(
     startDate: LocalDate,
     endDate: LocalDate,
   ): Flow<Async<List<DayHistory>>> {
-    // TODO: Implement habit history
     throw NotImplementedError("Habit history not implemented yet")
   }
 }
