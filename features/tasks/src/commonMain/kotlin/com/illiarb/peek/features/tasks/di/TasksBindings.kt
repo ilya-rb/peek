@@ -2,8 +2,6 @@ package com.illiarb.peek.features.tasks.di
 
 import app.cash.sqldelight.db.SqlDriver
 import com.illiarb.peek.core.arch.di.AppScope
-import com.illiarb.peek.core.data.ConcurrentHashMapCache
-import com.illiarb.peek.core.data.MemoryCache
 import com.illiarb.peek.features.tasks.DefaultTasksService
 import com.illiarb.peek.features.tasks.TasksDatabase
 import com.illiarb.peek.features.tasks.TasksService
@@ -27,12 +25,6 @@ internal object TasksBindingsInternal {
   @Provides
   fun provideTasksService(repository: TasksRepository): TasksService {
     return DefaultTasksService(repository)
-  }
-
-  @Provides
-  @InternalApi
-  fun provideMemoryCache(): MemoryCache<String> {
-    return ConcurrentHashMapCache()
   }
 
   @Provides
