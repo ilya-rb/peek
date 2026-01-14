@@ -24,6 +24,7 @@ internal actual object TasksPlatformBindings {
       callback = object : AndroidSqliteDriver.Callback(TasksDatabase.Schema) {
         override fun onConfigure(db: SupportSQLiteDatabase) {
           db.enableWriteAheadLogging()
+          db.setForeignKeyConstraintsEnabled(true)
         }
       },
     )
