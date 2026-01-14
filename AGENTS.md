@@ -66,7 +66,7 @@ internal interface HomeScreenContract {
 }
 
 // Presenter
-internal class HomeScreenPresenter() : Presenter<HomeScreenContract.State> {
+internal class HomeScreenPresenter : Presenter<HomeScreenContract.State> {
 
   @Composable
   override fun present(): HomeScreenContract.State {
@@ -124,7 +124,7 @@ public interface HomeScreenComponent {
 
 ### Async Data Loading
 
-- Use the `Async<T>` sealed class for representing loading states:
+- Use the `Async<T>` sealed class for representing loading states
 - Use `AsyncDataStore` for cache-first data loading with appropriate strategies
 
 ### Dependency Injection (Metro)
@@ -222,12 +222,12 @@ class ValueProviderStub(
 }
 ```
 
-### Test contract rather then implementation details
+### Test contract rather than implementation details
 
 Always strive to test as black-box as possible:
 
 - Use real implementation instead of mocks or stubs whenever it fits: data classes, simple logic
-- Avoid making methods or properties public, but test in more integrational way
+- Avoid making methods or properties public, but test in a more integrated way
 
 ### Running Tests
 
@@ -238,7 +238,7 @@ Always strive to test as black-box as possible:
 
 ## CI
 
-Project uses github actions which are stored in .github folder
+Project uses GitHub Actions which are stored in the .github directory.
 
 ## Gradle Conventions
 
