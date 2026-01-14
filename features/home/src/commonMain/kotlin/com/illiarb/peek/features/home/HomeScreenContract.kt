@@ -58,6 +58,7 @@ internal interface HomeScreenContract {
     data object ErrorRetryClicked : Event
     data object SettingsClicked : Event
     data object BookmarksClicked : Event
+    data object TasksClicked : Event
     data object ReorderServicesClicked : Event
     data object ReorderServicesClosed : Event
     data object RefreshTriggered : Event

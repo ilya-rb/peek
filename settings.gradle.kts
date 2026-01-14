@@ -47,6 +47,7 @@ include(
   ":ui-kit:messages",
   ":ui-kit:resources",
   "features:home",
+  "features:tasks",
   "features:navigation-map",
   "features:reader",
   "features:settings",

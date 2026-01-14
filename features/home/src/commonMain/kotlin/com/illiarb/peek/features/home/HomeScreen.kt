@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmarks
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Reorder
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.BottomAppBar
@@ -163,6 +164,12 @@ private fun TopBarTitle(
 
 @Composable
 private fun TopBarActions(eventSink: (Event) -> Unit) {
+  IconButton(onClick = { eventSink.invoke(Event.TasksClicked) }) {
+    Icon(
+      imageVector = Icons.Filled.CheckCircle,
+      contentDescription = null,
+    )
+  }
   IconButton(onClick = { eventSink.invoke(Event.BookmarksClicked) }) {
     Icon(
       imageVector = Icons.Filled.Bookmarks,
