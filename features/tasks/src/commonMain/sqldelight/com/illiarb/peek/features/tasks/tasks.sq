@@ -1,0 +1,69 @@
+CREATE TABLE IF NOT EXISTS tasks (
+    id TEXT PRIMARY KEY NOT NULL,
+    title TEXT NOT NULL,
+    is_habit INTEGER NOT NULL DEFAULT 0,
+    time_of_day TEXT,
+    created_at INTEGER NOT NULL,
+    created_for_date TEXT,
+    archived INTEGER NOT NULL DEFAULT 0,
+    CHECK (time_of_day IN ('MORNING', 'MIDDAY', 'EVENING'))
+);
+
+CREATE TABLE IF NOT EXISTS task_completions (
+    task_id TEXT NOT NULL,
+    date TEXT NOT NULL,
+    completed_at INTEGER NOT NULL,
+    PRIMARY KEY (task_id, date),
+    FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE
+);
+
+allActiveTasks:
+SELECT * FROM tasks WHERE archived = 0;
+
+allHabits:
+SELECT * FROM tasks WHERE is_habit = 1 AND archived = 0;
+
+taskById:
+SELECT * FROM tasks WHERE id = :id;
+
+insertTask:
+INSERT INTO tasks (id, title, is_habit, time_of_day, created_at, created_for_date, archived)
+VALUES (
+  :id,
+  :title,
+  :isHabit,
+  :timeOfDay,
+  :createdAt,
+  :createdForDate,
+  0
+);
+
+archiveTask:
+UPDATE tasks SET archived = 1 WHERE id = :id;
+
+tasksForDateWithCompletion:
+SELECT
+    tasks.id,
+    tasks.title,
+    tasks.is_habit,
+    tasks.time_of_day,
+    tasks.created_at,
+    tasks.created_for_date,
+    tasks.archived,
+    CASE WHEN task_completions.task_id IS NOT NULL THEN 1 ELSE 0 END AS is_completed
+FROM tasks
+LEFT JOIN task_completions ON tasks.id = task_completions.task_id AND task_completions.date = :date
+WHERE tasks.archived = 0
+AND (tasks.is_habit = 1 OR (tasks.is_habit = 0 AND tasks.created_for_date = :date))
+ORDER BY tasks.time_of_day IS NULL, tasks.time_of_day, tasks.created_at;
+
+insertCompletion:
+INSERT OR REPLACE INTO task_completions (task_id, date, completed_at)
+VALUES (
+  :taskId,
+  :date,
+  :completedAt
+);
+
+deleteCompletion:
+DELETE FROM task_completions WHERE task_id = :taskId AND date = :date;
