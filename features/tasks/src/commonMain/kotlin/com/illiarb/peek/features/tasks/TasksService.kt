@@ -16,7 +16,7 @@ public interface TasksService {
 
   public suspend fun deleteTask(taskId: String): Result<Unit>
 
-  public suspend fun toggleCompletion(taskId: String, date: LocalDate): Result<Boolean>
+  public suspend fun toggleCompletion(task: Task, date: LocalDate): Result<Boolean>
 
   public fun getHabitHistory(
     startDate: LocalDate,
@@ -40,8 +40,8 @@ internal class DefaultTasksService(
     return repository.deleteTask(taskId)
   }
 
-  override suspend fun toggleCompletion(taskId: String, date: LocalDate): Result<Boolean> {
-    return repository.toggleCompletion(taskId, date)
+  override suspend fun toggleCompletion(task: Task, date: LocalDate): Result<Boolean> {
+    return repository.toggleCompletion(task, date)
   }
 
   override fun getHabitHistory(

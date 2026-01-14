@@ -56,14 +56,14 @@ internal class TasksRepository(
     }
   }
 
-  suspend fun toggleCompletion(taskId: String, date: LocalDate): Result<Boolean> {
-    val task: Task = memoryCache.get(taskId)
-      ?: return Result.failure(IllegalArgumentException("Task not found: $taskId"))
-
-    return if (task.completed) {
-      tasksDao.deleteCompletion(taskId, date).map { false }
+  suspend fun toggleCompletion(task: Task, date: LocalDate): Result<Boolean> {
+    val result = if (task.completed) {
+      tasksDao.deleteCompletion(task.id, date).map { false }
     } else {
-      tasksDao.insertCompletion(taskId, date).map { true }
+      tasksDao.insertCompletion(task.id, date).map { true }
+    }
+    return result.onSuccess { completed ->
+      memoryCache.put(task.id, task.copy(completed = completed))
     }
   }
 }
