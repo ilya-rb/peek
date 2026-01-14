@@ -15,6 +15,7 @@ import com.illiarb.peek.features.home.HomeScreenContract.Event
 import com.illiarb.peek.features.home.HomeScreenContract.NewsSource
 import com.illiarb.peek.features.home.articles.ArticlesUi
 import com.illiarb.peek.features.navigation.map.BookmarksScreen
+import com.illiarb.peek.features.navigation.map.TasksScreen
 import com.illiarb.peek.features.navigation.map.ReaderScreen
 import com.illiarb.peek.features.navigation.map.SettingsScreen
 import com.illiarb.peek.features.navigation.map.ShareScreen
@@ -181,6 +182,10 @@ internal class HomeScreenPresenter(
 
           is Event.BookmarksClicked -> {
             navigator.goTo(BookmarksScreen)
+          }
+
+          is Event.TasksClicked -> {
+            navigator.goTo(TasksScreen)
           }
 
           is Event.RefreshTriggered -> {

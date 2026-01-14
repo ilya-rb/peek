@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmarks
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Reorder
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.BottomAppBar
@@ -47,6 +48,7 @@ import com.illiarb.peek.uikit.core.components.text.DateFormats
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_action_bookmarks
 import com.illiarb.peek.uikit.resources.acsb_action_settings
+import com.illiarb.peek.uikit.resources.acsb_action_tasks
 import com.illiarb.peek.uikit.resources.home_screen_title
 import com.slack.circuit.overlay.OverlayEffect
 import dev.chrisbanes.haze.HazeState
@@ -163,6 +165,12 @@ private fun TopBarTitle(
 
 @Composable
 private fun TopBarActions(eventSink: (Event) -> Unit) {
+  IconButton(onClick = { eventSink.invoke(Event.TasksClicked) }) {
+    Icon(
+      imageVector = Icons.Filled.CheckCircle,
+      contentDescription = stringResource(Res.string.acsb_action_tasks),
+    )
+  }
   IconButton(onClick = { eventSink.invoke(Event.BookmarksClicked) }) {
     Icon(
       imageVector = Icons.Filled.Bookmarks,

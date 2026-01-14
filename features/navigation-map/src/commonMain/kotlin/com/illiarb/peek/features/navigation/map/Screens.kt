@@ -29,6 +29,10 @@ public data object SettingsScreen : Screen, CommonParcelable
 
 @CommonParcelize
 @Immutable
+public data object TasksScreen : Screen, CommonParcelable
+
+@CommonParcelize
+@Immutable
 public data class ReaderScreen(val url: Url) : Screen, CommonParcelable
 
 @CommonParcelize

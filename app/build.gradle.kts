@@ -43,6 +43,7 @@ kotlin {
       implementation(projects.core.types)
       implementation(projects.core.workScheduler)
       implementation(projects.features.home)
+      implementation(projects.features.tasks)
       implementation(projects.features.navigationMap)
       implementation(projects.features.reader)
       implementation(projects.features.settings)
