@@ -1,7 +1,7 @@
 package com.illiarb.peek.features.tasks.domain
 
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
+import kotlin.time.Instant
 
 /**
  * Represents a task in the tasks feature.
@@ -20,7 +20,7 @@ public data class Task(
   val id: String,
   val title: String,
   val habit: Boolean,
-  val timeOfDay: TimeOfDay?,
+  val timeOfDay: TimeOfDay,
   val createdAt: Instant,
   val createdForDate: LocalDate?,
   val archived: Boolean = false,

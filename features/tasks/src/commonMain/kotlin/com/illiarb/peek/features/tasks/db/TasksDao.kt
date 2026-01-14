@@ -42,13 +42,17 @@ internal class TasksDao(
           id = task.id,
           title = task.title,
           isHabit = if (task.habit) 1L else 0L,
-          timeOfDay = task.timeOfDay?.name,
+          timeOfDay = task.timeOfDay.toDbValue(),
           createdAt = task.createdAt.toEpochMilliseconds(),
           createdForDate = task.createdForDate?.toString(),
         ).await()
         Unit
       }
     }
+  }
+
+  private fun TimeOfDay.toDbValue(): String? {
+    return if (this == TimeOfDay.ANYTIME) null else name
   }
 
   suspend fun archiveTask(taskId: String): Result<Unit> {

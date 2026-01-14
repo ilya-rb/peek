@@ -55,7 +55,14 @@ FROM tasks
 LEFT JOIN task_completions ON tasks.id = task_completions.task_id AND task_completions.date = :date
 WHERE tasks.archived = 0
 AND (tasks.is_habit = 1 OR (tasks.is_habit = 0 AND tasks.created_for_date = :date))
-ORDER BY tasks.time_of_day IS NULL, tasks.time_of_day, tasks.created_at;
+ORDER BY
+    CASE tasks.time_of_day
+        WHEN 'MORNING' THEN 1
+        WHEN 'MIDDAY' THEN 2
+        WHEN 'EVENING' THEN 3
+        ELSE 0
+    END,
+    tasks.created_at;
 
 insertCompletion:
 INSERT OR REPLACE INTO task_completions (task_id, date, completed_at)
