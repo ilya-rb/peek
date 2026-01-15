@@ -16,18 +16,7 @@ internal fun CheckableListItemPreviewLight(
   @PreviewParameter(CheckableListItemPreviewProvider::class)
   data: CheckableListItemPreviewData
 ) {
-  PreviewTheme(darkMode = false) {
-    CheckableListItem(
-      text = data.text,
-      checked = data.checked,
-      onCheckedChange = {},
-      trailingContent = if (data.hasTrailingIcon) {
-        { Icon(imageVector = Icons.Filled.Refresh, contentDescription = null) }
-      } else {
-        null
-      },
-    )
-  }
+  CheckableListItemPreview(data = data, darkMode = false)
 }
 
 @Composable
@@ -36,7 +25,15 @@ internal fun CheckableListItemPreviewDark(
   @PreviewParameter(CheckableListItemPreviewProvider::class)
   data: CheckableListItemPreviewData
 ) {
-  PreviewTheme(darkMode = true) {
+  CheckableListItemPreview(data = data, darkMode = true)
+}
+
+@Composable
+private fun CheckableListItemPreview(
+  data: CheckableListItemPreviewData,
+  darkMode: Boolean,
+) {
+  PreviewTheme(darkMode = darkMode) {
     CheckableListItem(
       text = data.text,
       checked = data.checked,

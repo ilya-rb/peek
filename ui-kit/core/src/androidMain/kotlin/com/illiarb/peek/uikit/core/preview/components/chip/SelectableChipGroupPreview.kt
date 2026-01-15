@@ -9,7 +9,30 @@ import kotlinx.collections.immutable.toImmutableList
 @Composable
 @Preview
 internal fun SelectableChipGroupPreviewLight() {
-  PreviewTheme(darkMode = false) {
+  SelectableChipGroupPreview(darkMode = false)
+}
+
+@Composable
+@Preview
+internal fun SelectableChipGroupPreviewDark() {
+  SelectableChipGroupPreview(darkMode = true)
+}
+
+@Composable
+@Preview
+internal fun SelectableChipGroupMultiRowPreviewLight() {
+  SelectableChipGroupMultiRowPreview(darkMode = false)
+}
+
+@Composable
+@Preview
+internal fun SelectableChipGroupMultiRowPreviewDark() {
+  SelectableChipGroupMultiRowPreview(darkMode = true)
+}
+
+@Composable
+private fun SelectableChipGroupPreview(darkMode: Boolean) {
+  PreviewTheme(darkMode = darkMode) {
     SelectableChipGroup(
       options = listOf("Anytime", "Morning", "Midday", "Evening").toImmutableList(),
       selectedOption = "Anytime",
@@ -20,22 +43,8 @@ internal fun SelectableChipGroupPreviewLight() {
 }
 
 @Composable
-@Preview
-internal fun SelectableChipGroupPreviewDark() {
-  PreviewTheme(darkMode = true) {
-    SelectableChipGroup(
-      options = listOf("Anytime", "Morning", "Midday", "Evening").toImmutableList(),
-      selectedOption = "Morning",
-      onOptionSelected = {},
-      labelProvider = { it },
-    )
-  }
-}
-
-@Composable
-@Preview
-internal fun SelectableChipGroupMultiRowPreviewLight() {
-  PreviewTheme(darkMode = false) {
+private fun SelectableChipGroupMultiRowPreview(darkMode: Boolean) {
+  PreviewTheme(darkMode = darkMode) {
     SelectableChipGroup(
       options = listOf(
         "Option 1",

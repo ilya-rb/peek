@@ -10,19 +10,30 @@ import com.illiarb.peek.uikit.core.preview.components.PreviewTheme
 @Composable
 @Preview
 internal fun SectionHeaderWithIconPreviewLight() {
-  PreviewTheme(darkMode = false) {
-    SectionHeader(
-      title = "Morning",
-      icon = Icons.Filled.WbSunny,
-      iconContentDescription = "Morning icon",
-    )
-  }
+  SectionHeaderWithIconPreview(darkMode = false)
 }
 
 @Composable
 @Preview
 internal fun SectionHeaderWithIconPreviewDark() {
-  PreviewTheme(darkMode = true) {
+  SectionHeaderWithIconPreview(darkMode = true)
+}
+
+@Composable
+@Preview
+internal fun SectionHeaderWithoutIconPreviewLight() {
+  SectionHeaderWithoutIconPreview(darkMode = false)
+}
+
+@Composable
+@Preview
+internal fun SectionHeaderWithoutIconPreviewDark() {
+  SectionHeaderWithoutIconPreview(darkMode = true)
+}
+
+@Composable
+private fun SectionHeaderWithIconPreview(darkMode: Boolean) {
+  PreviewTheme(darkMode = darkMode) {
     SectionHeader(
       title = "Morning",
       icon = Icons.Filled.WbSunny,
@@ -32,19 +43,8 @@ internal fun SectionHeaderWithIconPreviewDark() {
 }
 
 @Composable
-@Preview
-internal fun SectionHeaderWithoutIconPreviewLight() {
-  PreviewTheme(darkMode = false) {
-    SectionHeader(
-      title = "Section Title",
-    )
-  }
-}
-
-@Composable
-@Preview
-internal fun SectionHeaderWithoutIconPreviewDark() {
-  PreviewTheme(darkMode = true) {
+private fun SectionHeaderWithoutIconPreview(darkMode: Boolean) {
+  PreviewTheme(darkMode = darkMode) {
     SectionHeader(
       title = "Section Title",
     )
