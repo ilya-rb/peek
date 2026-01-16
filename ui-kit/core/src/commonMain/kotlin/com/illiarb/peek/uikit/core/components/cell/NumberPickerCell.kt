@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,6 +29,7 @@ import com.illiarb.peek.uikit.resources.common_action_cancel
 import com.illiarb.peek.uikit.resources.settings_article_retention_days_option
 import com.illiarb.peek.uikit.resources.settings_article_retention_dialog_title
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -81,6 +83,7 @@ private fun NumberPickerBottomSheet(
   onSelected: (Int) -> Unit,
 ) {
   val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+  val coroutineScope = rememberCoroutineScope()
 
   ModalBottomSheet(
     onDismissRequest = onDismiss,
@@ -105,7 +108,12 @@ private fun NumberPickerBottomSheet(
         Column {
           options.forEach { option ->
             TextButton(
-              onClick = { onSelected(option) },
+              onClick = {
+                coroutineScope.launch {
+                  sheetState.hide()
+                  onSelected(option)
+                }
+              },
               modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp, vertical = 4.dp),
@@ -124,8 +132,13 @@ private fun NumberPickerBottomSheet(
         }
       }
       TextButton(
-        onClick = onDismiss,
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+        onClick = {
+          coroutineScope.launch {
+            sheetState.hide()
+            onDismiss()
+          }
+        },
       ) {
         Text(stringResource(Res.string.common_action_cancel))
       }
