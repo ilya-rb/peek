@@ -80,12 +80,8 @@ internal class MainActivity(
           starter = ::navigateTo,
         )
 
-        BackHandler {
-          if (backStack.size == 1) {
-            onBackPressedDispatcher.onBackPressed()
-          } else {
-            navigator.pop()
-          }
+        BackHandler(enabled = backStack.size > 1) {
+          navigator.pop()
         }
 
         CircuitCompositionLocals(uiGraph.circuit) {
