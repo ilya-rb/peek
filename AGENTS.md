@@ -24,6 +24,9 @@ peek/
 └── iosApp/                 # iOS application
 ```
 
+## Pull requests
+Use Github CLI to create pull requests
+
 ## Code style
 
 - .editorconfig is the source of truth for formatting
