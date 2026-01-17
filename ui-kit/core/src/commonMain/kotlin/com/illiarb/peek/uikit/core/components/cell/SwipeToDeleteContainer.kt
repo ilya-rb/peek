@@ -19,6 +19,7 @@ import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -26,17 +27,14 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.illiarb.peek.uikit.core.model.VectorIcon
-import kotlinx.coroutines.delay
 import kotlin.math.abs
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -46,48 +44,56 @@ public fun SwipeToDeleteContainer(
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
   deleteIcon: VectorIcon = VectorIcon(
-    Icons.Filled.Delete,
+    imageVector = Icons.Filled.Delete,
     contentDescription = "",
   ),
   content: @Composable RowScope.() -> Unit,
 ) {
-  var offset by remember { mutableStateOf(0.dp) }
-  var width by remember { mutableStateOf(0.dp) }
-  var hasTriggeredHaptic by remember { mutableStateOf(false) }
+  var offsetPx by remember { mutableStateOf(0f) }
+  var widthPx by remember { mutableStateOf(0) }
+  var hapticTriggered by remember { mutableStateOf(false) }
+  var distanceToTriggerDismiss by remember { mutableFloatStateOf(0f) }
 
   val hapticFeedback = LocalHapticFeedback.current
   val dismissState = rememberSwipeToDismissBoxState(
-    positionalThreshold = { width.value / 2f }
+    positionalThreshold = { distanceToTriggerDismiss }
   )
 
-  LaunchedEffect(dismissState, width) {
-    snapshotFlow { dismissState.requireOffset() }.collect { offsetPx ->
-      val newOffset = abs(offsetPx).dp
-      offset = newOffset
+  /**
+   * Proper way is to utilise positionalThreshold as 0 and use
+   * dismissState.progress instead of manual tracking but it looks like a bug
+   * inside the component so positionalThreshold is always default (half of the width)
+   */
+  LaunchedEffect(dismissState) {
+    snapshotFlow { dismissState.requireOffset() }.collect { offset ->
+      val newOffset = abs(offset)
+      offsetPx = newOffset
 
-      val distanceToTriggerDismiss = width / 2f
-      if (width > 0.dp && newOffset >= distanceToTriggerDismiss && !hasTriggeredHaptic) {
+      if (widthPx > 0 && newOffset >= distanceToTriggerDismiss && !hapticTriggered) {
         hapticFeedback.performHapticFeedback(HapticFeedbackType.Confirm)
-        hasTriggeredHaptic = true
+        hapticTriggered = true
       } else if (newOffset < distanceToTriggerDismiss) {
-        hasTriggeredHaptic = false
+        hapticTriggered = false
       }
     }
   }
 
   SwipeToDismissBox(
     state = dismissState,
-    modifier = modifier.onSizeChanged { size -> width = size.width.dp },
+    modifier = modifier.onSizeChanged { size ->
+      widthPx = size.width
+      distanceToTriggerDismiss = widthPx / 2f
+    },
     enableDismissFromStartToEnd = false,
     enableDismissFromEndToStart = enabled,
     onDismiss = { onDelete() },
     backgroundContent = {
       DeleteBackground(
         modifier = modifier,
-        offset = offset,
-        width = width,
+        offset = offsetPx,
+        distanceToTriggerDismiss = distanceToTriggerDismiss,
         deleteIcon = deleteIcon,
-        shouldBounce = hasTriggeredHaptic,
+        shouldBounce = hapticTriggered,
       )
     },
     content = content,
@@ -97,63 +103,29 @@ public fun SwipeToDeleteContainer(
 @Composable
 private fun DeleteBackground(
   modifier: Modifier = Modifier,
-  offset: Dp,
-  width: Dp,
+  offset: Float,
+  distanceToTriggerDismiss: Float,
   deleteIcon: VectorIcon,
   shouldBounce: Boolean,
 ) {
-  val errorColor = MaterialTheme.colorScheme.error
-  val onErrorColor = MaterialTheme.colorScheme.onError
-  val targetOffset = 200.dp
-  val fraction = (offset / targetOffset).coerceIn(0f, 1f)
+  val fraction = (offset / distanceToTriggerDismiss).coerceIn(0f, 1f)
 
   val backgroundColor = lerp(
     start = Color.Transparent,
-    stop = errorColor,
+    stop = MaterialTheme.colorScheme.error,
     fraction = fraction,
   )
-
   val iconColor = lerp(
     start = Color.Transparent,
-    stop = onErrorColor,
+    stop = MaterialTheme.colorScheme.onError,
     fraction = fraction,
   )
-
-  var bounceTarget by remember { mutableStateOf(1f) }
-  var rotation by remember { mutableStateOf(0f) }
-
-  LaunchedEffect(shouldBounce) {
-    if (shouldBounce) {
-      // Scale up to 1.2f
-      bounceTarget = 1.2f
-      rotation = 20f
-      // Wait for the spring animation to reach peak, then bounce back
-      delay(200)
-      // Scale back down to 1f (spring will naturally bounce)
-      bounceTarget = 1f
-      rotation = 0f
-    } else {
-      bounceTarget = 1f
-      rotation = 0f
-    }
-  }
-
-  val rotationBounce by animateFloatAsState(
-    targetValue = rotation,
-    animationSpec = spring(
-      dampingRatio = Spring.DampingRatioMediumBouncy,
-      stiffness = Spring.StiffnessLow,
-    ),
-    label = "rotation",
-  )
-
   val bounceScale by animateFloatAsState(
-    targetValue = bounceTarget,
+    targetValue = if (shouldBounce) 1.2f else 1f,
     animationSpec = spring(
       dampingRatio = Spring.DampingRatioMediumBouncy,
       stiffness = Spring.StiffnessLow,
     ),
-    label = "bounce",
   )
 
   Box(
@@ -164,13 +136,12 @@ private fun DeleteBackground(
       .background(backgroundColor)
   ) {
     Icon(
-      modifier = Modifier
-        .padding(end = 16.dp)
-        .scale(bounceScale)
-        .rotate(rotationBounce),
       imageVector = deleteIcon.imageVector,
       contentDescription = deleteIcon.contentDescription,
       tint = iconColor,
+      modifier = Modifier
+        .padding(end = 16.dp)
+        .scale(bounceScale)
     )
   }
 }
