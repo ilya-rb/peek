@@ -2,8 +2,12 @@ package com.illiarb.peek.features.tasks.ui
 
 import androidx.compose.runtime.Immutable
 import com.illiarb.peek.core.arch.di.UiScope
-import com.illiarb.peek.features.tasks.ui.TasksScreenContract.State
+import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.navigation.map.TasksScreen
+import com.illiarb.peek.features.tasks.domain.Task
+import com.illiarb.peek.features.tasks.TasksService
+import com.illiarb.peek.features.tasks.ui.TasksScreenContract.State
+import com.illiarb.peek.uikit.messages.MessageDispatcher
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
@@ -14,16 +18,25 @@ import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import dev.zacsweers.metro.ContributesIntoSet
 import dev.zacsweers.metro.Inject
+import kotlinx.collections.immutable.ImmutableList
 
 internal interface TasksScreenContract {
 
   @Immutable
   data class State(
+    val tasks: Async<ImmutableList<Task>>,
+    val showAddTaskSheet: Boolean,
     val eventSink: (Event) -> Unit,
   ) : CircuitUiState
 
   sealed interface Event : CircuitUiEvent {
     data object NavigateBack : Event
+    data object AddTaskClicked : Event
+    data object AddTaskDismissed : Event
+    data object ErrorRetryClicked : Event
+    data class AddTaskSubmitted(val title: String) : Event
+    data class TaskToggled(val task: Task) : Event
+    data class TaskDeleted(val taskId: String) : Event
   }
 }
 
@@ -43,7 +56,10 @@ public interface TasksScreenComponent {
 
   @Inject
   @ContributesIntoSet(UiScope::class)
-  public class PresenterFactory : Presenter.Factory {
+  public class PresenterFactory(
+    private val tasksService: TasksService,
+    private val messageDispatcher: MessageDispatcher,
+  ) : Presenter.Factory {
 
     override fun create(
       screen: Screen,
@@ -51,7 +67,7 @@ public interface TasksScreenComponent {
       context: CircuitContext
     ): Presenter<*>? {
       return if (screen is TasksScreen) {
-        TasksScreenPresenter(navigator)
+        TasksScreenPresenter(navigator, tasksService, messageDispatcher)
       } else {
         null
       }

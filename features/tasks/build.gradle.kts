@@ -15,6 +15,7 @@ kotlin {
     commonMain.dependencies {
       implementation(libs.circuit.core)
       implementation(libs.kotlin.coroutines.core)
+      implementation(libs.kotlinx.collections)
       implementation(libs.kotlinx.datetime)
       implementation(libs.sqldelight.coroutines)
       implementation(libs.sqldelight.primitive)
@@ -27,6 +28,7 @@ kotlin {
       implementation(projects.features.navigationMap)
       implementation(projects.uiKit.core)
       implementation(projects.uiKit.resources)
+      implementation(projects.uiKit.messages)
     }
 
     iosMain.dependencies {

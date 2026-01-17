@@ -4,14 +4,10 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
@@ -19,24 +15,23 @@ import androidx.compose.material.icons.outlined.CollectionsBookmark
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.home.articles.ArticlesContent
 import com.illiarb.peek.features.home.articles.ArticlesLoading
-import com.illiarb.peek.features.home.articles.ArticlesUi
 import com.illiarb.peek.features.home.bookmarks.BookmarksScreenContract.Event
 import com.illiarb.peek.features.navigation.map.SummaryScreen
 import com.illiarb.peek.features.navigation.map.showScreenOverlay
 import com.illiarb.peek.uikit.core.components.cell.EmptyState
-import com.illiarb.peek.uikit.core.components.cell.FullscreenErrorState
+import com.illiarb.peek.uikit.core.components.cell.ErrorEmptyState
+import com.illiarb.peek.uikit.core.model.VectorIcon
 import com.illiarb.peek.uikit.resources.Res
+import com.illiarb.peek.uikit.resources.acsb_icon_bookmarks_empty
 import com.illiarb.peek.uikit.resources.acsb_navigation_back
 import com.illiarb.peek.uikit.resources.bookmarks_empty
 import com.illiarb.peek.uikit.resources.bookmarks_screen_title
@@ -104,7 +99,7 @@ private fun BookmarksContent(
   ) { targetState ->
     when (targetState) {
       is Async.Error -> {
-        FullscreenErrorState(Modifier.padding(contentPadding)) {
+        ErrorEmptyState(modifier = Modifier.padding(contentPadding)) {
           eventSink.invoke(Event.ErrorRetryClicked)
         }
       }
@@ -115,9 +110,7 @@ private fun BookmarksContent(
 
       is Async.Content -> {
         if (targetState.content.isEmpty()) {
-          BookmarksEmpty(contentPadding = contentPadding) {
-            articlesEventSink.invoke(ArticlesUi.ArticlesRefreshClicked)
-          }
+          BookmarksEmpty(contentPadding = contentPadding)
         } else {
           ArticlesContent(
             contentPadding = contentPadding,
@@ -135,7 +128,6 @@ private fun BookmarksContent(
 private fun BookmarksEmpty(
   contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
-  onActionClick: () -> Unit,
 ) {
   Column(
     modifier = modifier.fillMaxSize().padding(contentPadding),
@@ -143,20 +135,10 @@ private fun BookmarksEmpty(
   ) {
     EmptyState(
       title = stringResource(Res.string.bookmarks_empty),
-      buttonText = null,
-      onButtonClick = onActionClick,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(16.dp)
-        .clip(shape = RoundedCornerShape(size = 24.dp))
-        .background(MaterialTheme.colorScheme.surfaceContainer),
-    ) {
-      Icon(
-        modifier = Modifier.size(120.dp).padding(top = 24.dp),
-        imageVector = Icons.Outlined.CollectionsBookmark,
-        contentDescription = null,
-        tint = MaterialTheme.colorScheme.onSurface,
+      image = VectorIcon(
+        Icons.Outlined.CollectionsBookmark,
+        contentDescription = stringResource(Res.string.acsb_icon_bookmarks_empty),
       )
-    }
+    )
   }
 }

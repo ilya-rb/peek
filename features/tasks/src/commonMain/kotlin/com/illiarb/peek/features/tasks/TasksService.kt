@@ -8,17 +8,17 @@ import com.illiarb.peek.features.tasks.repository.TasksRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDate
 
-internal interface TasksService {
+public interface TasksService {
 
-  fun getTasksForDate(date: LocalDate): Flow<Async<List<Task>>>
+  public fun getTasksForDate(date: LocalDate): Flow<Async<List<Task>>>
 
-  suspend fun addTask(draft: TaskDraft): Result<Task>
+  public suspend fun addTask(draft: TaskDraft): Result<Task>
 
-  suspend fun deleteTask(taskId: String): Result<Unit>
+  public suspend fun deleteTask(taskId: String): Result<Unit>
 
-  suspend fun toggleCompletion(task: Task, date: LocalDate): Result<Boolean>
+  public suspend fun toggleCompletion(task: Task, date: LocalDate): Result<Boolean>
 
-  fun getHabitHistory(
+  public fun getHabitHistory(
     startDate: LocalDate,
     endDate: LocalDate
   ): Flow<Async<List<DayHistory>>>

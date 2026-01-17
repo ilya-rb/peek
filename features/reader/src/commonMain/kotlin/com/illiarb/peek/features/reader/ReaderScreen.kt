@@ -50,7 +50,7 @@ import com.illiarb.peek.features.reader.ReaderScreenContract.Event
 import com.illiarb.peek.uikit.core.components.TopAppBarTitleLoading
 import com.illiarb.peek.uikit.core.components.WebView
 import com.illiarb.peek.uikit.core.components.cell.ArticleReaderLoading
-import com.illiarb.peek.uikit.core.components.cell.FullscreenErrorState
+import com.illiarb.peek.uikit.core.components.cell.ErrorEmptyState
 import com.illiarb.peek.uikit.core.components.popup.OpenInBrowserAction
 import com.illiarb.peek.uikit.core.components.popup.ShareAction
 import com.illiarb.peek.uikit.core.components.popup.SummarizeAction
@@ -218,7 +218,7 @@ private fun ReaderContent(
 ) {
   when (article) {
     is Async.Loading -> ArticleReaderLoading()
-    is Async.Error -> FullscreenErrorState(onActionClick = onErrorClicked)
+    is Async.Error -> ErrorEmptyState(onButtonClick = onErrorClicked)
     is Async.Content -> {
       WebView(
         url = article.content.url.url,

@@ -1,0 +1,10 @@
+<resources>
+  <string name="tasks_task_removed">Task deleted</string>
+  <string name="tasks_add_title">I need to</string>
+  <string name="tasks_add_input_hint">What do you need to do?</string>
+  <string name="tasks_add_submit">Save</string>
+  <string name="tasks_title">Tasks</string>
+  <string name="tasks_empty_add">Add task</string>
+  <string name="tasks_empty_title">Nothing for today</string>
+  <string name="tasks_group_today">Today</string>
+</resources>

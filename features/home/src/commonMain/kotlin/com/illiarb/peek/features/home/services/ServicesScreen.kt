@@ -1,12 +1,16 @@
 package com.illiarb.peek.features.home.services
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material3.Icon
@@ -19,6 +23,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.illiarb.peek.api.domain.NewsSource
 import com.illiarb.peek.api.domain.NewsSourceKind
@@ -34,6 +40,7 @@ import com.illiarb.peek.uikit.resources.hn_logo
 import com.illiarb.peek.uikit.resources.service_dou_name
 import com.illiarb.peek.uikit.resources.service_ft_name
 import com.illiarb.peek.uikit.resources.service_hacker_news_name
+import com.illiarb.peek.uikit.resources.services_diaog_title
 import kotlinx.collections.immutable.mutate
 import kotlinx.collections.immutable.toPersistentList
 import org.jetbrains.compose.resources.stringResource
@@ -65,19 +72,33 @@ internal fun ServicesScreen(
     }
   )
 
-  LazyColumn(
-    modifier = modifier.reorderableContainer(reorderableState).padding(bottom = 24.dp),
-    verticalArrangement = Arrangement.spacedBy(8.dp),
-    state = listState,
-  ) {
-    reorderableItems(
-      items = items,
-      state = reorderableState,
-      key = { source -> source.kind },
-      content = { itemModifier, dragHandleModifier, source ->
-        ServiceItem(source, itemModifier, dragHandleModifier)
-      },
+  Column(modifier = modifier) {
+    Text(
+      text = stringResource(Res.string.services_diaog_title),
+      style = MaterialTheme.typography.titleMedium,
+      textAlign = TextAlign.Center,
+      modifier = Modifier.fillMaxWidth()
+        .padding(horizontal = 16.dp)
+        .clip(RoundedCornerShape(16.dp))
+        .background(MaterialTheme.colorScheme.surfaceContainer)
+        .padding(8.dp),
     )
+    LazyColumn(
+      state = listState,
+      verticalArrangement = Arrangement.spacedBy(8.dp),
+      modifier = Modifier.reorderableContainer(reorderableState)
+        .navigationBarsPadding()
+        .padding(bottom = 24.dp, top = 16.dp)
+    ) {
+      reorderableItems(
+        items = items,
+        state = reorderableState,
+        key = { source -> source.kind },
+        content = { itemModifier, dragHandleModifier, source ->
+          ServiceItem(source, itemModifier, dragHandleModifier)
+        },
+      )
+    }
   }
 }
 
@@ -89,9 +110,7 @@ private fun ServiceItem(
 ) {
   Row(
     verticalAlignment = Alignment.CenterVertically,
-    modifier = modifier
-      .fillMaxWidth()
-      .padding(horizontal = 16.dp, vertical = 4.dp)
+    modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp)
   ) {
     SelectableCircleAvatar(
       image = when (source.kind) {

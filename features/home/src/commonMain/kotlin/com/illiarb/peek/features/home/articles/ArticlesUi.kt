@@ -1,31 +1,22 @@
 package com.illiarb.peek.features.home.articles
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Article
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
 import com.illiarb.peek.api.domain.Article
 import com.illiarb.peek.uikit.core.components.cell.ArticleCell
 import com.illiarb.peek.uikit.core.components.cell.ArticleLoadingCell
 import com.illiarb.peek.uikit.core.components.cell.EmptyState
+import com.illiarb.peek.uikit.core.model.VectorIcon
 import com.illiarb.peek.uikit.resources.Res
+import com.illiarb.peek.uikit.resources.acsb_icon_articles_empty
 import com.illiarb.peek.uikit.resources.bookmarks_stale_badge
 import com.illiarb.peek.uikit.resources.home_articles_empty_action
 import com.illiarb.peek.uikit.resources.home_articles_empty_title
@@ -62,28 +53,16 @@ internal fun ArticlesEmpty(
   contentPadding: PaddingValues,
   eventSink: (ArticlesUi) -> Unit,
 ) {
-  Column(
-    modifier = modifier.fillMaxSize().padding(contentPadding),
-    horizontalAlignment = Alignment.CenterHorizontally,
-  ) {
-    EmptyState(
-      title = stringResource(Res.string.home_articles_empty_title),
-      buttonText = stringResource(Res.string.home_articles_empty_action),
-      onButtonClick = { eventSink.invoke(ArticlesUi.ArticlesRefreshClicked) },
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(16.dp)
-        .clip(shape = RoundedCornerShape(size = 24.dp))
-        .background(MaterialTheme.colorScheme.surfaceContainer),
-    ) {
-      Icon(
-        modifier = Modifier.size(120.dp).padding(top = 24.dp),
-        imageVector = Icons.AutoMirrored.Filled.Article,
-        contentDescription = null,
-        tint = MaterialTheme.colorScheme.onSurface,
-      )
-    }
-  }
+  EmptyState(
+    modifier = modifier.padding(contentPadding),
+    title = stringResource(Res.string.home_articles_empty_title),
+    image = VectorIcon(
+      imageVector = Icons.AutoMirrored.Filled.Article,
+      contentDescription = stringResource(Res.string.acsb_icon_articles_empty),
+    ),
+    buttonText = stringResource(Res.string.home_articles_empty_action),
+    onButtonClick = { eventSink.invoke(ArticlesUi.ArticlesRefreshClicked) },
+  )
 }
 
 @Composable
