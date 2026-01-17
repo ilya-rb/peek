@@ -1,15 +1,14 @@
 package com.illiarb.peek.uikit.core.preview.components.cell
 
-import android.R
-import androidx.compose.foundation.Image
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Dialpad
+import androidx.compose.material.icons.filled.Filter
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.illiarb.peek.uikit.core.components.cell.EmptyState
+import com.illiarb.peek.uikit.core.model.VectorIcon
 import com.illiarb.peek.uikit.core.preview.components.PreviewTheme
 
 @Preview(
@@ -25,15 +24,10 @@ internal fun FullscreenStatePreviewParameterizedLight(
     EmptyState(
       title = data.title,
       buttonText = if (data.hasButton) data.buttonText else null,
-      onButtonClick = { },
-      image = { modifier ->
-        Image(
-          painter = painterResource(id = R.drawable.ic_dialog_dialer),
-          contentDescription = "Icon",
-          modifier = modifier,
-          colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.tertiary)
-        )
-      }
+      image = VectorIcon(
+        Icons.Filled.Filter,
+        contentDescription = "icon"
+      )
     )
   }
 }
@@ -51,15 +45,10 @@ internal fun FullscreenStatePreviewParameterizedDark(
     EmptyState(
       title = data.title,
       buttonText = if (data.hasButton) data.buttonText else null,
-      onButtonClick = { },
-      image = { modifier ->
-        Image(
-          painter = painterResource(id = R.drawable.ic_dialog_dialer),
-          contentDescription = "Icon",
-          modifier = modifier,
-          colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.tertiary)
-        )
-      }
+      image = VectorIcon(
+        Icons.Filled.Dialpad,
+        contentDescription = "icon",
+      )
     )
   }
 }

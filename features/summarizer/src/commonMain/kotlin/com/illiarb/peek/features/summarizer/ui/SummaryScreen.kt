@@ -26,7 +26,7 @@ import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.navigation.map.SummaryScreen
 import com.illiarb.peek.features.summarizer.ui.SummaryScreenContract.Event
 import com.illiarb.peek.features.summarizer.ui.SummaryScreenContract.State.ArticleWithSummary
-import com.illiarb.peek.uikit.core.components.cell.FullscreenErrorState
+import com.illiarb.peek.uikit.core.components.cell.ErrorEmptyState
 import com.illiarb.peek.uikit.core.components.shimmer.ShimmerBox
 import com.illiarb.peek.uikit.core.components.shimmer.ShimmerColumn
 import com.illiarb.peek.uikit.resources.Res
@@ -112,7 +112,7 @@ private fun SummaryContent(
   onErrorActionClick: () -> Unit,
 ) {
   when (article) {
-    is Async.Error -> FullscreenErrorState(onActionClick = onErrorActionClick)
+    is Async.Error -> ErrorEmptyState(onButtonClick = onErrorActionClick)
     is Async.Loading -> SummaryLoading()
     is Async.Content -> {
       Text(

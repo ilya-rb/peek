@@ -42,7 +42,7 @@ import com.illiarb.peek.features.navigation.map.showScreenOverlay
 import com.illiarb.peek.uikit.core.components.HorizontalList
 import com.illiarb.peek.uikit.core.components.TextSwitcher
 import com.illiarb.peek.uikit.core.components.cell.AvatarState
-import com.illiarb.peek.uikit.core.components.cell.FullscreenErrorState
+import com.illiarb.peek.uikit.core.components.cell.ErrorEmptyState
 import com.illiarb.peek.uikit.core.components.cell.SelectableCircleAvatar
 import com.illiarb.peek.uikit.core.components.text.DateFormats
 import com.illiarb.peek.uikit.resources.Res
@@ -242,7 +242,7 @@ private fun ScreenContent(
   ) { targetState ->
     when (targetState) {
       is Async.Error -> {
-        FullscreenErrorState(Modifier.padding(innerPadding)) {
+        ErrorEmptyState(modifier = Modifier.padding(innerPadding)) {
           eventSink.invoke(Event.ErrorRetryClicked)
         }
       }

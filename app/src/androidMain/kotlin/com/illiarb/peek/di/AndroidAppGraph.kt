@@ -15,6 +15,7 @@ import com.illiarb.peek.core.network.di.NetworkBindings
 import com.illiarb.peek.core.workscheduler.Worker
 import com.illiarb.peek.features.settings.di.AppSettingsBindings
 import com.illiarb.peek.features.summarizer.di.SummarizerBindings
+import com.illiarb.peek.features.tasks.di.TasksBindings
 import com.illiarb.peek.uikit.imageloader.ImageLoaderBindings
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.Multibinds
@@ -28,13 +29,14 @@ import kotlin.reflect.KClass
 @DependencyGraph(
   scope = AppScope::class,
   bindingContainers = [
-    CoreDataBindings::class,
-    NetworkBindings::class,
-    PeekApiBindings::class,
     AppConfigurationsBindings::class,
     AppSettingsBindings::class,
+    CoreDataBindings::class,
     ImageLoaderBindings::class,
+    NetworkBindings::class,
+    PeekApiBindings::class,
     SummarizerBindings::class,
+    TasksBindings::class,
   ]
 )
 internal interface AndroidAppGraph : AppGraph {
