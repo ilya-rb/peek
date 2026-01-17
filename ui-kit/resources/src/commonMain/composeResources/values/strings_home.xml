@@ -8,4 +8,5 @@
   <string name="bookmarks_action_removed">Removed from bookmarks</string>
   <string name="bookmarks_empty">Bookmarks will appear here</string>
   <string name="bookmarks_stale_badge">Stale</string>
+  <string name="services_diaog_title">Reorder news sources</string>
 </resources>

@@ -31,6 +31,7 @@ import com.illiarb.peek.uikit.core.components.cell.EmptyState
 import com.illiarb.peek.uikit.core.components.cell.ErrorEmptyState
 import com.illiarb.peek.uikit.core.model.VectorIcon
 import com.illiarb.peek.uikit.resources.Res
+import com.illiarb.peek.uikit.resources.acsb_icon_bookmarks_empty
 import com.illiarb.peek.uikit.resources.acsb_navigation_back
 import com.illiarb.peek.uikit.resources.bookmarks_empty
 import com.illiarb.peek.uikit.resources.bookmarks_screen_title
@@ -136,7 +137,7 @@ private fun BookmarksEmpty(
       title = stringResource(Res.string.bookmarks_empty),
       image = VectorIcon(
         Icons.Outlined.CollectionsBookmark,
-        contentDescription = "",
+        contentDescription = stringResource(Res.string.acsb_icon_bookmarks_empty),
       )
     )
   }

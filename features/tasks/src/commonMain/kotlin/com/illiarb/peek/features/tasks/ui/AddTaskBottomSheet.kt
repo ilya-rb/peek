@@ -37,6 +37,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.illiarb.peek.uikit.resources.Res
+import com.illiarb.peek.uikit.resources.acsb_action_close
 import com.illiarb.peek.uikit.resources.tasks_add_input_hint
 import com.illiarb.peek.uikit.resources.tasks_add_submit
 import com.illiarb.peek.uikit.resources.tasks_add_title
@@ -90,7 +91,7 @@ internal fun AddTaskBottomSheet(
           content = {
             Icon(
               imageVector = Icons.Filled.Close,
-              contentDescription = "",
+              contentDescription = stringResource(Res.string.acsb_action_close),
               modifier = Modifier
                 .background(MaterialTheme.colorScheme.surfaceContainer)
                 .padding(8.dp)

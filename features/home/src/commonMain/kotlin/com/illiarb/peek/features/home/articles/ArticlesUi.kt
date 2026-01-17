@@ -16,6 +16,7 @@ import com.illiarb.peek.uikit.core.components.cell.ArticleLoadingCell
 import com.illiarb.peek.uikit.core.components.cell.EmptyState
 import com.illiarb.peek.uikit.core.model.VectorIcon
 import com.illiarb.peek.uikit.resources.Res
+import com.illiarb.peek.uikit.resources.acsb_icon_articles_empty
 import com.illiarb.peek.uikit.resources.bookmarks_stale_badge
 import com.illiarb.peek.uikit.resources.home_articles_empty_action
 import com.illiarb.peek.uikit.resources.home_articles_empty_title
@@ -57,7 +58,7 @@ internal fun ArticlesEmpty(
     title = stringResource(Res.string.home_articles_empty_title),
     image = VectorIcon(
       imageVector = Icons.AutoMirrored.Filled.Article,
-      contentDescription = "",
+      contentDescription = stringResource(Res.string.acsb_icon_articles_empty),
     ),
     buttonText = stringResource(Res.string.home_articles_empty_action),
     onButtonClick = { eventSink.invoke(ArticlesUi.ArticlesRefreshClicked) },

@@ -107,7 +107,11 @@ private fun DeleteBackground(
   deleteIcon: VectorIcon,
   shouldBounce: Boolean,
 ) {
-  val fraction = (offset / distanceToTriggerDismiss).coerceIn(0f, 1f)
+  val fraction = if (distanceToTriggerDismiss == 0f) {
+    0f
+  } else {
+    (offset / distanceToTriggerDismiss).coerceIn(0f, 1f)
+  }
 
   val backgroundColor = lerp(
     start = Color.Transparent,

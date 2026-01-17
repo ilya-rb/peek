@@ -12,6 +12,7 @@ import androidx.compose.material.icons.outlined.Error
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -24,6 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.illiarb.peek.uikit.core.model.VectorIcon
 import com.illiarb.peek.uikit.resources.Res
+import com.illiarb.peek.uikit.resources.acsb_icon_error
 import com.illiarb.peek.uikit.resources.common_error_default_action
 import com.illiarb.peek.uikit.resources.common_error_default_title
 import org.jetbrains.compose.resources.stringResource
@@ -46,7 +48,7 @@ public fun ErrorEmptyState(
   modifier: Modifier = Modifier,
   image: VectorIcon? = VectorIcon(
     imageVector = Icons.Outlined.Error,
-    contentDescription = "",
+    contentDescription = stringResource(Res.string.acsb_icon_error),
     colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onError),
   ),
   buttonText: String = stringResource(Res.string.common_error_default_action),
@@ -59,8 +61,8 @@ public fun ErrorEmptyState(
     image,
     buttonText,
     buttonIcon,
-    iconsColor = MaterialTheme.colorScheme.error,
-    buttonColors = ButtonDefaults.buttonColors(
+    MaterialTheme.colorScheme.error,
+    ButtonDefaults.buttonColors(
       containerColor = MaterialTheme.colorScheme.error,
       contentColor = MaterialTheme.colorScheme.onError,
     ),
@@ -113,15 +115,13 @@ internal fun EmptyStateInternal(
           colors = buttonColors,
         ) {
           if (buttonIcon != null) {
-            Image(
+            Icon(
+              modifier = Modifier.padding(end = 8.dp),
               imageVector = buttonIcon.imageVector,
               contentDescription = buttonIcon.contentDescription,
             )
           }
-          Text(
-            modifier = Modifier.padding(start = 8.dp),
-            text = buttonText,
-          )
+          Text(text = buttonText)
         }
       }
     }

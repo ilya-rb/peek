@@ -40,6 +40,7 @@ import com.illiarb.peek.uikit.resources.hn_logo
 import com.illiarb.peek.uikit.resources.service_dou_name
 import com.illiarb.peek.uikit.resources.service_ft_name
 import com.illiarb.peek.uikit.resources.service_hacker_news_name
+import com.illiarb.peek.uikit.resources.services_diaog_title
 import kotlinx.collections.immutable.mutate
 import kotlinx.collections.immutable.toPersistentList
 import org.jetbrains.compose.resources.stringResource
@@ -71,9 +72,9 @@ internal fun ServicesScreen(
     }
   )
 
-  Column {
+  Column(modifier = modifier) {
     Text(
-      text = "Reorder news sources",
+      text = stringResource(Res.string.services_diaog_title),
       style = MaterialTheme.typography.titleMedium,
       textAlign = TextAlign.Center,
       modifier = Modifier.fillMaxWidth()
@@ -85,7 +86,7 @@ internal fun ServicesScreen(
     LazyColumn(
       state = listState,
       verticalArrangement = Arrangement.spacedBy(8.dp),
-      modifier = modifier.reorderableContainer(reorderableState)
+      modifier = Modifier.reorderableContainer(reorderableState)
         .navigationBarsPadding()
         .padding(bottom = 24.dp, top = 16.dp)
     ) {

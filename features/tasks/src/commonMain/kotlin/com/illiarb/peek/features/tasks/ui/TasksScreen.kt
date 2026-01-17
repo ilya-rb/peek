@@ -86,7 +86,7 @@ internal fun TasksScreen(
       FloatingActionButton(onClick = { eventSink(Event.AddTaskClicked) }) {
         Icon(
           imageVector = Icons.Filled.Add,
-          contentDescription = stringResource(Res.string.tasks_empty_add),
+          contentDescription = stringResource(Res.string.acsb_action_add_task),
         )
       }
     },
