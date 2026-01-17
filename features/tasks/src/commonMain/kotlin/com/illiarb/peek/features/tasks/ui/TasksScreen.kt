@@ -5,7 +5,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,7 +16,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ListAlt
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -40,6 +38,9 @@ import com.illiarb.peek.uikit.core.components.cell.TaskLoadingCell
 import com.illiarb.peek.uikit.core.model.VectorIcon
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_navigation_back
+import com.illiarb.peek.uikit.resources.tasks_empty_add
+import com.illiarb.peek.uikit.resources.tasks_empty_title
+import com.illiarb.peek.uikit.resources.tasks_title
 import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
 
@@ -66,7 +67,7 @@ internal fun TasksScreen(
     topBar = {
       CenterAlignedTopAppBar(
         title = {
-          Text(text = "Tasks")
+          Text(text = stringResource(Res.string.tasks_title))
         },
         navigationIcon = {
           IconButton(onClick = { eventSink(Event.NavigateBack) }) {
@@ -82,7 +83,7 @@ internal fun TasksScreen(
       FloatingActionButton(onClick = { eventSink(Event.AddTaskClicked) }) {
         Icon(
           imageVector = Icons.Filled.Add,
-          contentDescription = "Add task",
+          contentDescription = stringResource(Res.string.tasks_empty_add),
         )
       }
     },
@@ -128,8 +129,8 @@ private fun TasksList(
   if (tasks.isEmpty()) {
     EmptyState(
       modifier = Modifier.padding(contentPadding),
-      title = "Nothing for today",
-      buttonText = "Add task",
+      title = stringResource(Res.string.tasks_empty_title),
+      buttonText = stringResource(Res.string.tasks_empty_add),
       buttonIcon = VectorIcon(
         imageVector = Icons.Filled.Add,
         contentDescription = "",
@@ -162,28 +163,15 @@ private fun TasksList(
           .padding(horizontal = 16.dp, vertical = 4.dp)
           .animateItem(fadeInSpec = null),
       ) {
-        Box(
+        CheckableListItem(
           modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
             .background(MaterialTheme.colorScheme.surfaceContainer),
-        ) {
-          CheckableListItem(
-            text = task.title,
-            checked = task.completed,
-            onCheckedChange = { onTaskToggled(task) },
-            trailingContent = if (task.habit) {
-              {
-                Icon(
-                  imageVector = Icons.Filled.Refresh,
-                  contentDescription = "Recurring task",
-                )
-              }
-            } else {
-              null
-            },
-          )
-        }
+          text = task.title,
+          checked = task.completed,
+          onCheckedChange = { onTaskToggled(task) },
+        )
       }
     }
   }

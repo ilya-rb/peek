@@ -3,6 +3,7 @@ package com.illiarb.peek.features.tasks.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.core.data.mapContent
@@ -38,9 +39,11 @@ internal class TasksScreenPresenter(
   @Composable
   override fun present(): TasksScreenContract.State {
     val coroutineScope = rememberStableCoroutineScope()
-    val today = Clock.System.now()
-      .toLocalDateTime(TimeZone.currentSystemDefault())
-      .date
+    val today = remember {
+      Clock.System.now()
+        .toLocalDateTime(TimeZone.currentSystemDefault())
+        .date
+    }
 
     var showAddTaskSheet by rememberRetained {
       mutableStateOf(false)

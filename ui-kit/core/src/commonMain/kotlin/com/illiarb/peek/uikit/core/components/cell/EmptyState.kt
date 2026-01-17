@@ -60,7 +60,7 @@ public fun ErrorEmptyState(
     buttonText,
     buttonIcon,
     iconsColor = MaterialTheme.colorScheme.error,
-    buttonColors = ButtonDefaults.buttonColors().copy(
+    buttonColors = ButtonDefaults.buttonColors(
       containerColor = MaterialTheme.colorScheme.error,
       contentColor = MaterialTheme.colorScheme.onError,
     ),
