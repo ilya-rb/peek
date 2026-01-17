@@ -53,7 +53,7 @@ internal fun ArticlesEmpty(
   eventSink: (ArticlesUi) -> Unit,
 ) {
   EmptyState(
-    modifier = Modifier.padding(contentPadding),
+    modifier = modifier.padding(contentPadding),
     title = stringResource(Res.string.home_articles_empty_title),
     image = VectorIcon(
       imageVector = Icons.AutoMirrored.Filled.Article,

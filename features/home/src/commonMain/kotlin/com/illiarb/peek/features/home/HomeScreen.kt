@@ -47,6 +47,7 @@ import com.illiarb.peek.uikit.core.components.cell.SelectableCircleAvatar
 import com.illiarb.peek.uikit.core.components.text.DateFormats
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_action_bookmarks
+import com.illiarb.peek.uikit.resources.acsb_action_reorder_services
 import com.illiarb.peek.uikit.resources.acsb_action_settings
 import com.illiarb.peek.uikit.resources.acsb_action_tasks
 import com.illiarb.peek.uikit.resources.home_screen_title
@@ -219,7 +220,7 @@ private fun BottomBar(
         Icon(
           imageVector = Icons.Filled.Reorder,
           tint = MaterialTheme.colorScheme.primary,
-          contentDescription = null,
+          contentDescription = stringResource(Res.string.acsb_action_reorder_services),
         )
       }
     }

@@ -37,9 +37,12 @@ import com.illiarb.peek.uikit.core.components.cell.SwipeToDeleteContainer
 import com.illiarb.peek.uikit.core.components.cell.TaskLoadingCell
 import com.illiarb.peek.uikit.core.model.VectorIcon
 import com.illiarb.peek.uikit.resources.Res
+import com.illiarb.peek.uikit.resources.acsb_action_add_task
+import com.illiarb.peek.uikit.resources.acsb_icon_tasks_empty
 import com.illiarb.peek.uikit.resources.acsb_navigation_back
 import com.illiarb.peek.uikit.resources.tasks_empty_add
 import com.illiarb.peek.uikit.resources.tasks_empty_title
+import com.illiarb.peek.uikit.resources.tasks_group_today
 import com.illiarb.peek.uikit.resources.tasks_title
 import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
@@ -101,13 +104,18 @@ internal fun TasksScreen(
         }
 
         is Async.Content -> {
-          TasksList(
-            tasks = targetState.content,
-            contentPadding = innerPadding,
-            onTaskToggled = { task -> eventSink(Event.TaskToggled(task)) },
-            onTaskDeleted = { taskId -> eventSink(Event.TaskDeleted(taskId)) },
-            onAddTaskClicked = { eventSink(Event.AddTaskClicked) },
-          )
+          if (targetState.content.isEmpty()) {
+            TasksEmpty(innerPadding) {
+              eventSink(Event.AddTaskClicked)
+            }
+          } else {
+            TasksList(
+              tasks = targetState.content,
+              contentPadding = innerPadding,
+              onTaskToggled = { task -> eventSink(Event.TaskToggled(task)) },
+              onTaskDeleted = { taskId -> eventSink(Event.TaskDeleted(taskId)) },
+            )
+          }
         }
 
         is Async.Loading -> {
@@ -119,39 +127,35 @@ internal fun TasksScreen(
 }
 
 @Composable
+private fun TasksEmpty(contentPadding: PaddingValues, onAddTaskClicked: () -> Unit) {
+  EmptyState(
+    modifier = Modifier.padding(contentPadding),
+    title = stringResource(Res.string.tasks_empty_title),
+    buttonText = stringResource(Res.string.tasks_empty_add),
+    buttonIcon = VectorIcon(
+      imageVector = Icons.Filled.Add,
+      contentDescription = stringResource(Res.string.acsb_action_add_task),
+    ),
+    onButtonClick = onAddTaskClicked,
+    image = VectorIcon(
+      imageVector = Icons.Filled.ListAlt,
+      contentDescription = stringResource(Res.string.acsb_icon_tasks_empty),
+    ),
+  )
+}
+
+@Composable
 private fun TasksList(
   tasks: ImmutableList<Task>,
   contentPadding: PaddingValues,
   onTaskToggled: (Task) -> Unit,
   onTaskDeleted: (String) -> Unit,
-  onAddTaskClicked: () -> Unit,
 ) {
-  if (tasks.isEmpty()) {
-    EmptyState(
-      modifier = Modifier.padding(contentPadding),
-      title = stringResource(Res.string.tasks_empty_title),
-      buttonText = stringResource(Res.string.tasks_empty_add),
-      buttonIcon = VectorIcon(
-        imageVector = Icons.Filled.Add,
-        contentDescription = "",
-      ),
-      onButtonClick = onAddTaskClicked,
-      image = VectorIcon(
-        imageVector = Icons.Filled.ListAlt,
-        contentDescription = "",
-      ),
-    )
-    return
-  }
-
   LazyColumn(
     modifier = Modifier.fillMaxSize(),
     contentPadding = contentPadding,
   ) {
-    item {
-      TasksHeader()
-    }
-
+    item { TasksHeader() }
     items(
       items = tasks,
       key = { it.id },
@@ -164,13 +168,13 @@ private fun TasksList(
           .animateItem(fadeInSpec = null),
       ) {
         CheckableListItem(
+          text = task.title,
+          checked = task.completed,
+          onCheckedChange = { onTaskToggled(task) },
           modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
             .background(MaterialTheme.colorScheme.surfaceContainer),
-          text = task.title,
-          checked = task.completed,
-          onCheckedChange = { onTaskToggled(task) },
         )
       }
     }
@@ -180,7 +184,7 @@ private fun TasksList(
 @Composable
 private fun TasksHeader() {
   Text(
-    text = "Today",
+    text = stringResource(Res.string.tasks_group_today),
     style = MaterialTheme.typography.titleMedium,
     color = MaterialTheme.colorScheme.onSurfaceVariant,
     modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),

@@ -26,6 +26,7 @@ import com.illiarb.peek.uikit.core.components.cell.SwitchCell
 import com.illiarb.peek.uikit.core.model.VectorIcon
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_icon_appearance
+import com.illiarb.peek.uikit.resources.acsb_icon_debug
 import com.illiarb.peek.uikit.resources.acsb_navigation_back
 import com.illiarb.peek.uikit.resources.settings_appearance_title
 import com.illiarb.peek.uikit.resources.settings_article_retention_subtitle
@@ -125,7 +126,7 @@ private fun SettingsContent(
       text = "Debug",
       icon = VectorIcon(
         imageVector = Icons.Filled.BugReport,
-        contentDescription = "Debug",
+        contentDescription = stringResource(Res.string.acsb_icon_debug),
       )
     )
     DebugSettings(

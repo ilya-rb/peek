@@ -89,7 +89,6 @@ public fun SwipeToDeleteContainer(
     onDismiss = { onDelete() },
     backgroundContent = {
       DeleteBackground(
-        modifier = modifier,
         offset = offsetPx,
         distanceToTriggerDismiss = distanceToTriggerDismiss,
         deleteIcon = deleteIcon,
@@ -130,7 +129,7 @@ private fun DeleteBackground(
 
   Box(
     contentAlignment = Alignment.CenterEnd,
-    modifier = Modifier
+    modifier = modifier
       .fillMaxSize()
       .clip(RoundedCornerShape(16.dp))
       .background(backgroundColor)
