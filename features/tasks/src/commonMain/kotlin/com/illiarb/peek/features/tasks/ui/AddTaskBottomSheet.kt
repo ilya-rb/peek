@@ -102,33 +102,7 @@ internal fun AddTaskBottomSheet(
     sheetState = sheetState,
     onDismissRequest = dismissSheet,
   ) {
-    Column(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp)
-        .navigationBarsPadding()
-    ) {
-      Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(
-          text = stringResource(Res.string.tasks_add_title),
-          style = MaterialTheme.typography.titleLarge,
-        )
-        Spacer(Modifier.weight(1f))
-        IconButton(
-          onClick = dismissSheet,
-          content = {
-            Icon(
-              imageVector = Icons.Filled.Close,
-              contentDescription = stringResource(Res.string.acsb_action_close),
-              modifier = Modifier
-                .background(MaterialTheme.colorScheme.surfaceContainer)
-                .padding(8.dp)
-                .clip(CircleShape),
-            )
-          },
-        )
-      }
-    }
+    BottomSheetHeader(onCloseClicked = dismissSheet)
 
     OutlinedTextField(
       value = taskTitle,
@@ -161,57 +135,114 @@ internal fun AddTaskBottomSheet(
       enter = expandVertically(),
       exit = shrinkVertically(),
     ) {
-      Column(
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp)
-          .padding(top = 16.dp)
-      ) {
-        Text(
-          text = stringResource(Res.string.tasks_add_time_of_day_title),
-          style = MaterialTheme.typography.labelLarge,
-          modifier = Modifier.padding(bottom = 8.dp),
-        )
-        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-          TimeOfDay.entries.minus(ANYTIME).forEachIndexed { index, entry ->
-            SegmentedButton(
-              selected = timeOfDay == entry,
-              onClick = { timeOfDay = entry },
-              shape = SegmentedButtonDefaults.itemShape(index = index, count = 3),
-            ) {
-              Text(entry.title())
-            }
-          }
+      HabitTimeSelector(timeOfDay, onNewSelected = { newSelection -> timeOfDay = newSelection })
+    }
+
+    ButtonsFooter(
+      enabled = taskTitle.isNotBlank(),
+      onAddNext = {
+        val selectedTimeOfDay = if (isHabit) timeOfDay else ANYTIME
+        onSubmit(taskTitle.trim(), isHabit, selectedTimeOfDay, false)
+
+        isHabit = false
+        taskTitle = ""
+        timeOfDay = MORNING
+      },
+      onSubmit = submitTask,
+    )
+  }
+}
+
+@Composable
+private fun HabitTimeSelector(
+  currentSelection: TimeOfDay,
+  onNewSelected: (TimeOfDay) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Column(
+    modifier = modifier
+      .fillMaxWidth()
+      .padding(horizontal = 16.dp)
+      .padding(top = 16.dp)
+  ) {
+    Text(
+      text = stringResource(Res.string.tasks_add_time_of_day_title),
+      style = MaterialTheme.typography.labelLarge,
+      modifier = Modifier.padding(bottom = 8.dp),
+    )
+    SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+      TimeOfDay.entries.minus(ANYTIME).forEachIndexed { index, entry ->
+        SegmentedButton(
+          selected = currentSelection == entry,
+          onClick = { onNewSelected(entry) },
+          shape = SegmentedButtonDefaults.itemShape(index = index, count = 3),
+        ) {
+          Text(entry.title())
         }
       }
     }
+  }
+}
 
-    Row(
-      horizontalArrangement = Arrangement.spacedBy(8.dp),
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp, vertical = 16.dp)
-    ) {
-      OutlinedButton(
-        modifier = Modifier.weight(1f),
-        enabled = taskTitle.isNotBlank(),
-        onClick = {
-          val selectedTimeOfDay = if (isHabit) timeOfDay else ANYTIME
-          onSubmit(taskTitle.trim(), isHabit, selectedTimeOfDay, false)
-
-          isHabit = false
-          taskTitle = ""
-          timeOfDay = MORNING
-        },
-        content = { Text(stringResource(Res.string.tasks_add_add_next)) }
+@Composable
+private fun BottomSheetHeader(
+  modifier: Modifier = Modifier,
+  onCloseClicked: () -> Unit,
+) {
+  Column(
+    modifier = modifier
+      .fillMaxWidth()
+      .padding(horizontal = 16.dp)
+      .navigationBarsPadding()
+  ) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+      Text(
+        text = stringResource(Res.string.tasks_add_title),
+        style = MaterialTheme.typography.titleLarge,
       )
-      Button(
-        modifier = Modifier.weight(1f),
-        enabled = taskTitle.isNotBlank(),
-        onClick = submitTask,
-        content = { Text(stringResource(Res.string.tasks_add_submit)) }
+      Spacer(Modifier.weight(1f))
+      IconButton(
+        onClick = onCloseClicked,
+        content = {
+          Icon(
+            imageVector = Icons.Filled.Close,
+            contentDescription = stringResource(Res.string.acsb_action_close),
+            modifier = Modifier
+              .background(MaterialTheme.colorScheme.surfaceContainer)
+              .padding(8.dp)
+              .clip(CircleShape),
+          )
+        },
       )
     }
+  }
+}
+
+@Composable
+private fun ButtonsFooter(
+  enabled: Boolean,
+  onAddNext: () -> Unit,
+  onSubmit: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Row(
+    horizontalArrangement = Arrangement.spacedBy(8.dp),
+    modifier = modifier
+      .fillMaxWidth()
+      .padding(horizontal = 16.dp, vertical = 16.dp)
+  ) {
+    OutlinedButton(
+      modifier = Modifier.weight(1f),
+      enabled = enabled,
+      onClick = onAddNext,
+      content = { Text(stringResource(Res.string.tasks_add_add_next)) }
+    )
+    Button(
+      modifier = Modifier.weight(1f),
+      enabled = enabled,
+      onClick = onSubmit,
+      content = { Text(stringResource(Res.string.tasks_add_submit)) }
+    )
   }
 }
 

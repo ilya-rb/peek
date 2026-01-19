@@ -26,6 +26,7 @@ import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
@@ -40,6 +41,7 @@ internal class TasksScreenPresenter(
 ) : Presenter<TasksScreenContract.State> {
 
   @Composable
+  @Suppress("CyclomaticComplexMethod")
   override fun present(): TasksScreenContract.State {
     val coroutineScope = rememberStableCoroutineScope()
     val now = remember {
@@ -82,43 +84,19 @@ internal class TasksScreenPresenter(
       selectedDate = selectedDate,
       eventSink = { event ->
         when (event) {
-          is Event.NavigateBack -> {
-            navigator.pop()
-          }
-
-          is Event.AddTaskClicked -> {
-            showAddTaskSheet = true
-          }
-
-          is Event.AddTaskDismissed -> {
-            showAddTaskSheet = false
-          }
-
-          is Event.ErrorRetryClicked -> {
-            reloadTrigger++
-          }
-
-          is Event.PreviousDayClicked -> {
-            selectedDate = selectedDate.minus(1, DateTimeUnit.DAY)
-          }
-
-          is Event.NextDayClicked -> {
-            selectedDate = selectedDate.plus(1, DateTimeUnit.DAY)
-          }
+          is Event.NavigateBack -> navigator.pop()
+          is Event.AddTaskClicked -> showAddTaskSheet = true
+          is Event.AddTaskDismissed -> showAddTaskSheet = false
+          is Event.ErrorRetryClicked -> reloadTrigger++
+          is Event.PreviousDayClicked -> selectedDate = selectedDate.minus(1, DateTimeUnit.DAY)
+          is Event.NextDayClicked -> selectedDate = selectedDate.plus(1, DateTimeUnit.DAY)
 
           is Event.AddTaskSubmitted -> {
             if (event.dismissSheet) {
               showAddTaskSheet = false
             }
-
             coroutineScope.launch {
-              val draft = TaskDraft(
-                title = event.title,
-                habit = event.isHabit,
-                timeOfDay = event.timeOfDay,
-                forDate = selectedDate,
-              )
-              tasksService.addTask(draft)
+              createNewTask(event, selectedDate)
             }
           }
 
@@ -130,14 +108,7 @@ internal class TasksScreenPresenter(
 
           is Event.TaskDeleted -> {
             coroutineScope.launch {
-              tasksService.deleteTask(event.taskId)
-
-              messageDispatcher.sendMessage(
-                Message(
-                  content = getString(Res.string.tasks_task_removed),
-                  type = MessageType.SUCCESS,
-                )
-              )
+              deleteTask(event)
             }
           }
 
@@ -151,5 +122,26 @@ internal class TasksScreenPresenter(
         }
       }
     )
+  }
+
+  private suspend fun deleteTask(event: Event.TaskDeleted) {
+    tasksService.deleteTask(event.taskId)
+
+    messageDispatcher.sendMessage(
+      Message(
+        content = getString(Res.string.tasks_task_removed),
+        type = MessageType.SUCCESS,
+      )
+    )
+  }
+
+  private suspend fun createNewTask(event: Event.AddTaskSubmitted, forDate: LocalDate) {
+    val draft = TaskDraft(
+      title = event.title,
+      habit = event.isHabit,
+      timeOfDay = event.timeOfDay,
+      forDate = forDate,
+    )
+    tasksService.addTask(draft)
   }
 }
