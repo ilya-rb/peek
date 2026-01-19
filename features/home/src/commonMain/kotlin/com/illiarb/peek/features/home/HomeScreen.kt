@@ -25,6 +25,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
@@ -33,18 +36,22 @@ import androidx.compose.ui.unit.dp
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.home.HomeScreenContract.Event
 import com.illiarb.peek.features.home.HomeScreenContract.NewsSource
+import com.illiarb.peek.features.home.HomeScreenContract.TasksIndicator
 import com.illiarb.peek.features.home.articles.ArticlesContent
 import com.illiarb.peek.features.home.articles.ArticlesEmpty
 import com.illiarb.peek.features.home.articles.ArticlesLoading
 import com.illiarb.peek.features.navigation.map.ServicesScreen
 import com.illiarb.peek.features.navigation.map.SummaryScreen
 import com.illiarb.peek.features.navigation.map.showScreenOverlay
+import com.illiarb.peek.uikit.core.components.BorderState
+import com.illiarb.peek.uikit.core.components.BorderedIcon
 import com.illiarb.peek.uikit.core.components.HorizontalList
 import com.illiarb.peek.uikit.core.components.TextSwitcher
 import com.illiarb.peek.uikit.core.components.cell.AvatarState
 import com.illiarb.peek.uikit.core.components.cell.ErrorEmptyState
 import com.illiarb.peek.uikit.core.components.cell.SelectableCircleAvatar
 import com.illiarb.peek.uikit.core.components.text.DateFormats
+import com.illiarb.peek.uikit.core.theme.UiKitColors
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_action_bookmarks
 import com.illiarb.peek.uikit.resources.acsb_action_reorder_services
@@ -69,6 +76,11 @@ internal fun HomeScreen(state: HomeScreenContract.State, modifier: Modifier = Mo
 
   val bottomBarBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior()
   val topBarBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+  val topBarFullyVisible by remember {
+    derivedStateOf {
+      topBarBehavior.state.collapsedFraction == 0f
+    }
+  }
 
   val hazeState = rememberHazeState()
   val hazeStyle = HazeMaterials.thin(MaterialTheme.colorScheme.surface)
@@ -102,8 +114,6 @@ internal fun HomeScreen(state: HomeScreenContract.State, modifier: Modifier = Mo
         .nestedScroll(bottomBarBehavior.nestedScrollConnection)
         .nestedScroll(topBarBehavior.nestedScrollConnection),
       topBar = {
-        val topBarFullyVisible = topBarBehavior.state.collapsedFraction == 0f
-
         TopAppBar(
           scrollBehavior = topBarBehavior,
           colors = TopAppBarDefaults.topAppBarColors(
@@ -117,7 +127,7 @@ internal fun HomeScreen(state: HomeScreenContract.State, modifier: Modifier = Mo
             )
           },
           actions = {
-            TopBarActions(eventSink)
+            TopBarActions(state.tasksIndicator, eventSink)
           },
         )
       },
@@ -165,12 +175,22 @@ private fun TopBarTitle(
 }
 
 @Composable
-private fun TopBarActions(eventSink: (Event) -> Unit) {
+private fun TopBarActions(
+  tasksIndicator: TasksIndicator,
+  eventSink: (Event) -> Unit,
+) {
   IconButton(onClick = { eventSink.invoke(Event.TasksClicked) }) {
-    Icon(
-      imageVector = Icons.Filled.CheckCircle,
-      contentDescription = stringResource(Res.string.acsb_action_tasks),
-    )
+    val borderState = when (tasksIndicator) {
+      TasksIndicator.None -> BorderState.None
+      TasksIndicator.HasIncompleteTasks -> BorderState.Pulsating(UiKitColors.orange)
+      TasksIndicator.AllTasksCompleted -> BorderState.Static(UiKitColors.green)
+    }
+    BorderedIcon(borderState = borderState) {
+      Icon(
+        imageVector = Icons.Filled.CheckCircle,
+        contentDescription = stringResource(Res.string.acsb_action_tasks),
+      )
+    }
   }
   IconButton(onClick = { eventSink.invoke(Event.BookmarksClicked) }) {
     Icon(
