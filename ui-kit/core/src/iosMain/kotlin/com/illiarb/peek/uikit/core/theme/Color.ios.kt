@@ -6,6 +6,6 @@ import androidx.compose.runtime.Composable
 @Composable
 internal actual fun colorScheme(useDarkTheme: Boolean, useDynamicColors: Boolean): ColorScheme =
   when {
-    useDarkTheme -> UiKitColor.colorSchemeDark
-    else -> UiKitColor.colorSchemeLight
+    useDarkTheme -> UiKitColorScheme.colorSchemeDark
+    else -> UiKitColorScheme.colorSchemeLight
   }
