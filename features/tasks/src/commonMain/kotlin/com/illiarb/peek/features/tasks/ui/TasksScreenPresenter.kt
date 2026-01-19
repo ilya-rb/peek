@@ -124,14 +124,14 @@ internal class TasksScreenPresenter(
   }
 
   private suspend fun deleteTask(event: Event.TaskDeleted) {
-    tasksService.deleteTask(event.taskId)
-
-    messageDispatcher.sendMessage(
-      Message(
-        content = getString(Res.string.tasks_task_removed),
-        type = MessageType.SUCCESS,
+    tasksService.deleteTask(event.taskId).onSuccess {
+      messageDispatcher.sendMessage(
+        Message(
+          content = getString(Res.string.tasks_task_removed),
+          type = MessageType.SUCCESS,
+        )
       )
-    )
+    }
   }
 
   private suspend fun createNewTask(event: Event.AddTaskSubmitted, forDate: LocalDate) {

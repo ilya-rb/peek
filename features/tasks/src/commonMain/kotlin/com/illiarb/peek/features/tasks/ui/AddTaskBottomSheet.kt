@@ -110,7 +110,13 @@ internal fun AddTaskBottomSheet(
       placeholder = { Text(stringResource(Res.string.tasks_add_input_hint)) },
       singleLine = true,
       keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-      keyboardActions = KeyboardActions(onDone = { submitTask() }),
+      keyboardActions = KeyboardActions(
+        onDone = {
+          if (taskTitle.isNotBlank()) {
+            submitTask()
+          }
+        }
+      ),
       modifier = Modifier.fillMaxWidth()
         .padding(horizontal = 16.dp)
         .padding(top = 16.dp),
@@ -210,9 +216,9 @@ private fun BottomSheetHeader(
             imageVector = Icons.Filled.Close,
             contentDescription = stringResource(Res.string.acsb_action_close),
             modifier = Modifier
+              .clip(CircleShape)
               .background(MaterialTheme.colorScheme.surfaceContainer)
               .padding(8.dp)
-              .clip(CircleShape),
           )
         },
       )
