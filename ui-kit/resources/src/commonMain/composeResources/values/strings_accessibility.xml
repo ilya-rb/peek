@@ -20,6 +20,7 @@
   <string name="acsb_icon_reader_reading_time">Estimated reading time</string>
   <string name="acsb_icon_tags">Tags</string>
   <string name="acsb_icon_tasks_empty">No tasks</string>
+  <string name="acsb_icon_task_habit">Repeatable</string>
   <string name="acsb_navigation_back">Back</string>
   <string name="acsb_switch_checked">On</string>
 </resources>

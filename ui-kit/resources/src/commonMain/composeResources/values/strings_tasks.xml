@@ -3,8 +3,18 @@
   <string name="tasks_add_title">I need to</string>
   <string name="tasks_add_input_hint">What do you need to do?</string>
   <string name="tasks_add_submit">Save</string>
-  <string name="tasks_title">Tasks</string>
+  <string name="tasks_add_add_next">Add next</string>
+  <string name="tasks_add_habit_title">Habit</string>
+  <string name="tasks_add_habit_subtitle">Repeat this task every day</string>
+  <string name="tasks_add_time_of_day_title">Time of day</string>
+  <string name="tasks_time_of_day_morning">Morning</string>
+  <string name="tasks_time_of_day_midday">Midday</string>
+  <string name="tasks_time_of_day_evening">Evening</string>
+  <string name="tasks_section_morning">Morning</string>
+  <string name="tasks_section_midday">Midday</string>
+  <string name="tasks_section_evening">Evening</string>
+  <string name="tasks_title">Daily routine</string>
   <string name="tasks_empty_add">Add task</string>
-  <string name="tasks_empty_title">Nothing for today</string>
-  <string name="tasks_group_today">Today</string>
+  <string name="tasks_empty_title">No tasks for today</string>
+  <string name="tasks_group_today">Tasks</string>
 </resources>
