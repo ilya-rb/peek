@@ -171,11 +171,13 @@ private fun HabitTimeSelector(
       modifier = Modifier.padding(bottom = 8.dp),
     )
     SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-      TimeOfDay.entries.minus(ANYTIME).forEachIndexed { index, entry ->
+      val entries = TimeOfDay.entries.minus(ANYTIME)
+
+      entries.forEachIndexed { index, entry ->
         SegmentedButton(
           selected = currentSelection == entry,
           onClick = { onNewSelected(entry) },
-          shape = SegmentedButtonDefaults.itemShape(index = index, count = 3),
+          shape = SegmentedButtonDefaults.itemShape(index = index, count = entries.size),
         ) {
           Text(entry.title())
         }

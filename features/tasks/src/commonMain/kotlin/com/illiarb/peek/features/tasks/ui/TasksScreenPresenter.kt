@@ -3,7 +3,6 @@ package com.illiarb.peek.features.tasks.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.core.data.mapContent
@@ -44,7 +43,7 @@ internal class TasksScreenPresenter(
   @Suppress("CyclomaticComplexMethod")
   override fun present(): TasksScreenContract.State {
     val coroutineScope = rememberStableCoroutineScope()
-    val now = remember {
+    val now = rememberRetained {
       Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
     }
     var selectedDate by rememberRetained {
@@ -59,8 +58,8 @@ internal class TasksScreenPresenter(
     var expandedSections by rememberRetained {
       mutableStateOf(
         when (now.time.hour) {
-          in 6..12 -> setOf(TimeOfDay.MORNING)
-          in 13..18 -> setOf(TimeOfDay.MIDDAY)
+          in 6..11 -> setOf(TimeOfDay.MORNING)
+          in 12..17 -> setOf(TimeOfDay.MIDDAY)
           else -> setOf(TimeOfDay.EVENING)
         }
       )

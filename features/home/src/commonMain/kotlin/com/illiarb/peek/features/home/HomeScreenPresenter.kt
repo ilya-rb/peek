@@ -3,7 +3,6 @@ package com.illiarb.peek.features.home
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.illiarb.peek.api.PeekApiService
 import com.illiarb.peek.api.domain.Article
@@ -60,14 +59,14 @@ internal class HomeScreenPresenter(
   @Suppress("CyclomaticComplexMethod", "LongMethod")
   override fun present(): HomeScreenContract.State {
     val coroutineScope = rememberStableCoroutineScope()
+    val today = Clock.System.now()
+      .toLocalDateTime(TimeZone.currentSystemDefault())
+      .date
 
-    val today = remember {
-      Clock.System.now()
-        .toLocalDateTime(TimeZone.currentSystemDefault())
-        .date
-    }
-
-    val tasksIndicator by produceRetainedState<TasksIndicator>(TasksIndicator.None) {
+    val tasksIndicator by produceRetainedState<TasksIndicator>(
+      initialValue = TasksIndicator.None,
+      key1 = today,
+    ) {
       tasksService.getTasksForDate(today).collect { async ->
         value = when (async) {
           is Async.Loading -> TasksIndicator.None
