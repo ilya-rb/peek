@@ -13,13 +13,16 @@ import com.illiarb.peek.core.data.mapContent
 import com.illiarb.peek.features.home.HomeScreenContract.ArticlesResult
 import com.illiarb.peek.features.home.HomeScreenContract.Event
 import com.illiarb.peek.features.home.HomeScreenContract.NewsSource
+import com.illiarb.peek.features.home.HomeScreenContract.TasksIndicator
 import com.illiarb.peek.features.home.articles.ArticlesUi
 import com.illiarb.peek.features.navigation.map.BookmarksScreen
-import com.illiarb.peek.features.navigation.map.TasksScreen
 import com.illiarb.peek.features.navigation.map.ReaderScreen
 import com.illiarb.peek.features.navigation.map.SettingsScreen
 import com.illiarb.peek.features.navigation.map.ShareScreen
 import com.illiarb.peek.features.navigation.map.SummaryScreen
+import com.illiarb.peek.features.navigation.map.TasksScreen
+import com.illiarb.peek.features.tasks.TasksService
+import com.illiarb.peek.features.tasks.domain.TimeOfDay
 import com.illiarb.peek.uikit.messages.Message
 import com.illiarb.peek.uikit.messages.MessageDispatcher
 import com.illiarb.peek.uikit.messages.MessageType
@@ -39,19 +42,46 @@ import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import com.slack.circuit.runtime.presenter.Presenter
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.getString
+import kotlin.time.Clock
 
 internal class HomeScreenPresenter(
   private val navigator: Navigator,
   private val peekApiService: PeekApiService,
   private val messageDispatcher: MessageDispatcher,
+  private val tasksService: TasksService,
 ) : Presenter<HomeScreenContract.State> {
 
   @Composable
   @Suppress("CyclomaticComplexMethod", "LongMethod")
   override fun present(): HomeScreenContract.State {
     val coroutineScope = rememberStableCoroutineScope()
+    val today = Clock.System.now()
+      .toLocalDateTime(TimeZone.currentSystemDefault())
+      .date
+
+    val tasksIndicator by produceRetainedState<TasksIndicator>(
+      initialValue = TasksIndicator.None,
+      key1 = today,
+    ) {
+      tasksService.getTasksForDate(today).collect { async ->
+        value = when (async) {
+          is Async.Loading -> TasksIndicator.None
+          is Async.Error -> TasksIndicator.None
+          is Async.Content -> {
+            val anytimeTasks = async.content.filter { it.timeOfDay == TimeOfDay.ANYTIME }
+            when {
+              anytimeTasks.isEmpty() -> TasksIndicator.None
+              anytimeTasks.all { it.completed } -> TasksIndicator.AllTasksCompleted
+              else -> TasksIndicator.HasIncompleteTasks
+            }
+          }
+        }
+      }
+    }
 
     var articleSummaryToShow by rememberRetained {
       mutableStateOf<Article?>(value = null)
@@ -146,6 +176,7 @@ internal class HomeScreenPresenter(
       contentRefreshing = contentRefreshing,
       servicesOrderToShow = servicesOrderToShow,
       articles = articles.articles,
+      tasksIndicator = tasksIndicator,
       eventSink = { event ->
         when (event) {
           is Event.SettingsClicked -> navigator.goTo(SettingsScreen)

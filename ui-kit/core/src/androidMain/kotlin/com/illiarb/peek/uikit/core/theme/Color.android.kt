@@ -18,7 +18,7 @@ internal actual fun colorScheme(useDarkTheme: Boolean, useDynamicColors: Boolean
       dynamicLightColorScheme(LocalContext.current)
     }
 
-    useDarkTheme -> UiKitColor.colorSchemeDark
+    useDarkTheme -> UiKitColorScheme.colorSchemeDark
 
-    else -> UiKitColor.colorSchemeLight
+    else -> UiKitColorScheme.colorSchemeLight
   }

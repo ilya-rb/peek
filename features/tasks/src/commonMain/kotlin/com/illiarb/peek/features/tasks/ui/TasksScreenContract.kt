@@ -4,8 +4,9 @@ import androidx.compose.runtime.Immutable
 import com.illiarb.peek.core.arch.di.UiScope
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.navigation.map.TasksScreen
-import com.illiarb.peek.features.tasks.domain.Task
 import com.illiarb.peek.features.tasks.TasksService
+import com.illiarb.peek.features.tasks.domain.Task
+import com.illiarb.peek.features.tasks.domain.TimeOfDay
 import com.illiarb.peek.features.tasks.ui.TasksScreenContract.State
 import com.illiarb.peek.uikit.messages.MessageDispatcher
 import com.slack.circuit.runtime.CircuitContext
@@ -18,14 +19,17 @@ import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import dev.zacsweers.metro.ContributesIntoSet
 import dev.zacsweers.metro.Inject
-import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.datetime.LocalDate
 
 internal interface TasksScreenContract {
 
   @Immutable
   data class State(
-    val tasks: Async<ImmutableList<Task>>,
+    val tasks: Async<ImmutableMap<TimeOfDay, List<Task>>>,
     val showAddTaskSheet: Boolean,
+    val expandedSections: Set<TimeOfDay>,
+    val selectedDate: LocalDate,
     val eventSink: (Event) -> Unit,
   ) : CircuitUiState
 
@@ -34,9 +38,17 @@ internal interface TasksScreenContract {
     data object AddTaskClicked : Event
     data object AddTaskDismissed : Event
     data object ErrorRetryClicked : Event
-    data class AddTaskSubmitted(val title: String) : Event
+    data object PreviousDayClicked : Event
+    data object NextDayClicked : Event
     data class TaskToggled(val task: Task) : Event
     data class TaskDeleted(val taskId: String) : Event
+    data class SectionToggled(val timeOfDay: TimeOfDay) : Event
+    data class AddTaskSubmitted(
+      val title: String,
+      val isHabit: Boolean,
+      val timeOfDay: TimeOfDay,
+      val dismissSheet: Boolean,
+    ) : Event
   }
 }
 

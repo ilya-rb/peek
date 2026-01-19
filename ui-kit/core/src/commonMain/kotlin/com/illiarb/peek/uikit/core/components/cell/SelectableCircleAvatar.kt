@@ -31,6 +31,12 @@ import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.vectorResource
 
+public enum class AvatarState {
+  Default,
+  Selected,
+  Unselected,
+}
+
 @Composable
 public fun SelectableCircleAvatar(
   modifier: Modifier = Modifier,
@@ -96,12 +102,6 @@ private fun Modifier.animatedSelectedBorder(borderWidth: Dp): Modifier {
     ),
   )
   return this.selectedBorder(colors, borderWidth, angle)
-}
-
-public enum class AvatarState {
-  Default,
-  Selected,
-  Unselected,
 }
 
 private fun Modifier.selectedBorder(

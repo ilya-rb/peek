@@ -10,6 +10,7 @@ import com.illiarb.peek.features.home.HomeScreenContract.State
 import com.illiarb.peek.features.home.articles.ArticlesUi
 import com.illiarb.peek.features.navigation.map.HomeScreen
 import com.illiarb.peek.features.navigation.map.SummaryScreen
+import com.illiarb.peek.features.tasks.TasksService
 import com.illiarb.peek.uikit.messages.MessageDispatcher
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiEvent
@@ -36,9 +37,16 @@ internal interface HomeScreenContract {
     val articleSummaryToShow: Article?,
     val servicesOrderToShow: Unit?,
     val contentRefreshing: Boolean,
+    val tasksIndicator: TasksIndicator,
     val eventSink: (Event) -> Unit,
     val articlesEventSink: (ArticlesUi) -> Unit,
   ) : CircuitUiState
+
+  sealed interface TasksIndicator {
+    data object None : TasksIndicator
+    data object HasIncompleteTasks : TasksIndicator
+    data object AllTasksCompleted : TasksIndicator
+  }
 
   data class NewsSource(
     val icon: DrawableResource,
@@ -90,6 +98,7 @@ public interface HomeScreenComponent {
   public class PresenterFactory(
     private val peekApiService: PeekApiService,
     private val messageDispatcher: MessageDispatcher,
+    private val tasksService: TasksService,
   ) : Presenter.Factory {
 
     override fun create(
@@ -98,7 +107,7 @@ public interface HomeScreenComponent {
       context: CircuitContext
     ): Presenter<*>? {
       return if (screen is HomeScreen) {
-        HomeScreenPresenter(navigator, peekApiService, messageDispatcher)
+        HomeScreenPresenter(navigator, peekApiService, messageDispatcher, tasksService)
       } else {
         null
       }

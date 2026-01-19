@@ -101,11 +101,14 @@ internal fun EmptyStateInternal(
 
       Text(
         text = title,
-        modifier = Modifier.padding(top = 16.dp),
         style = MaterialTheme.typography.titleMedium,
         color = MaterialTheme.colorScheme.onSurface,
         textAlign = TextAlign.Center,
         maxLines = 2,
+        modifier = Modifier.padding(
+          top = 16.dp,
+          bottom = if (buttonText == null) 16.dp else 0.dp,
+        ),
       )
 
       if (buttonText != null) {

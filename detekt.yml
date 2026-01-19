@@ -18,6 +18,8 @@ naming:
   TopLevelPropertyNaming:
     active: true
     constantPattern: '[A-Z][A-Za-z0-9]*'
+  MatchingDeclarationName:
+    active: false
 
 style:
   active: true

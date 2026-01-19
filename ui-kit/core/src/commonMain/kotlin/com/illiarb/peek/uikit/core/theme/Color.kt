@@ -9,10 +9,15 @@ import androidx.compose.ui.graphics.Color
 @Composable
 internal expect fun colorScheme(useDarkTheme: Boolean, useDynamicColors: Boolean): ColorScheme
 
+public object UiKitColors {
+  public val green: Color = Color(0xFF00C700)
+  public val orange: Color = Color(0xFFED9C00)
+}
+
 /**
  * https://material-foundation.github.io/material-theme-builder/
  */
-internal object UiKitColor {
+internal object UiKitColorScheme {
 
   val colorSchemeLight: ColorScheme = lightColorScheme(
     background = Light.background,
