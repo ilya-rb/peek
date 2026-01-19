@@ -22,8 +22,8 @@ import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import com.slack.circuit.runtime.presenter.Presenter
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.TimeZone
@@ -63,13 +63,15 @@ internal class TasksScreenPresenter(
         }
       )
     }
-    val tasks by produceRetainedState<Async<ImmutableList<Task>>>(
+    val tasks by produceRetainedState<Async<ImmutableMap<TimeOfDay, List<Task>>>>(
       initialValue = Async.Loading,
       key1 = reloadTrigger,
       key2 = selectedDate,
     ) {
       tasksService.getTasksForDate(selectedDate)
-        .mapContent { it.toImmutableList() }
+        .mapContent {
+          it.groupBy { task -> task.timeOfDay }.toImmutableMap()
+        }
         .collect { value = it }
     }
 

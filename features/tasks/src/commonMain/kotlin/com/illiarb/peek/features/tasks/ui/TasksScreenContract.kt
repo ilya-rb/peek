@@ -19,14 +19,14 @@ import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import dev.zacsweers.metro.ContributesIntoSet
 import dev.zacsweers.metro.Inject
-import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.datetime.LocalDate
 
 internal interface TasksScreenContract {
 
   @Immutable
   data class State(
-    val tasks: Async<ImmutableList<Task>>,
+    val tasks: Async<ImmutableMap<TimeOfDay, List<Task>>>,
     val showAddTaskSheet: Boolean,
     val expandedSections: Set<TimeOfDay>,
     val selectedDate: LocalDate,

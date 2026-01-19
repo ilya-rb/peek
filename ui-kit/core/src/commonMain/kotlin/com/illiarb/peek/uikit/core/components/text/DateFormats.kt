@@ -5,6 +5,7 @@ import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.duration_hours_ago
 import com.illiarb.peek.uikit.resources.duration_less_then_a_minute
 import com.illiarb.peek.uikit.resources.duration_minutes_ago
+import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Duration
@@ -20,5 +21,11 @@ public object DateFormats {
         else -> stringResource(Res.string.duration_less_then_a_minute)
       }
     }
+  }
+
+  public fun formatDate(date: LocalDate): String {
+    val month = date.month.name.lowercase().replaceFirstChar { it.uppercase() }
+    val monthShort = month.take(3)
+    return "$monthShort ${date.dayOfMonth}, ${date.year}"
   }
 }
