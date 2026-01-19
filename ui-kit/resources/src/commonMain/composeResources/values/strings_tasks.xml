@@ -16,5 +16,6 @@
   <string name="tasks_title">Daily routine</string>
   <string name="tasks_empty_add">Add task</string>
   <string name="tasks_empty_title">No tasks for today</string>
-  <string name="tasks_group_today">Tasks</string>
+  <string name="tasks_group_anytime">Tasks</string>
+  <string name="tasks_today_title">Today</string>
 </resources>

@@ -56,6 +56,7 @@ import com.illiarb.peek.uikit.core.components.cell.SwipeToDeleteContainer
 import com.illiarb.peek.uikit.core.components.cell.TaskLoadingCell
 import com.illiarb.peek.uikit.core.components.text.DateFormats
 import com.illiarb.peek.uikit.core.model.VectorIcon
+import com.illiarb.peek.uikit.core.theme.UiKitColors
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_action_add_task
 import com.illiarb.peek.uikit.resources.acsb_icon_collapse
@@ -65,11 +66,12 @@ import com.illiarb.peek.uikit.resources.acsb_icon_previous_day
 import com.illiarb.peek.uikit.resources.acsb_icon_tasks_empty
 import com.illiarb.peek.uikit.resources.acsb_navigation_back
 import com.illiarb.peek.uikit.resources.tasks_empty_title
-import com.illiarb.peek.uikit.resources.tasks_group_today
+import com.illiarb.peek.uikit.resources.tasks_group_anytime
 import com.illiarb.peek.uikit.resources.tasks_section_evening
 import com.illiarb.peek.uikit.resources.tasks_section_midday
 import com.illiarb.peek.uikit.resources.tasks_section_morning
 import com.illiarb.peek.uikit.resources.tasks_title
+import com.illiarb.peek.uikit.resources.tasks_today_title
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -191,7 +193,7 @@ private fun TasksList(
     modifier = Modifier.fillMaxSize(),
     contentPadding = contentPadding,
   ) {
-    tasks.forEach { (timeOfDay, sectionTasks) ->
+    tasks.minus(TimeOfDay.ANYTIME).forEach { (timeOfDay, sectionTasks) ->
       if (sectionTasks.isNotEmpty()) {
         item(key = "header_${timeOfDay.name}") {
           TimeOfDaySectionHeader(
@@ -199,7 +201,6 @@ private fun TasksList(
             isExpanded = expandedSections.contains(timeOfDay),
             allTasksCompleted = sectionTasks.all { it.completed },
             onToggle = { onSectionToggled(timeOfDay) },
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
           )
         }
 
@@ -270,10 +271,10 @@ private fun TasksList(
 @Composable
 private fun TasksHeader() {
   Text(
-    text = stringResource(Res.string.tasks_group_today),
+    text = stringResource(Res.string.tasks_group_anytime),
     style = MaterialTheme.typography.titleLarge,
     color = MaterialTheme.colorScheme.onSurfaceVariant,
-    modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+    modifier = Modifier.padding(horizontal = 16.dp).padding(top = 32.dp, bottom = 16.dp),
   )
 }
 
@@ -294,14 +295,14 @@ private fun TimeOfDaySectionHeader(
     Icon(
       imageVector = timeOfDay.getIcon(),
       contentDescription = null,
-      modifier = Modifier.size(20.dp),
+      modifier = Modifier.padding(start = 16.dp).size(20.dp),
       tint = MaterialTheme.colorScheme.onSurfaceVariant,
     )
     Text(
       text = stringResource(timeOfDay.getSectionTitle()),
       style = MaterialTheme.typography.labelLarge,
       color = MaterialTheme.colorScheme.onSurfaceVariant,
-      modifier = Modifier.padding(start = 8.dp),
+      modifier = Modifier.padding(start = 8.dp).padding(vertical = 16.dp),
     )
 
     Spacer(modifier = Modifier.weight(1f))
@@ -311,13 +312,13 @@ private fun TimeOfDaySectionHeader(
         imageVector = Icons.Default.Check,
         contentDescription = null,
         modifier = Modifier.size(20.dp).padding(end = 4.dp),
-        tint = MaterialTheme.colorScheme.primary,
+        tint = UiKitColors.green,
       )
     }
 
     Icon(
       imageVector = if (isExpanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
-      modifier = Modifier.size(20.dp),
+      modifier = Modifier.padding(end = 16.dp).size(20.dp),
       tint = MaterialTheme.colorScheme.onSurfaceVariant,
       contentDescription = if (isExpanded) {
         stringResource(Res.string.acsb_icon_collapse)
@@ -341,7 +342,7 @@ private fun DateSelector(
 
   val isToday = selectedDate == today
   val dateText = if (isToday) {
-    stringResource(Res.string.tasks_group_today)
+    stringResource(Res.string.tasks_today_title).uppercase()
   } else {
     DateFormats.formatDate(selectedDate)
   }
@@ -382,8 +383,9 @@ private fun TasksLoading(
     modifier = modifier.fillMaxSize(),
     contentPadding = contentPadding,
   ) {
-    item { TasksHeader() }
-    items(count = 5) { TaskLoadingCell() }
+    items(count = 5) {
+      TaskLoadingCell()
+    }
   }
 }
 
