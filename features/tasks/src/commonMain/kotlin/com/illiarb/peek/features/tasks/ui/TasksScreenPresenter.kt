@@ -25,7 +25,10 @@ import com.slack.circuit.runtime.presenter.Presenter
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
+import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.minus
+import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.getString
 import kotlin.time.Clock
@@ -39,24 +42,33 @@ internal class TasksScreenPresenter(
   @Composable
   override fun present(): TasksScreenContract.State {
     val coroutineScope = rememberStableCoroutineScope()
-    val today = remember {
-      Clock.System.now()
-        .toLocalDateTime(TimeZone.currentSystemDefault())
-        .date
+    val now = remember {
+      Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
     }
-
+    var selectedDate by rememberRetained {
+      mutableStateOf(now.date)
+    }
     var showAddTaskSheet by rememberRetained {
       mutableStateOf(false)
     }
     var reloadTrigger by rememberRetained {
       mutableStateOf(0)
     }
-
+    var expandedSections by rememberRetained {
+      mutableStateOf(
+        when (now.time.hour) {
+          in 6..12 -> setOf(TimeOfDay.MORNING)
+          in 13..18 -> setOf(TimeOfDay.MIDDAY)
+          else -> setOf(TimeOfDay.EVENING)
+        }
+      )
+    }
     val tasks by produceRetainedState<Async<ImmutableList<Task>>>(
       initialValue = Async.Loading,
       key1 = reloadTrigger,
+      key2 = selectedDate,
     ) {
-      tasksService.getTasksForDate(today)
+      tasksService.getTasksForDate(selectedDate)
         .mapContent { it.toImmutableList() }
         .collect { value = it }
     }
@@ -64,6 +76,8 @@ internal class TasksScreenPresenter(
     return TasksScreenContract.State(
       tasks = tasks,
       showAddTaskSheet = showAddTaskSheet,
+      expandedSections = expandedSections,
+      selectedDate = selectedDate,
       eventSink = { event ->
         when (event) {
           is Event.NavigateBack -> {
@@ -82,13 +96,25 @@ internal class TasksScreenPresenter(
             reloadTrigger++
           }
 
+          is Event.PreviousDayClicked -> {
+            selectedDate = selectedDate.minus(1, DateTimeUnit.DAY)
+          }
+
+          is Event.NextDayClicked -> {
+            selectedDate = selectedDate.plus(1, DateTimeUnit.DAY)
+          }
+
           is Event.AddTaskSubmitted -> {
+            if (event.dismissSheet) {
+              showAddTaskSheet = false
+            }
+
             coroutineScope.launch {
               val draft = TaskDraft(
                 title = event.title,
-                habit = false,
-                timeOfDay = TimeOfDay.ANYTIME,
-                forDate = today,
+                habit = event.isHabit,
+                timeOfDay = event.timeOfDay,
+                forDate = selectedDate,
               )
               tasksService.addTask(draft)
             }
@@ -96,7 +122,7 @@ internal class TasksScreenPresenter(
 
           is Event.TaskToggled -> {
             coroutineScope.launch {
-              tasksService.toggleCompletion(event.task, today)
+              tasksService.toggleCompletion(event.task, selectedDate)
             }
           }
 
@@ -110,6 +136,14 @@ internal class TasksScreenPresenter(
                   type = MessageType.SUCCESS,
                 )
               )
+            }
+          }
+
+          is Event.SectionToggled -> {
+            expandedSections = if (event.timeOfDay in expandedSections) {
+              expandedSections - event.timeOfDay
+            } else {
+              expandedSections + event.timeOfDay
             }
           }
         }
