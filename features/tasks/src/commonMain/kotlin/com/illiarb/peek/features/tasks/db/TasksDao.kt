@@ -7,13 +7,18 @@ import com.illiarb.peek.core.coroutines.suspendRunCatching
 import com.illiarb.peek.features.tasks.TasksDatabase
 import com.illiarb.peek.features.tasks.TasksForDateWithCompletion
 import com.illiarb.peek.features.tasks.di.InternalApi
+import com.illiarb.peek.features.tasks.domain.HabitInfo
 import com.illiarb.peek.features.tasks.domain.Task
+import com.illiarb.peek.features.tasks.domain.TaskCompletion
 import com.illiarb.peek.features.tasks.domain.TimeOfDay
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atTime
+import kotlinx.datetime.toInstant
 import kotlin.time.Clock
 import kotlin.time.Instant
 
@@ -86,6 +91,26 @@ internal class TasksDao(
         ).await()
         Unit
       }
+    }
+  }
+
+  suspend fun getHabitsCreatedBefore(date: LocalDate): List<HabitInfo> {
+    return withContext(appDispatchers.io) {
+      db.tasksQueries
+        .allHabitsCreatedBefore(
+          date.atTime(23, 59).toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds(),
+        )
+        .executeAsList()
+        .map { HabitInfo(it.id, Instant.fromEpochMilliseconds(it.created_at)) }
+    }
+  }
+
+  suspend fun getAllCompletions(): List<TaskCompletion> {
+    return withContext(appDispatchers.io) {
+      db.tasksQueries
+        .allCompletions()
+        .executeAsList()
+        .map { TaskCompletion(it.task_id, LocalDate.parse(it.date)) }
     }
   }
 

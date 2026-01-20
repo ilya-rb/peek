@@ -2,6 +2,7 @@ package com.illiarb.peek.features.tasks
 
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.tasks.domain.DayHistory
+import com.illiarb.peek.features.tasks.domain.HabitStatistics
 import com.illiarb.peek.features.tasks.domain.Task
 import com.illiarb.peek.features.tasks.domain.TaskDraft
 import com.illiarb.peek.features.tasks.repository.TasksRepository
@@ -17,6 +18,8 @@ public interface TasksService {
   public suspend fun deleteTask(taskId: String): Result<Unit>
 
   public suspend fun toggleCompletion(task: Task, date: LocalDate): Result<Boolean>
+
+  public fun getHabitStatistics(): Flow<Async<HabitStatistics>>
 
   public fun getHabitHistory(
     startDate: LocalDate,
@@ -42,6 +45,10 @@ internal class DefaultTasksService(
 
   override suspend fun toggleCompletion(task: Task, date: LocalDate): Result<Boolean> {
     return repository.toggleCompletion(task, date)
+  }
+
+  override fun getHabitStatistics(): Flow<Async<HabitStatistics>> {
+    return repository.habitStatistics()
   }
 
   override fun getHabitHistory(

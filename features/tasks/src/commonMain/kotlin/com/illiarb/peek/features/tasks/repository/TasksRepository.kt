@@ -2,13 +2,18 @@ package com.illiarb.peek.features.tasks.repository
 
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.tasks.db.TasksDao
+import com.illiarb.peek.features.tasks.domain.HabitStatistics
+import com.illiarb.peek.features.tasks.domain.StreakCalculator
 import com.illiarb.peek.features.tasks.domain.Task
 import com.illiarb.peek.features.tasks.domain.TaskDraft
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -16,6 +21,7 @@ import kotlin.uuid.Uuid
 @Inject
 internal class TasksRepository(
   private val tasksDao: TasksDao,
+  private val streakCalculator: StreakCalculator,
 ) {
 
   fun tasksForDate(date: LocalDate): Flow<Async<List<Task>>> {
@@ -51,5 +57,25 @@ internal class TasksRepository(
     } else {
       tasksDao.insertCompletion(task.id, date).map { true }
     }
+  }
+
+  fun habitStatistics(): Flow<Async<HabitStatistics>> {
+    return flow {
+      val today = Clock.System.now()
+        .toLocalDateTime(TimeZone.currentSystemDefault())
+        .date
+
+      val habits = tasksDao.getHabitsCreatedBefore(today)
+      val completions = tasksDao.getAllCompletions()
+      val streak = streakCalculator.calculateCurrentStreak(today, habits, completions)
+
+      emit(HabitStatistics(currentStreak = streak))
+    }
+      .map {
+        Async.Content(it, contentRefreshing = false) as Async<HabitStatistics>
+      }
+      .catch {
+        emit(Async.Error(it))
+      }
   }
 }

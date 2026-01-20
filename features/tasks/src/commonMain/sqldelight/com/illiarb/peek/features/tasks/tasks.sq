@@ -74,3 +74,16 @@ VALUES (
 
 deleteCompletion:
 DELETE FROM task_completions WHERE task_id = :taskId AND date = :date;
+
+allHabitsCreatedBefore:
+SELECT id, created_at
+FROM tasks
+WHERE is_habit = 1
+  AND archived = 0
+  AND created_at <= :beforeTimestamp
+ORDER BY created_at;
+
+allCompletions:
+SELECT task_id, date
+FROM task_completions
+ORDER BY date DESC;

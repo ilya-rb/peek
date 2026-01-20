@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.core.data.mapContent
 import com.illiarb.peek.features.tasks.TasksService
+import com.illiarb.peek.features.tasks.domain.HabitStatistics
 import com.illiarb.peek.features.tasks.domain.Task
 import com.illiarb.peek.features.tasks.domain.TaskDraft
 import com.illiarb.peek.features.tasks.domain.TimeOfDay
@@ -76,8 +77,13 @@ internal class TasksScreenPresenter(
         .collect { value = it }
     }
 
+    val statistics by produceRetainedState<Async<HabitStatistics>>(Async.Loading) {
+      tasksService.getHabitStatistics().collect { value = it }
+    }
+
     return TasksScreenContract.State(
       tasks = tasks,
+      statistics = statistics,
       showAddTaskSheet = showAddTaskSheet,
       expandedSections = expandedSections,
       selectedDate = selectedDate,
