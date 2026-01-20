@@ -15,9 +15,11 @@ import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
+import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlin.time.Clock
 import kotlin.time.Instant
@@ -94,23 +96,30 @@ internal class TasksDao(
     }
   }
 
-  suspend fun getHabitsCreatedBefore(date: LocalDate): List<HabitInfo> {
+  suspend fun getHabitsCreatedBefore(date: LocalDate): Result<List<HabitInfo>> {
     return withContext(appDispatchers.io) {
-      db.tasksQueries
-        .allHabitsCreatedBefore(
-          date.atTime(23, 59).toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds(),
-        )
-        .executeAsList()
-        .map { HabitInfo(it.id, Instant.fromEpochMilliseconds(it.created_at)) }
+      suspendRunCatching {
+        db.tasksQueries
+          .allHabitsCreatedBefore(
+            date.plus(1, DateTimeUnit.DAY)
+              .atTime(0, 0)
+              .toInstant(TimeZone.currentSystemDefault())
+              .toEpochMilliseconds(),
+          )
+          .executeAsList()
+          .map { HabitInfo(it.id, Instant.fromEpochMilliseconds(it.created_at)) }
+      }
     }
   }
 
-  suspend fun getAllCompletions(): List<TaskCompletion> {
+  suspend fun getAllCompletions(): Result<List<TaskCompletion>> {
     return withContext(appDispatchers.io) {
-      db.tasksQueries
-        .allCompletions()
-        .executeAsList()
-        .map { TaskCompletion(it.task_id, LocalDate.parse(it.date)) }
+      suspendRunCatching {
+        db.tasksQueries
+          .allCompletions()
+          .executeAsList()
+          .map { TaskCompletion(it.task_id, LocalDate.parse(it.date)) }
+      }
     }
   }
 

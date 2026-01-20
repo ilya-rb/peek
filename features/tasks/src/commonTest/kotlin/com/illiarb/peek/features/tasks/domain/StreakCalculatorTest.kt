@@ -10,6 +10,7 @@ import kotlin.test.assertEquals
 internal class StreakCalculatorTest {
 
   private val streakCalculator = StreakCalculator()
+  private val timezone = TimeZone.currentSystemDefault()
 
   @Test
   fun `it should return zero streak when no habits exist`() {
@@ -31,7 +32,7 @@ internal class StreakCalculatorTest {
     val today = LocalDate(2026, 1, 15)
     val habit = HabitInfo(
       id = "h1",
-      createdAt = LocalDate(2026, 1, 10).atTime(0, 0).toInstant(TimeZone.UTC),
+      createdAt = LocalDate(2026, 1, 10).atTime(0, 0).toInstant(timezone),
     )
     val completions = listOf(
       TaskCompletion("h1", today),
@@ -51,11 +52,11 @@ internal class StreakCalculatorTest {
     val today = LocalDate(2026, 1, 15)
     val habit1 = HabitInfo(
       id = "h1",
-      createdAt = LocalDate(2026, 1, 10).atTime(0, 0).toInstant(TimeZone.UTC),
+      createdAt = LocalDate(2026, 1, 10).atTime(0, 0).toInstant(timezone),
     )
     val habit2 = HabitInfo(
       id = "h2",
-      createdAt = LocalDate(2026, 1, 10).atTime(0, 0).toInstant(TimeZone.UTC),
+      createdAt = LocalDate(2026, 1, 10).atTime(0, 0).toInstant(timezone),
     )
     val completions = listOf(
       // Today: only h1 complete, h2 missing
@@ -82,7 +83,7 @@ internal class StreakCalculatorTest {
     val today = LocalDate(2026, 1, 15)
     val habit = HabitInfo(
       id = "h1",
-      createdAt = LocalDate(2026, 1, 10).atTime(0, 0).toInstant(TimeZone.UTC),
+      createdAt = LocalDate(2026, 1, 10).atTime(0, 0).toInstant(timezone),
     )
     val completions = listOf(
       TaskCompletion("h1", LocalDate(2026, 1, 13)),
@@ -103,7 +104,7 @@ internal class StreakCalculatorTest {
     val today = LocalDate(2026, 1, 15)
     val habit = HabitInfo(
       id = "h1",
-      createdAt = LocalDate(2026, 1, 10).atTime(0, 0).toInstant(TimeZone.UTC),
+      createdAt = LocalDate(2026, 1, 10).atTime(0, 0).toInstant(timezone),
     )
     val completions = listOf(
       TaskCompletion("h1", today),
@@ -125,7 +126,7 @@ internal class StreakCalculatorTest {
     val today = LocalDate(2026, 1, 15)
     val habit = HabitInfo(
       id = "h1",
-      createdAt = LocalDate(2026, 1, 10).atTime(0, 0).toInstant(TimeZone.UTC),
+      createdAt = LocalDate(2026, 1, 10).atTime(0, 0).toInstant(timezone),
     )
     val completions = listOf(
       TaskCompletion("h1", today),
@@ -148,7 +149,7 @@ internal class StreakCalculatorTest {
     val today = LocalDate(2026, 1, 15)
     val habit = HabitInfo(
       id = "h1",
-      createdAt = LocalDate(2026, 1, 10).atTime(0, 0).toInstant(TimeZone.UTC),
+      createdAt = LocalDate(2026, 1, 10).atTime(0, 0).toInstant(timezone),
     )
     val completions = listOf(
       TaskCompletion("h1", today),
@@ -173,7 +174,7 @@ internal class StreakCalculatorTest {
     val today = LocalDate(2026, 1, 15)
     val habit = HabitInfo(
       id = "h1",
-      createdAt = LocalDate(2026, 1, 13).atTime(0, 0).toInstant(TimeZone.UTC),
+      createdAt = LocalDate(2026, 1, 13).atTime(0, 0).toInstant(timezone),
     )
     val completions = listOf(
       TaskCompletion("h1", today),
@@ -195,11 +196,11 @@ internal class StreakCalculatorTest {
     val today = LocalDate(2026, 1, 15)
     val habit1 = HabitInfo(
       id = "h1",
-      createdAt = LocalDate(2026, 1, 10).atTime(0, 0).toInstant(TimeZone.UTC),
+      createdAt = LocalDate(2026, 1, 10).atTime(0, 0).toInstant(timezone),
     )
     val habit2 = HabitInfo(
       id = "h2",
-      createdAt = LocalDate(2026, 1, 10).atTime(0, 0).toInstant(TimeZone.UTC),
+      createdAt = LocalDate(2026, 1, 10).atTime(0, 0).toInstant(timezone),
     )
     val completions = listOf(
       TaskCompletion("h1", today),
@@ -223,11 +224,11 @@ internal class StreakCalculatorTest {
     val today = LocalDate(2026, 1, 15)
     val habit1 = HabitInfo(
       id = "h1",
-      createdAt = LocalDate(2026, 1, 10).atTime(0, 0).toInstant(TimeZone.UTC),
+      createdAt = LocalDate(2026, 1, 10).atTime(0, 0).toInstant(timezone),
     )
     val habit2 = HabitInfo(
       id = "h2",
-      createdAt = LocalDate(2026, 1, 13).atTime(0, 0).toInstant(TimeZone.UTC),
+      createdAt = LocalDate(2026, 1, 13).atTime(0, 0).toInstant(timezone),
     )
     val completions = listOf(
       TaskCompletion("h1", today),
@@ -256,7 +257,7 @@ internal class StreakCalculatorTest {
     val today = LocalDate(2026, 1, 30)
     val habit = HabitInfo(
       id = "h1",
-      createdAt = LocalDate(2026, 1, 1).atTime(0, 0).toInstant(TimeZone.UTC),
+      createdAt = LocalDate(2026, 1, 1).atTime(0, 0).toInstant(timezone),
     )
 
     // Create completions for 30 days
@@ -278,7 +279,7 @@ internal class StreakCalculatorTest {
     val today = LocalDate(2026, 1, 15)
     val habit = HabitInfo(
       id = "h1",
-      createdAt = LocalDate(2026, 1, 10).atTime(0, 0).toInstant(TimeZone.UTC),
+      createdAt = LocalDate(2026, 1, 10).atTime(0, 0).toInstant(timezone),
     )
     val completions = emptyList<TaskCompletion>()
 

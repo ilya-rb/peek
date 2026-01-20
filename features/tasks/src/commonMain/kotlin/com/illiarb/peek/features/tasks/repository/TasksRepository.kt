@@ -1,6 +1,7 @@
 package com.illiarb.peek.features.tasks.repository
 
 import com.illiarb.peek.core.data.Async
+import com.illiarb.peek.core.logging.catchWithLog
 import com.illiarb.peek.features.tasks.db.TasksDao
 import com.illiarb.peek.features.tasks.domain.HabitStatistics
 import com.illiarb.peek.features.tasks.domain.StreakCalculator
@@ -65,8 +66,8 @@ internal class TasksRepository(
         .toLocalDateTime(TimeZone.currentSystemDefault())
         .date
 
-      val habits = tasksDao.getHabitsCreatedBefore(today)
-      val completions = tasksDao.getAllCompletions()
+      val habits = tasksDao.getHabitsCreatedBefore(today).getOrThrow()
+      val completions = tasksDao.getAllCompletions().getOrThrow()
       val streak = streakCalculator.calculateCurrentStreak(today, habits, completions)
 
       emit(HabitStatistics(currentStreak = streak))
@@ -74,7 +75,7 @@ internal class TasksRepository(
       .map {
         Async.Content(it, contentRefreshing = false) as Async<HabitStatistics>
       }
-      .catch {
+      .catchWithLog {
         emit(Async.Error(it))
       }
   }

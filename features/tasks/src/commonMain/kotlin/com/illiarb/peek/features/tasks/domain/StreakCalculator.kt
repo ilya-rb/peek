@@ -31,7 +31,7 @@ internal class StreakCalculator {
       it.createdAt.toLocalDateTime(timezone).date <= today
     }
     val todayCompleted = if (habitsForToday.isNotEmpty()) {
-      val completedIds = completionsByDate[today].orEmpty().map { it.taskId }
+      val completedIds = completionsByDate[today].orEmpty().map { it.taskId }.toSet()
       habitsForToday.all { it.id in completedIds }
     } else {
       false
@@ -48,7 +48,7 @@ internal class StreakCalculator {
       }
 
       if (habitsForDate.isNotEmpty()) {
-        val completedIds = completionsByDate[currentDate].orEmpty().map { it.taskId }
+        val completedIds = completionsByDate[currentDate].orEmpty().map { it.taskId }.toSet()
 
         val allCompleted = habitsForDate.all { it.id in completedIds }
         if (!allCompleted) {
