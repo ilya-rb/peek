@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -28,6 +29,7 @@ import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material.icons.filled.WbTwilight
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -44,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.tasks.domain.Task
@@ -60,6 +63,7 @@ import com.illiarb.peek.uikit.core.theme.UiKitColors
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_action_add_task
 import com.illiarb.peek.uikit.resources.acsb_icon_collapse
+import com.illiarb.peek.uikit.resources.acsb_icon_current_streak
 import com.illiarb.peek.uikit.resources.acsb_icon_expand
 import com.illiarb.peek.uikit.resources.acsb_icon_next_day
 import com.illiarb.peek.uikit.resources.acsb_icon_previous_day
@@ -120,6 +124,17 @@ internal fun TasksScreen(
               imageVector = Icons.AutoMirrored.Filled.ArrowBack,
               contentDescription = stringResource(Res.string.acsb_navigation_back),
             )
+          }
+        },
+        actions = {
+          when (val stats = state.statistics) {
+            is Async.Content -> {
+              if (stats.content.currentStreak > 0) {
+                StreakCounter(streak = stats.content.currentStreak)
+              }
+            }
+
+            else -> Unit
           }
         },
       )
@@ -371,6 +386,29 @@ private fun DateSelector(
         contentDescription = stringResource(Res.string.acsb_icon_next_day),
       )
     }
+  }
+}
+
+@Composable
+private fun StreakCounter(
+  streak: Int,
+  modifier: Modifier = Modifier,
+) {
+  Row(
+    modifier = modifier.padding(end = 16.dp),
+    horizontalArrangement = Arrangement.spacedBy(2.dp),
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    Icon(
+      imageVector = Icons.Filled.LocalFireDepartment,
+      contentDescription = stringResource(Res.string.acsb_icon_current_streak),
+      tint = UiKitColors.orange,
+    )
+    Text(
+      text = streak.toString(),
+      style = MaterialTheme.typography.titleMedium,
+      fontWeight = FontWeight.Bold,
+    )
   }
 }
 

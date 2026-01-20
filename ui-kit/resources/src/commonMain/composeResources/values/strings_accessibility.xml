@@ -26,6 +26,7 @@
   <string name="acsb_icon_previous_day">Previous day</string>
   <string name="acsb_icon_next_day">Next day</string>
   <string name="acsb_icon_task_habit">Repeatable</string>
+  <string name="acsb_icon_current_streak">Current streak</string>
   <string name="acsb_navigation_back">Back</string>
   <string name="acsb_switch_checked">On</string>
 </resources>

@@ -5,6 +5,7 @@ import com.illiarb.peek.core.arch.di.UiScope
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.navigation.map.TasksScreen
 import com.illiarb.peek.features.tasks.TasksService
+import com.illiarb.peek.features.tasks.domain.HabitStatistics
 import com.illiarb.peek.features.tasks.domain.Task
 import com.illiarb.peek.features.tasks.domain.TimeOfDay
 import com.illiarb.peek.features.tasks.ui.TasksScreenContract.State
@@ -27,6 +28,7 @@ internal interface TasksScreenContract {
   @Immutable
   data class State(
     val tasks: Async<ImmutableMap<TimeOfDay, List<Task>>>,
+    val statistics: Async<HabitStatistics>,
     val showAddTaskSheet: Boolean,
     val expandedSections: Set<TimeOfDay>,
     val selectedDate: LocalDate,

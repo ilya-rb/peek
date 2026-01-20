@@ -26,3 +26,9 @@ public data class Task(
   val archived: Boolean = false,
   val completed: Boolean = false,
 )
+
+internal data class TaskCompletion(
+  val taskId: String,
+  val date: LocalDate,
+)
+
