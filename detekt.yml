@@ -6,6 +6,7 @@ complexity:
     ignoreDefaultParameters: true
   TooManyFunctions:
     active: true
+    thresholdInFiles: 20
     ignoreAnnotatedFunctions: ['Preview']
   LongMethod:
     threshold: 100
