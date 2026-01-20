@@ -10,6 +10,7 @@ import androidx.activity.addCallback
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.compose.runtime.getValue
 import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
@@ -48,6 +49,8 @@ internal class MainActivity(
 ) : ComponentActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
+    installSplashScreen()
+
     enableEdgeToEdge(SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT))
 
     super.onCreate(savedInstanceState)

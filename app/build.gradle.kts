@@ -20,6 +20,7 @@ kotlin {
     androidMain.dependencies {
       implementation(libs.androidx.activity.compose)
       implementation(libs.androidx.browser)
+      implementation(libs.androidx.core.splashscreen)
       implementation(libs.androidx.work)
       implementation(libs.circuit.core)
       implementation(libs.circuit.x.android)
