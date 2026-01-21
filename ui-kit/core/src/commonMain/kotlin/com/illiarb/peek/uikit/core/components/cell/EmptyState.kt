@@ -49,7 +49,7 @@ public fun ErrorEmptyState(
   image: VectorIcon? = VectorIcon(
     imageVector = Icons.Outlined.Error,
     contentDescription = stringResource(Res.string.acsb_icon_error),
-    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onError),
+    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.error),
   ),
   buttonText: String = stringResource(Res.string.common_error_default_action),
   buttonIcon: VectorIcon? = null,
