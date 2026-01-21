@@ -36,9 +36,9 @@ public class AsyncDataStore<Params, Domain>(
         scope = coroutineScope,
         started = SharingStarted.WhileSubscribed(
           stopTimeoutMillis = 5000,
-          replayExpirationMillis = 0, // Don't replay cached emissions
+          replayExpirationMillis = 0,
         ),
-        replay = 0, // Don't cache emissions
+        replay = 0,
       ).onCompletion {
         sharedFlows.remove(params)
       }
@@ -63,7 +63,7 @@ public class AsyncDataStore<Params, Domain>(
     return flow {
       val networkRefreshRequired = when (strategy) {
         is LoadStrategy.ForceReload, LoadStrategy.CacheFirst -> true
-        is LoadStrategy.TimeBased<Params> -> cacheExpired(params, strategy)
+        is LoadStrategy.TimeBased<Params> -> strategy.cacheExpired(params)
         else -> false
       }
 
@@ -174,17 +174,18 @@ public class AsyncDataStore<Params, Domain>(
       .getOrNull()
   }
 
-  private suspend fun cacheExpired(
-    params: Params,
-    strategy: LoadStrategy.TimeBased<Params>,
-  ): Boolean {
-    val current = strategy.invalidator.getCacheTimestamp(params)
+  private suspend fun LoadStrategy.TimeBased<Params>.cacheExpired(params: Params): Boolean {
+    if (invalidate) {
+      return true
+    }
+
+    val current = invalidator.getCacheTimestamp(params)
       .onFailure { error ->
         Logger.e(TAG, error) { "Failed to read cached timestamp for $params" }
       }
       .getOrNull()
 
-    return current == null || (Clock.System.now() - current) > strategy.duration
+    return current == null || (Clock.System.now() - current) > duration
   }
 
   private suspend fun getFromNetwork(
@@ -211,6 +212,7 @@ public class AsyncDataStore<Params, Domain>(
     public data class TimeBased<P>(
       val duration: Duration,
       val invalidator: CacheInvalidator<P>,
+      internal val invalidate: Boolean = false,
     ) : LoadStrategy<P> {
 
       public interface CacheInvalidator<P> {

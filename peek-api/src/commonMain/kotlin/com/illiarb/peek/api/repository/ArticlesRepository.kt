@@ -10,6 +10,7 @@ import com.illiarb.peek.api.error.ArticleNotFoundException
 import com.illiarb.peek.core.arch.di.AppScope
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.core.data.AsyncDataStore
+import com.illiarb.peek.core.data.AsyncDataStore.LoadStrategy.ForceReload
 import com.illiarb.peek.core.data.AsyncDataStore.LoadStrategy.TimeBased
 import com.illiarb.peek.core.data.KeyValueStorage
 import com.illiarb.peek.core.data.MemoryCache
@@ -83,7 +84,7 @@ internal class ArticlesRepository(
     kind: NewsSourceKind,
     strategy: AsyncDataStore.LoadStrategy<NewsSourceKind>? = null,
   ): Flow<Async<ArticlesOfKind>> {
-    return articlesStore.collect(kind, strategy ?: articlesLoadingStrategy)
+    return articlesStore.collect(kind, articlesLoadingStrategy.overrideIfNeeded(strategy))
       .mapContent { articles ->
         articles.sortedByDescending { it.date }.toArticlesOfKind(kind)
       }
@@ -135,6 +136,12 @@ internal class ArticlesRepository(
 
   private fun NewsSourceKind.storageKey(): String {
     return "${KEY_ARTICLES_LAST_FETCHED_PREFIX}_${name}"
+  }
+
+  private fun TimeBased<NewsSourceKind>.overrideIfNeeded(
+    requested: AsyncDataStore.LoadStrategy<NewsSourceKind>?,
+  ): TimeBased<NewsSourceKind> {
+    return copy(invalidate = requested is ForceReload)
   }
 
   companion object {
