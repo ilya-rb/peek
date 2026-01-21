@@ -41,10 +41,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.illiarb.peek.features.tasks.domain.TimeOfDay
-import com.illiarb.peek.features.tasks.domain.TimeOfDay.ANYTIME
-import com.illiarb.peek.features.tasks.domain.TimeOfDay.EVENING
-import com.illiarb.peek.features.tasks.domain.TimeOfDay.MIDDAY
-import com.illiarb.peek.features.tasks.domain.TimeOfDay.MORNING
+import com.illiarb.peek.features.tasks.domain.TimeOfDay.Anytime
+import com.illiarb.peek.features.tasks.domain.TimeOfDay.Evening
+import com.illiarb.peek.features.tasks.domain.TimeOfDay.Midday
+import com.illiarb.peek.features.tasks.domain.TimeOfDay.Morning
 import com.illiarb.peek.uikit.core.components.cell.SwitchCell
 import com.illiarb.peek.uikit.core.model.VectorIcon
 import com.illiarb.peek.uikit.resources.Res
@@ -75,7 +75,7 @@ internal fun AddTaskBottomSheet(
 ) {
   var taskTitle by remember { mutableStateOf("") }
   var isHabit by remember { mutableStateOf(false) }
-  var timeOfDay by remember { mutableStateOf(MORNING) }
+  var timeOfDay by remember { mutableStateOf(Morning) }
 
   val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
   val coroutineScope = rememberCoroutineScope()
@@ -92,7 +92,7 @@ internal fun AddTaskBottomSheet(
     {
       coroutineScope.launch {
         sheetState.hide()
-        val selectedTimeOfDay = if (isHabit) timeOfDay else ANYTIME
+        val selectedTimeOfDay = if (isHabit) timeOfDay else Anytime
         onSubmit(taskTitle.trim(), isHabit, selectedTimeOfDay, true)
       }
     }
@@ -147,12 +147,12 @@ internal fun AddTaskBottomSheet(
     ButtonsFooter(
       enabled = taskTitle.isNotBlank(),
       onAddNext = {
-        val selectedTimeOfDay = if (isHabit) timeOfDay else ANYTIME
+        val selectedTimeOfDay = if (isHabit) timeOfDay else Anytime
         onSubmit(taskTitle.trim(), isHabit, selectedTimeOfDay, false)
 
         isHabit = false
         taskTitle = ""
-        timeOfDay = MORNING
+        timeOfDay = Morning
       },
       onSubmit = submitTask,
     )
@@ -177,7 +177,7 @@ private fun HabitTimeSelector(
       modifier = Modifier.padding(bottom = 8.dp),
     )
     SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-      val entries = TimeOfDay.entries.minus(ANYTIME)
+      val entries = TimeOfDay.entries.minus(Anytime)
 
       entries.forEachIndexed { index, entry ->
         SegmentedButton(
@@ -257,9 +257,9 @@ private fun ButtonsFooter(
 @Composable
 private fun TimeOfDay.title(): String {
   return when (this) {
-    MORNING -> stringResource(Res.string.tasks_time_of_day_morning)
-    MIDDAY -> stringResource(Res.string.tasks_time_of_day_midday)
-    EVENING -> stringResource(Res.string.tasks_time_of_day_evening)
-    ANYTIME -> throw IllegalArgumentException("Anytime is not supported")
+    Morning -> stringResource(Res.string.tasks_time_of_day_morning)
+    Midday -> stringResource(Res.string.tasks_time_of_day_midday)
+    Evening -> stringResource(Res.string.tasks_time_of_day_evening)
+    Anytime -> throw IllegalArgumentException("Anytime is not supported")
   }
 }

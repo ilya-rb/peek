@@ -2,9 +2,11 @@ package com.illiarb.peek.features.tasks.di
 
 import app.cash.sqldelight.db.SqlDriver
 import com.illiarb.peek.core.arch.di.AppScope
+import com.illiarb.peek.core.coroutines.CoroutineDispatchers
 import com.illiarb.peek.features.tasks.DefaultTasksService
 import com.illiarb.peek.features.tasks.TasksDatabase
 import com.illiarb.peek.features.tasks.TasksService
+import com.illiarb.peek.features.tasks.domain.StreakCalculator
 import com.illiarb.peek.features.tasks.repository.TasksRepository
 import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.Provides
@@ -23,8 +25,12 @@ public object TasksBindings
 internal object TasksBindingsInternal {
 
   @Provides
-  fun provideTasksService(repository: TasksRepository): TasksService {
-    return DefaultTasksService(repository)
+  fun provideTasksService(
+    repository: TasksRepository,
+    streakCalculator: StreakCalculator,
+    coroutineDispatchers: CoroutineDispatchers,
+  ): TasksService {
+    return DefaultTasksService(repository, streakCalculator, coroutineDispatchers)
   }
 
   @Provides

@@ -1,6 +1,6 @@
 package com.illiarb.peek.core.network
 
-import com.illiarb.peek.core.coroutines.AppDispatchers
+import com.illiarb.peek.core.coroutines.CoroutineDispatchers
 import com.illiarb.peek.core.coroutines.suspendRunCatching
 import io.ktor.client.plugins.HttpClientPlugin
 import io.ktor.client.request.get
@@ -53,14 +53,14 @@ public interface HttpClient {
 
 internal class DefaultHttpClient(
   private val ktorHttpClient: KtorClient,
-  private val appDispatchers: AppDispatchers,
+  private val coroutineDispatchers: CoroutineDispatchers,
 ) : HttpClient {
 
   override suspend fun get(
     url: String,
     parameters: Map<String, String>,
   ): Result<HttpResponse> = suspendRunCatching {
-    withContext(appDispatchers.io) {
+    withContext(coroutineDispatchers.io) {
       ktorHttpClient.get(url) {
         contentType(ContentType.Application.Json)
 
@@ -75,7 +75,7 @@ internal class DefaultHttpClient(
     url: String,
     requestBody: HttpClient.RequestBody<*>
   ): Result<HttpResponse> = suspendRunCatching {
-    withContext(appDispatchers.io) {
+    withContext(coroutineDispatchers.io) {
       ktorHttpClient.post(url) {
         contentType(ContentType.Application.Json)
         setBody(requestBody.body, TypeInfo(requestBody.type))

@@ -3,6 +3,7 @@ package com.illiarb.peek.uikit.core.components.cell
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
@@ -16,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.illiarb.peek.uikit.core.model.VectorIcon
 
 @Composable
 public fun CheckableListItem(
@@ -23,6 +25,7 @@ public fun CheckableListItem(
   checked: Boolean,
   onCheckedChange: (Boolean) -> Unit,
   modifier: Modifier = Modifier,
+  subtitle: String? = null,
   enabled: Boolean = true,
   trailingContent: @Composable (() -> Unit)? = null,
 ) {
@@ -48,19 +51,31 @@ public fun CheckableListItem(
       enabled = enabled,
     )
 
-    Text(
-      text = text,
+    Column(
       modifier = Modifier.weight(1f).padding(start = 12.dp),
-      style = MaterialTheme.typography.bodyLarge,
-      color = textColor,
-      textDecoration = if (checked) {
-        TextDecoration.LineThrough
-      } else {
-        TextDecoration.None
-      },
-      maxLines = 2,
-      overflow = TextOverflow.Ellipsis,
-    )
+    ) {
+      Text(
+        text = text,
+        style = MaterialTheme.typography.bodyLarge,
+        color = textColor,
+        textDecoration = if (checked) {
+          TextDecoration.LineThrough
+        } else {
+          TextDecoration.None
+        },
+        maxLines = 2,
+        overflow = TextOverflow.Ellipsis,
+      )
+      if (subtitle != null) {
+        Text(
+          text = subtitle,
+          style = MaterialTheme.typography.bodySmall,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          maxLines = 1,
+          overflow = TextOverflow.Ellipsis,
+        )
+      }
+    }
 
     if (trailingContent != null) {
       trailingContent()

@@ -1,17 +1,17 @@
 package com.illiarb.peek.features.tasks.domain
 
 public enum class TimeOfDay {
-  ANYTIME,
-  MORNING,
-  MIDDAY,
-  EVENING;
+  Anytime,
+  Morning,
+  Midday,
+  Evening;
 
   public companion object {
     public fun fromString(value: String?): TimeOfDay {
       if (value == null) {
-        return ANYTIME
+        return Anytime
       }
-      return runCatching { valueOf(value) }.getOrElse { ANYTIME }
+      return runCatching { valueOf(value) }.getOrElse { Anytime }
     }
   }
 }

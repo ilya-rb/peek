@@ -1,13 +1,13 @@
 package com.illiarb.peek.core.network
 
-import com.illiarb.peek.core.coroutines.AppDispatchers
+import com.illiarb.peek.core.coroutines.CoroutineDispatchers
 import dev.zacsweers.metro.Inject
 import io.ktor.client.plugins.HttpClientPlugin
 
 @Inject
 internal class HttpClientFactory(
   private val plugins: List<HttpClientPlugin<*, *>>,
-  private val appDispatchers: AppDispatchers,
+  private val coroutineDispatchers: CoroutineDispatchers,
 ) : HttpClient.Factory {
 
   override fun create(
@@ -15,7 +15,7 @@ internal class HttpClientFactory(
     plugins: List<HttpClientPlugin<*, *>>,
   ): HttpClient {
     return DefaultHttpClient(
-      appDispatchers = appDispatchers,
+      coroutineDispatchers = coroutineDispatchers,
       ktorHttpClient = createKtorClient(
         plugins = this.plugins + plugins,
         config = config,

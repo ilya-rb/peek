@@ -1,5 +1,6 @@
 package com.illiarb.peek.core.data
 
+import com.illiarb.peek.core.data.error.CompositeException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
@@ -24,6 +25,13 @@ public sealed class Async<out T> {
     }
   }
 
+  public fun errorOrNull(): Throwable? {
+    return when (this) {
+      is Error -> error
+      else -> null
+    }
+  }
+
   public fun <R> map(mapper: (T) -> R): Async<R> {
     return when (this) {
       is Content -> Content(mapper(this.content), this.contentRefreshing, this.suppressedError)
@@ -43,6 +51,26 @@ public sealed class Async<out T> {
       }
 
       else -> this::class
+    }
+  }
+
+  public fun <R> mergeWith(other: Async<R>): Async<Pair<T, R>> {
+    return when {
+      this is Loading || other is Loading -> Loading
+      this is Content && other is Content -> {
+        val mergedError = if (this.suppressedError != null || other.suppressedError != null) {
+          CompositeException(this.suppressedError, other.suppressedError)
+        } else {
+          null
+        }
+        Content(
+          content = this.content to other.content,
+          contentRefreshing = this.contentRefreshing || other.contentRefreshing,
+          suppressedError = mergedError
+        )
+      }
+
+      else -> Error(CompositeException(this.errorOrNull(), other.errorOrNull()))
     }
   }
 

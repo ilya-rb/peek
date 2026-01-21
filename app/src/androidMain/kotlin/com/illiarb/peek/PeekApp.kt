@@ -37,7 +37,7 @@ internal class PeekApp : Application() {
 
     appGraph.appCoroutineScope.launch {
       val initializers = appGraph.appInitializers.filterIsInstance<AndroidAsyncAppInitializer>()
-      val dispatchers = appGraph.appDispatchers
+      val dispatchers = appGraph.coroutineDispatchers
       val jobs = initializers.map {
         async(dispatchers.default) {
           it.initialise(this@PeekApp)

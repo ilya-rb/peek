@@ -23,9 +23,19 @@ public object DateFormats {
     }
   }
 
-  public fun formatDate(date: LocalDate): String {
-    val month = date.month.name.lowercase().replaceFirstChar { it.uppercase() }
+  public fun formatDate(dateToFormat: LocalDate, currentDate: LocalDate): String {
+    val month = dateToFormat.month.name.lowercase().replaceFirstChar { it.uppercase() }
     val monthShort = month.take(3)
-    return "$monthShort ${date.day}, ${date.year}"
+
+    return buildString {
+      append(monthShort)
+      append(" ")
+      append(dateToFormat.day)
+
+      if (dateToFormat.year != currentDate.year) {
+        append(" ")
+        append(dateToFormat.year)
+      }
+    }
   }
 }

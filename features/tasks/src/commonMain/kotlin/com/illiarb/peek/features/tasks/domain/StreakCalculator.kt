@@ -1,11 +1,9 @@
 package com.illiarb.peek.features.tasks.domain
 
 import dev.zacsweers.metro.Inject
-import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.DateTimeUnit.Companion.DAY
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
-import kotlinx.datetime.toLocalDateTime
 
 @Inject
 internal class StreakCalculator {
@@ -20,48 +18,44 @@ internal class StreakCalculator {
     }
 
     var streak = 0
+
     val completionsByDate = completions.groupBy { it.date }
-    val timezone = TimeZone.currentSystemDefault()
+    val earliestHabitDate = habits.minOf { habit -> habit.createdAt }
 
-    val earliestHabitDate = habits.minOf { habit ->
-      habit.createdAt.toLocalDateTime(timezone).date
-    }
+    val habitsForToday = habits.filter { it.createdAt <= today }
+    val todayCompleted = habitsCompletedFor(today, habitsForToday, completionsByDate)
 
-    val habitsForToday = habits.filter {
-      it.createdAt.toLocalDateTime(timezone).date <= today
-    }
-    val todayCompleted = if (habitsForToday.isNotEmpty()) {
-      val completedIds = completionsByDate[today].orEmpty().map { it.taskId }.toSet()
-      habitsForToday.all { it.id in completedIds }
-    } else {
-      false
-    }
     var currentDate = if (todayCompleted) {
       today
     } else {
-      today.minus(value = 1, DateTimeUnit.DAY)
+      today.minus(1, DAY)
     }
 
     while (currentDate >= earliestHabitDate) {
-      val habitsForDate = habits.filter {
-        it.createdAt.toLocalDateTime(timezone).date <= currentDate
-      }
-
+      val habitsForDate = habits.filter { it.createdAt <= currentDate }
       if (habitsForDate.isNotEmpty()) {
-        val completedIds = completionsByDate[currentDate].orEmpty().map { it.taskId }.toSet()
-
-        val allCompleted = habitsForDate.all { it.id in completedIds }
-        if (!allCompleted) {
+        val completed = habitsCompletedFor(currentDate, habitsForDate, completionsByDate)
+        if (completed.not()) {
           // Streak broken
           break
         }
-
         streak++
       }
-
-      currentDate = currentDate.minus(1, DateTimeUnit.DAY)
+      currentDate = currentDate.minus(1, DAY)
     }
 
     return streak
+  }
+
+  private fun habitsCompletedFor(
+    date: LocalDate,
+    habits: List<HabitInfo>,
+    completions: Map<LocalDate, List<TaskCompletion>>
+  ): Boolean {
+    if (habits.isEmpty()) {
+      return false
+    }
+    val completedIds = completions[date].orEmpty().map { it.taskId }.toSet()
+    return habits.all { it.id in completedIds }
   }
 }

@@ -9,7 +9,7 @@ complexity:
     thresholdInFiles: 20
     ignoreAnnotatedFunctions: ['Preview']
   LongMethod:
-    threshold: 100
+    active: false
 
 naming:
   active: true

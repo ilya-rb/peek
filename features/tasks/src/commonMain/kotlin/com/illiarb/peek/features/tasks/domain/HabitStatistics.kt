@@ -1,6 +1,6 @@
 package com.illiarb.peek.features.tasks.domain
 
-import kotlin.time.Instant
+import kotlinx.datetime.LocalDate
 
 public data class HabitStatistics(
   val currentStreak: Int,
@@ -8,6 +8,6 @@ public data class HabitStatistics(
 
 internal data class HabitInfo(
   val id: String,
-  val createdAt: Instant,
+  val createdAt: LocalDate,
 )
 

@@ -23,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AssignmentLate
 import androidx.compose.material.icons.filled.Brightness3
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ChevronLeft
@@ -51,6 +52,10 @@ import androidx.compose.ui.unit.dp
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.tasks.domain.Task
 import com.illiarb.peek.features.tasks.domain.TimeOfDay
+import com.illiarb.peek.features.tasks.domain.TimeOfDay.Anytime
+import com.illiarb.peek.features.tasks.domain.TimeOfDay.Evening
+import com.illiarb.peek.features.tasks.domain.TimeOfDay.Midday
+import com.illiarb.peek.features.tasks.domain.TimeOfDay.Morning
 import com.illiarb.peek.features.tasks.ui.TasksScreenContract.Event
 import com.illiarb.peek.uikit.core.components.cell.CheckableListItem
 import com.illiarb.peek.uikit.core.components.cell.EmptyState
@@ -67,6 +72,7 @@ import com.illiarb.peek.uikit.resources.acsb_icon_current_streak
 import com.illiarb.peek.uikit.resources.acsb_icon_expand
 import com.illiarb.peek.uikit.resources.acsb_icon_next_day
 import com.illiarb.peek.uikit.resources.acsb_icon_previous_day
+import com.illiarb.peek.uikit.resources.acsb_icon_task_overdue
 import com.illiarb.peek.uikit.resources.acsb_icon_tasks_empty
 import com.illiarb.peek.uikit.resources.acsb_navigation_back
 import com.illiarb.peek.uikit.resources.tasks_empty_title
@@ -168,6 +174,8 @@ internal fun TasksScreen(
               tasks = targetState.content,
               contentPadding = innerPadding,
               expandedSections = state.expandedSections,
+              selectedDate = state.selectedDate,
+              today = state.today,
               onTaskToggled = { task -> eventSink(Event.TaskToggled(task)) },
               onTaskDeleted = { taskId -> eventSink(Event.TaskDeleted(taskId)) },
               onSectionToggled = { timeOfDay -> eventSink(Event.SectionToggled(timeOfDay)) },
@@ -197,9 +205,11 @@ private fun TasksEmpty(contentPadding: PaddingValues) {
 
 @Composable
 private fun TasksList(
-  tasks: ImmutableMap<TimeOfDay, List<Task>>,
   contentPadding: PaddingValues,
+  tasks: ImmutableMap<TimeOfDay, List<Task>>,
   expandedSections: Set<TimeOfDay>,
+  today: LocalDate,
+  selectedDate: LocalDate,
   onTaskToggled: (Task) -> Unit,
   onTaskDeleted: (String) -> Unit,
   onSectionToggled: (TimeOfDay) -> Unit,
@@ -208,7 +218,7 @@ private fun TasksList(
     modifier = Modifier.fillMaxSize(),
     contentPadding = contentPadding,
   ) {
-    tasks.minus(TimeOfDay.ANYTIME).forEach { (timeOfDay, sectionTasks) ->
+    tasks.minus(Anytime).forEach { (timeOfDay, sectionTasks) ->
       if (sectionTasks.isNotEmpty()) {
         item(key = "header_${timeOfDay.name}") {
           TimeOfDaySectionHeader(
@@ -251,7 +261,7 @@ private fun TasksList(
       TasksHeader()
     }
 
-    val anytimeTasks = tasks[TimeOfDay.ANYTIME].orEmpty()
+    val anytimeTasks = tasks[Anytime].orEmpty()
     if (anytimeTasks.isEmpty()) {
       item {
         TasksEmpty(PaddingValues())
@@ -271,7 +281,21 @@ private fun TasksList(
           CheckableListItem(
             text = task.title,
             checked = task.completed,
+            subtitle = if (selectedDate == task.createdForDate) {
+              null
+            } else {
+              DateFormats.formatDate(task.createdForDate, today)
+            },
             onCheckedChange = { onTaskToggled(task) },
+            trailingContent = {
+              if (task.createdForDate < today) {
+                Icon(
+                  imageVector = Icons.Filled.AssignmentLate,
+                  contentDescription = stringResource(Res.string.acsb_icon_task_overdue),
+                  tint = MaterialTheme.colorScheme.error,
+                )
+              }
+            },
             modifier = Modifier
               .fillMaxWidth()
               .clip(RoundedCornerShape(16.dp))
@@ -284,12 +308,12 @@ private fun TasksList(
 }
 
 @Composable
-private fun TasksHeader() {
+private fun TasksHeader(modifier: Modifier = Modifier) {
   Text(
     text = stringResource(Res.string.tasks_group_anytime),
     style = MaterialTheme.typography.titleLarge,
     color = MaterialTheme.colorScheme.onSurfaceVariant,
-    modifier = Modifier.padding(horizontal = 16.dp).padding(top = 32.dp, bottom = 16.dp),
+    modifier = modifier.padding(horizontal = 16.dp).padding(top = 32.dp, bottom = 16.dp),
   )
 }
 
@@ -359,7 +383,7 @@ private fun DateSelector(
   val dateText = if (isToday) {
     stringResource(Res.string.tasks_today_title).uppercase()
   } else {
-    DateFormats.formatDate(selectedDate)
+    DateFormats.formatDate(selectedDate, today)
   }
 
   Row(
@@ -428,17 +452,17 @@ private fun TasksLoading(
 }
 
 private fun TimeOfDay.getSectionTitle() = when (this) {
-  TimeOfDay.MORNING -> Res.string.tasks_section_morning
-  TimeOfDay.MIDDAY -> Res.string.tasks_section_midday
-  TimeOfDay.EVENING -> Res.string.tasks_section_evening
-  TimeOfDay.ANYTIME -> throw IllegalArgumentException("Anytime not supported")
+  Morning -> Res.string.tasks_section_morning
+  Midday -> Res.string.tasks_section_midday
+  Evening -> Res.string.tasks_section_evening
+  Anytime -> throw IllegalArgumentException("Anytime not supported")
 }
 
 private fun TimeOfDay.getIcon(): ImageVector = when (this) {
-  TimeOfDay.MORNING -> Icons.Filled.WbTwilight
-  TimeOfDay.MIDDAY -> Icons.Filled.WbSunny
-  TimeOfDay.EVENING -> Icons.Filled.Brightness3
-  TimeOfDay.ANYTIME -> throw IllegalArgumentException("Anytime not supported")
+  Morning -> Icons.Filled.WbTwilight
+  Midday -> Icons.Filled.WbSunny
+  Evening -> Icons.Filled.Brightness3
+  Anytime -> throw IllegalArgumentException("Anytime not supported")
 }
 
 private fun groupShape(position: Int, itemsCount: Int): Shape {
