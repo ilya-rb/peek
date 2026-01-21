@@ -90,7 +90,7 @@ SELECT task_id, date
 FROM task_completions
 ORDER BY date DESC;
 
-overdueTasksForDate:
+overdueTasksBetween:
 SELECT
     tasks.id,
     tasks.title,
