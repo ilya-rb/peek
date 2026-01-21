@@ -29,9 +29,11 @@ public object DateFormats {
 
     return buildString {
       append(monthShort)
+      append(" ")
       append(dateToFormat.day)
 
       if (dateToFormat.year != currentDate.year) {
+        append(" ")
         append(dateToFormat.year)
       }
     }
