@@ -1,13 +1,14 @@
 package com.illiarb.peek.features.tasks.domain
 
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 
 public data class Task(
   val id: String,
   val title: String,
   val habit: Boolean,
   val timeOfDay: TimeOfDay,
-  val createdAt: LocalDate,
+  val createdAt: LocalDateTime,
   val createdForDate: LocalDate,
   val archived: Boolean = false,
   val completed: Boolean = false,

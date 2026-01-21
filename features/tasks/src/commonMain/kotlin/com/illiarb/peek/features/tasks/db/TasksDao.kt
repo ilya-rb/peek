@@ -7,7 +7,7 @@ import com.illiarb.peek.core.coroutines.suspendRunCatching
 import com.illiarb.peek.core.data.ext.toEpochMilliseconds
 import com.illiarb.peek.features.tasks.AllCompletions
 import com.illiarb.peek.features.tasks.AllHabitsCreatedBefore
-import com.illiarb.peek.features.tasks.NotCompletedTasksInRange
+import com.illiarb.peek.features.tasks.OverdueTasksForDate
 import com.illiarb.peek.features.tasks.TasksDatabase
 import com.illiarb.peek.features.tasks.TasksForDateWithCompletion
 import com.illiarb.peek.features.tasks.di.InternalApi
@@ -16,12 +16,7 @@ import com.illiarb.peek.features.tasks.domain.TimeOfDay.Anytime
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atTime
-import kotlinx.datetime.plus
-import kotlinx.datetime.toInstant
 import kotlin.time.Clock
 
 @Inject
@@ -37,12 +32,12 @@ internal class TasksDao(
       .mapToList(coroutineDispatchers.io)
   }
 
-  fun notCompletedTasksInRange(
+  fun overdueTasksBetween(
     start: LocalDate,
     end: LocalDate
-  ): Flow<List<NotCompletedTasksInRange>> {
+  ): Flow<List<OverdueTasksForDate>> {
     return db.tasksQueries
-      .notCompletedTasksInRange(
+      .overdueTasksForDate(
         startDate = start.toEpochMilliseconds(),
         endDate = end.toEpochMilliseconds(),
       )
@@ -106,12 +101,7 @@ internal class TasksDao(
   suspend fun getHabitsCreatedBefore(date: LocalDate): Result<List<AllHabitsCreatedBefore>> {
     return withContext(coroutineDispatchers.io) {
       suspendRunCatching {
-        val date = date.plus(1, DateTimeUnit.DAY)
-          .atTime(0, 0)
-          .toInstant(TimeZone.currentSystemDefault())
-          .toEpochMilliseconds()
-
-        db.tasksQueries.allHabitsCreatedBefore(date).executeAsList()
+        db.tasksQueries.allHabitsCreatedBefore(date.toEpochMilliseconds()).executeAsList()
       }
     }
   }

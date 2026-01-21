@@ -45,9 +45,9 @@ internal class DefaultTasksService(
 
     return combine(
       repository.getTasksFor(today),
-      repository.getTasksBetween(start = today.minus(7, DAY), end = today),
-    ) { currentTasks, notCompletedOnPreviousDays ->
-      currentTasks.mergeWith(notCompletedOnPreviousDays)
+      repository.getOverdueTasksBetween(today.minus(OVERDUE_TASKS_LOOKBACK_DAYS, DAY), today),
+    ) { currentTasks, overdueTasks ->
+      currentTasks.mergeWith(overdueTasks)
     }.mapContent { (current, overdue) ->
       current + overdue
     }
@@ -78,5 +78,9 @@ internal class DefaultTasksService(
 
   override suspend fun toggleCompletion(task: Task, date: LocalDate): Result<Boolean> {
     return repository.toggleCompletion(task, date)
+  }
+
+  companion object {
+    const val OVERDUE_TASKS_LOOKBACK_DAYS = 7
   }
 }

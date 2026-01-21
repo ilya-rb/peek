@@ -72,6 +72,7 @@ import com.illiarb.peek.uikit.resources.acsb_icon_current_streak
 import com.illiarb.peek.uikit.resources.acsb_icon_expand
 import com.illiarb.peek.uikit.resources.acsb_icon_next_day
 import com.illiarb.peek.uikit.resources.acsb_icon_previous_day
+import com.illiarb.peek.uikit.resources.acsb_icon_task_overdue
 import com.illiarb.peek.uikit.resources.acsb_icon_tasks_empty
 import com.illiarb.peek.uikit.resources.acsb_navigation_back
 import com.illiarb.peek.uikit.resources.tasks_empty_title
@@ -257,7 +258,7 @@ private fun TasksList(
     }
 
     item {
-      TasksHeader(Modifier.animateItem(fadeInSpec = null))
+      TasksHeader()
     }
 
     val anytimeTasks = tasks[Anytime].orEmpty()
@@ -283,14 +284,14 @@ private fun TasksList(
             subtitle = if (selectedDate == task.createdForDate) {
               null
             } else {
-              DateFormats.formatDate(task.createdForDate)
+              DateFormats.formatDate(task.createdForDate, today)
             },
             onCheckedChange = { onTaskToggled(task) },
             trailingContent = {
-              if (task.createdForDate != today) {
+              if (task.createdForDate < today) {
                 Icon(
                   imageVector = Icons.Filled.AssignmentLate,
-                  contentDescription = "Overdue",
+                  contentDescription = stringResource(Res.string.acsb_icon_task_overdue),
                   tint = MaterialTheme.colorScheme.error,
                 )
               }
@@ -382,7 +383,7 @@ private fun DateSelector(
   val dateText = if (isToday) {
     stringResource(Res.string.tasks_today_title).uppercase()
   } else {
-    DateFormats.formatDate(selectedDate)
+    DateFormats.formatDate(selectedDate, today)
   }
 
   Row(

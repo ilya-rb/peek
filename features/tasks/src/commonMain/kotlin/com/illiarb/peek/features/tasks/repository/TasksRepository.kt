@@ -3,6 +3,7 @@ package com.illiarb.peek.features.tasks.repository
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.core.data.ext.asAsync
 import com.illiarb.peek.core.data.ext.toLocalDate
+import com.illiarb.peek.core.data.ext.toLocalDateTime
 import com.illiarb.peek.features.tasks.db.TasksDao
 import com.illiarb.peek.features.tasks.db.asTask
 import com.illiarb.peek.features.tasks.domain.HabitInfo
@@ -35,8 +36,8 @@ internal class TasksRepository(
       .asAsync(withLoading = false)
   }
 
-  fun getTasksBetween(start: LocalDate, end: LocalDate): Flow<Async<List<Task>>> {
-    return tasksDao.notCompletedTasksInRange(start, end)
+  fun getOverdueTasksBetween(start: LocalDate, end: LocalDate): Flow<Async<List<Task>>> {
+    return tasksDao.overdueTasksBetween(start, end)
       .map { entries ->
         entries.map {
           it.asTask()
@@ -71,7 +72,7 @@ internal class TasksRepository(
       title = draft.title,
       habit = draft.habit,
       timeOfDay = draft.timeOfDay,
-      createdAt = Clock.System.now().toLocalDate(),
+      createdAt = Clock.System.now().toLocalDateTime(),
       createdForDate = draft.forDate,
     )
     return tasksDao.insertTask(task).map { task }

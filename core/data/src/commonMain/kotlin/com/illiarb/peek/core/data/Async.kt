@@ -1,5 +1,6 @@
 package com.illiarb.peek.core.data
 
+import com.illiarb.peek.core.data.error.CompositeException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
@@ -60,10 +61,11 @@ public sealed class Async<out T> {
         Content(
           content = this.content to other.content,
           contentRefreshing = this.contentRefreshing || other.contentRefreshing,
+          suppressedError = CompositeException(this.suppressedError, other.suppressedError)
         )
       }
 
-      else -> Error(requireNotNull(this.errorOrNull() ?: other.errorOrNull()))
+      else -> Error(CompositeException(this.errorOrNull(), other.errorOrNull()))
     }
   }
 

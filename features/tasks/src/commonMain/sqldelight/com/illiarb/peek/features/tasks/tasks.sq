@@ -50,6 +50,13 @@ LEFT JOIN task_completions
     AND task_completions.date = :date
 WHERE tasks.archived = 0
 AND (tasks.is_habit = 1 OR (tasks.is_habit = 0 AND tasks.created_for_date = :date))
+AND (
+    tasks.is_habit = 1
+    OR NOT EXISTS (
+        SELECT 1 FROM task_completions tc
+        WHERE tc.task_id = tasks.id AND tc.date != :date
+    )
+)
 ORDER BY
     CASE tasks.time_of_day
         WHEN 'Morning' THEN 1
@@ -83,7 +90,7 @@ SELECT task_id, date
 FROM task_completions
 ORDER BY date DESC;
 
-notCompletedTasksInRange:
+overdueTasksForDate:
 SELECT
     tasks.id,
     tasks.title,
@@ -92,15 +99,18 @@ SELECT
     tasks.created_at,
     tasks.created_for_date,
     tasks.archived,
-    0 AS is_completed
+    CASE WHEN task_completions.task_id IS NOT NULL THEN 1 ELSE 0 END AS is_completed
 FROM tasks
 LEFT JOIN task_completions
     ON tasks.id = task_completions.task_id
-    AND task_completions.date = tasks.created_for_date
+    AND task_completions.date = :endDate
 WHERE tasks.archived = 0
     AND tasks.is_habit = 0
     AND tasks.time_of_day IS NULL
     AND tasks.created_for_date >= :startDate
     AND tasks.created_for_date < :endDate
-    AND task_completions.task_id IS NULL
+    AND (
+        NOT EXISTS (SELECT 1 FROM task_completions tc WHERE tc.task_id = tasks.id)
+        OR task_completions.task_id IS NOT NULL
+    )
 ORDER BY tasks.created_for_date DESC, tasks.created_at;
