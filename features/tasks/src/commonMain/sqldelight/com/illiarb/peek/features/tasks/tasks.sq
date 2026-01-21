@@ -49,7 +49,9 @@ LEFT JOIN task_completions
     ON tasks.id = task_completions.task_id
     AND task_completions.date = :date
 WHERE tasks.archived = 0
-AND (tasks.is_habit = 1 OR (tasks.is_habit = 0 AND tasks.created_for_date = :date))
+AND (
+    tasks.is_habit = 1 OR (tasks.is_habit = 0 AND tasks.created_for_date = :date)
+)
 AND (
     tasks.is_habit = 1
     OR NOT EXISTS (
@@ -90,7 +92,7 @@ SELECT task_id, date
 FROM task_completions
 ORDER BY date DESC;
 
-overdueTasksBetween:
+overdueTasksForDate:
 SELECT
     tasks.id,
     tasks.title,
@@ -103,12 +105,12 @@ SELECT
 FROM tasks
 LEFT JOIN task_completions
     ON tasks.id = task_completions.task_id
-    AND task_completions.date = :endDate
+    AND task_completions.date = :date
 WHERE tasks.archived = 0
     AND tasks.is_habit = 0
     AND tasks.time_of_day IS NULL
-    AND tasks.created_for_date >= :startDate
-    AND tasks.created_for_date < :endDate
+    AND tasks.created_for_date >= :maxLookbackDate
+    AND tasks.created_for_date < :date
     AND (
         NOT EXISTS (SELECT 1 FROM task_completions tc WHERE tc.task_id = tasks.id)
         OR task_completions.task_id IS NOT NULL

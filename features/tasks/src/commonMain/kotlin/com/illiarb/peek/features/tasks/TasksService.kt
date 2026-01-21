@@ -45,7 +45,10 @@ internal class DefaultTasksService(
 
     return combine(
       repository.getTasksFor(today),
-      repository.getOverdueTasksBetween(today.minus(OVERDUE_TASKS_LOOKBACK_DAYS, DAY), today),
+      repository.getOverdueTasksFor(
+        today,
+        maxLookbackDate = today.minus(OVERDUE_TASKS_LOOKBACK_DAYS, DAY)
+      ),
     ) { currentTasks, overdueTasks ->
       currentTasks.mergeWith(overdueTasks)
     }.mapContent { (current, overdue) ->

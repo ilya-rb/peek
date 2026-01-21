@@ -7,7 +7,7 @@ import com.illiarb.peek.core.coroutines.suspendRunCatching
 import com.illiarb.peek.core.data.ext.toEpochMilliseconds
 import com.illiarb.peek.features.tasks.AllCompletions
 import com.illiarb.peek.features.tasks.AllHabitsCreatedBefore
-import com.illiarb.peek.features.tasks.OverdueTasksBetween
+import com.illiarb.peek.features.tasks.OverdueTasksForDate
 import com.illiarb.peek.features.tasks.TasksDatabase
 import com.illiarb.peek.features.tasks.TasksForDateWithCompletion
 import com.illiarb.peek.features.tasks.di.InternalApi
@@ -32,14 +32,14 @@ internal class TasksDao(
       .mapToList(coroutineDispatchers.io)
   }
 
-  fun overdueTasksBetween(
-    start: LocalDate,
-    end: LocalDate
-  ): Flow<List<OverdueTasksBetween>> {
+  fun overdueTasksForDate(
+    date: LocalDate,
+    maxLookbackDate: LocalDate,
+  ): Flow<List<OverdueTasksForDate>> {
     return db.tasksQueries
-      .overdueTasksBetween(
-        startDate = start.toEpochMilliseconds(),
-        endDate = end.toEpochMilliseconds(),
+      .overdueTasksForDate(
+        date = date.toEpochMilliseconds(),
+        maxLookbackDate = maxLookbackDate.toEpochMilliseconds(),
       )
       .asFlow()
       .mapToList(coroutineDispatchers.io)

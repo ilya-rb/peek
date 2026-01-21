@@ -36,8 +36,8 @@ internal class TasksRepository(
       .asAsync(withLoading = false)
   }
 
-  fun getOverdueTasksBetween(start: LocalDate, end: LocalDate): Flow<Async<List<Task>>> {
-    return tasksDao.overdueTasksBetween(start, end)
+  fun getOverdueTasksFor(date: LocalDate, maxLookbackDate: LocalDate): Flow<Async<List<Task>>> {
+    return tasksDao.overdueTasksForDate(date, maxLookbackDate)
       .map { entries ->
         entries.map {
           it.asTask()
