@@ -140,8 +140,12 @@ internal class ArticlesRepository(
 
   private fun TimeBased<NewsSourceKind>.overrideIfNeeded(
     requested: AsyncDataStore.LoadStrategy<NewsSourceKind>?,
-  ): TimeBased<NewsSourceKind> {
-    return copy(invalidate = requested is ForceReload)
+  ): AsyncDataStore.LoadStrategy<NewsSourceKind> {
+    return if (requested is ForceReload) {
+      copy(invalidate = true)
+    } else {
+      requested ?: this
+    }
   }
 
   companion object {
