@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.util.fastAny
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.core.data.ext.toLocalDateTime
 import com.illiarb.peek.core.data.mapContent
@@ -58,13 +59,7 @@ internal class TasksScreenPresenter(
       mutableStateOf(0)
     }
     var expandedSections by rememberRetained {
-      mutableStateOf(
-        when (now.time.hour) {
-          in 6..11 -> setOf(TimeOfDay.Morning)
-          in 12..17 -> setOf(TimeOfDay.Midday)
-          else -> setOf(TimeOfDay.Evening)
-        }
-      )
+      mutableStateOf<Set<TimeOfDay>?>(null)
     }
     val tasks by produceRetainedState<Async<ImmutableMap<TimeOfDay, List<Task>>>>(
       initialValue = Async.Loading,
@@ -81,6 +76,10 @@ internal class TasksScreenPresenter(
         tasks.groupBy { it.timeOfDay }.toImmutableMap()
       }.collect {
         value = it
+
+        if (expandedSections == null && it is Async.Content) {
+          expandedSections = getInitialExpandedSections(now.time.hour, it.content)
+        }
       }
     }
 
@@ -92,7 +91,7 @@ internal class TasksScreenPresenter(
       tasks = tasks,
       statistics = statistics,
       showAddTaskSheet = showAddTaskSheet,
-      expandedSections = expandedSections,
+      expandedSections = expandedSections.orEmpty(),
       selectedDate = selectedDate,
       today = now.date,
       eventSink = { event ->
@@ -163,14 +162,34 @@ internal class TasksScreenPresenter(
           }
 
           is Event.SectionToggled -> {
-            expandedSections = if (event.timeOfDay in expandedSections) {
-              expandedSections - event.timeOfDay
+            val currentSections = expandedSections.orEmpty()
+
+            expandedSections = if (event.timeOfDay in currentSections) {
+              currentSections - event.timeOfDay
             } else {
-              expandedSections + event.timeOfDay
+              currentSections + event.timeOfDay
             }
           }
         }
       }
     )
+  }
+
+  private fun getInitialExpandedSections(
+    currentHour: Int,
+    currentTasks: Map<TimeOfDay, List<Task>>
+  ): Set<TimeOfDay> {
+    val timeOfDay = when (currentHour) {
+      in 6..11 -> TimeOfDay.Morning
+      in 12..17 -> TimeOfDay.Midday
+      else -> TimeOfDay.Evening
+    }
+    val hasPendingTasks = currentTasks[timeOfDay].orEmpty().fastAny { it.completed.not() }
+
+    return if (hasPendingTasks) {
+      setOf(timeOfDay)
+    } else {
+      emptySet()
+    }
   }
 }

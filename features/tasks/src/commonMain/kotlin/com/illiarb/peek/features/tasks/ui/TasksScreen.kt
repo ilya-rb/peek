@@ -257,7 +257,7 @@ private fun TasksList(
     }
 
     item {
-      TasksHeader()
+      TasksHeader(Modifier.animateItem(fadeInSpec = null))
     }
 
     val anytimeTasks = tasks[Anytime].orEmpty()
@@ -307,12 +307,12 @@ private fun TasksList(
 }
 
 @Composable
-private fun TasksHeader() {
+private fun TasksHeader(modifier: Modifier = Modifier) {
   Text(
     text = stringResource(Res.string.tasks_group_anytime),
     style = MaterialTheme.typography.titleLarge,
     color = MaterialTheme.colorScheme.onSurfaceVariant,
-    modifier = Modifier.padding(horizontal = 16.dp).padding(top = 32.dp, bottom = 16.dp),
+    modifier = modifier.padding(horizontal = 16.dp).padding(top = 32.dp, bottom = 16.dp),
   )
 }
 
