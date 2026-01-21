@@ -58,10 +58,15 @@ public sealed class Async<out T> {
     return when {
       this is Loading || other is Loading -> Loading
       this is Content && other is Content -> {
+        val mergedError = if (this.suppressedError != null || other.suppressedError != null) {
+          CompositeException(this.suppressedError, other.suppressedError)
+        } else {
+          null
+        }
         Content(
           content = this.content to other.content,
           contentRefreshing = this.contentRefreshing || other.contentRefreshing,
-          suppressedError = CompositeException(this.suppressedError, other.suppressedError)
+          suppressedError = mergedError
         )
       }
 

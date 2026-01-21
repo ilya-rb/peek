@@ -111,6 +111,7 @@ WHERE tasks.archived = 0
     AND tasks.time_of_day IS NULL
     AND tasks.created_for_date >= :maxLookbackDate
     AND tasks.created_for_date < :date
+    -- Show overdue tasks that can stil be completed or were completed today
     AND (
         NOT EXISTS (SELECT 1 FROM task_completions tc WHERE tc.task_id = tasks.id)
         OR task_completions.task_id IS NOT NULL
