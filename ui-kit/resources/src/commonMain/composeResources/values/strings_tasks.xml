@@ -18,4 +18,7 @@
   <string name="tasks_empty_title">No tasks for today</string>
   <string name="tasks_group_anytime">Tasks</string>
   <string name="tasks_today_title">Today</string>
+  <string name="tasks_create_error">Error while creating task</string>
+  <string name="tasks_update_error">Error while updating task</string>
+  <string name="tasks_delete_error">Error while deleting task</string>
 </resources>

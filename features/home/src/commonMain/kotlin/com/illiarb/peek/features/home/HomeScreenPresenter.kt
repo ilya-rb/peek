@@ -22,7 +22,7 @@ import com.illiarb.peek.features.navigation.map.ShareScreen
 import com.illiarb.peek.features.navigation.map.SummaryScreen
 import com.illiarb.peek.features.navigation.map.TasksScreen
 import com.illiarb.peek.features.tasks.TasksService
-import com.illiarb.peek.features.tasks.domain.TimeOfDay
+import com.illiarb.peek.features.tasks.domain.TimeOfDay.Anytime
 import com.illiarb.peek.uikit.messages.Message
 import com.illiarb.peek.uikit.messages.MessageDispatcher
 import com.illiarb.peek.uikit.messages.MessageType
@@ -67,12 +67,12 @@ internal class HomeScreenPresenter(
       initialValue = TasksIndicator.None,
       key1 = today,
     ) {
-      tasksService.getTasksForDate(today).collect { async ->
+      tasksService.getTasksForToday().collect { async ->
         value = when (async) {
           is Async.Loading -> TasksIndicator.None
           is Async.Error -> TasksIndicator.None
           is Async.Content -> {
-            val anytimeTasks = async.content.filter { it.timeOfDay == TimeOfDay.ANYTIME }
+            val anytimeTasks = async.content.filter { it.timeOfDay == Anytime }
             when {
               anytimeTasks.isEmpty() -> TasksIndicator.None
               anytimeTasks.all { it.completed } -> TasksIndicator.AllTasksCompleted

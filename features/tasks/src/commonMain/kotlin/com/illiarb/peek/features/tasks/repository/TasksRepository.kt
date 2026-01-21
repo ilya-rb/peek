@@ -1,55 +1,80 @@
 package com.illiarb.peek.features.tasks.repository
 
 import com.illiarb.peek.core.data.Async
-import com.illiarb.peek.core.logging.catchWithLog
+import com.illiarb.peek.core.data.ext.asAsync
+import com.illiarb.peek.core.data.ext.toLocalDate
 import com.illiarb.peek.features.tasks.db.TasksDao
-import com.illiarb.peek.features.tasks.domain.HabitStatistics
-import com.illiarb.peek.features.tasks.domain.StreakCalculator
+import com.illiarb.peek.features.tasks.db.asTask
+import com.illiarb.peek.features.tasks.domain.HabitInfo
 import com.illiarb.peek.features.tasks.domain.Task
+import com.illiarb.peek.features.tasks.domain.TaskCompletion
 import com.illiarb.peek.features.tasks.domain.TaskDraft
+import com.illiarb.peek.features.tasks.domain.TaskNotCreatedException
+import com.illiarb.peek.features.tasks.domain.TaskNotCreatedException.ErrorKind.NameTooLong
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @Inject
+@OptIn(ExperimentalUuidApi::class)
 internal class TasksRepository(
   private val tasksDao: TasksDao,
-  private val streakCalculator: StreakCalculator,
 ) {
 
-  fun tasksForDate(date: LocalDate): Flow<Async<List<Task>>> {
+  fun getTasksFor(date: LocalDate): Flow<Async<List<Task>>> {
     return tasksDao.tasksForDate(date)
-      .map {
-        Async.Content(it, contentRefreshing = false) as Async<List<Task>>
+      .map { entries ->
+        entries.map {
+          it.asTask()
+        }
       }
-      .catch {
-        emit(Async.Error(it))
-      }
+      .asAsync(withLoading = false)
   }
 
-  @OptIn(ExperimentalUuidApi::class)
-  suspend fun addTask(draft: TaskDraft): Result<Task> {
+  fun getTasksBetween(start: LocalDate, end: LocalDate): Flow<Async<List<Task>>> {
+    return tasksDao.notCompletedTasksInRange(start, end)
+      .map { entries ->
+        entries.map {
+          it.asTask()
+        }
+      }
+      .asAsync(withLoading = false)
+  }
+
+  suspend fun getHabitsCreatedBefore(date: LocalDate): Result<List<HabitInfo>> {
+    return tasksDao.getHabitsCreatedBefore(date).map { entries ->
+      entries.map {
+        HabitInfo(it.id, it.created_at.toLocalDate())
+      }
+    }
+  }
+
+  suspend fun getAllTasksCompletions(): Result<List<TaskCompletion>> {
+    return tasksDao.getAllCompletions().map { entries ->
+      entries.map {
+        TaskCompletion(it.task_id, it.date.toLocalDate())
+      }
+    }
+  }
+
+  suspend fun createTask(draft: TaskDraft): Result<Task> {
+    if (draft.title.length > Task.TASK_NAME_LIMIT) {
+      return Result.failure(TaskNotCreatedException(NameTooLong))
+    }
+
     val task = Task(
       id = Uuid.random().toString(),
       title = draft.title,
       habit = draft.habit,
       timeOfDay = draft.timeOfDay,
-      createdAt = Clock.System.now(),
+      createdAt = Clock.System.now().toLocalDate(),
       createdForDate = draft.forDate,
     )
     return tasksDao.insertTask(task).map { task }
-  }
-
-  suspend fun deleteTask(taskId: String): Result<Unit> {
-    return tasksDao.archiveTask(taskId)
   }
 
   suspend fun toggleCompletion(task: Task, date: LocalDate): Result<Boolean> {
@@ -60,23 +85,7 @@ internal class TasksRepository(
     }
   }
 
-  fun habitStatistics(): Flow<Async<HabitStatistics>> {
-    return flow {
-      val today = Clock.System.now()
-        .toLocalDateTime(TimeZone.currentSystemDefault())
-        .date
-
-      val habits = tasksDao.getHabitsCreatedBefore(today).getOrThrow()
-      val completions = tasksDao.getAllCompletions().getOrThrow()
-      val streak = streakCalculator.calculateCurrentStreak(today, habits, completions)
-
-      emit(HabitStatistics(currentStreak = streak))
-    }
-      .map {
-        Async.Content(it, contentRefreshing = false) as Async<HabitStatistics>
-      }
-      .catchWithLog {
-        emit(Async.Error(it))
-      }
+  suspend fun deleteTask(taskId: String): Result<Unit> {
+    return tasksDao.archiveTask(taskId)
   }
 }

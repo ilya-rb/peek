@@ -26,6 +26,6 @@ public object DateFormats {
   public fun formatDate(date: LocalDate): String {
     val month = date.month.name.lowercase().replaceFirstChar { it.uppercase() }
     val monthShort = month.take(3)
-    return "$monthShort ${date.day}, ${date.year}"
+    return "$monthShort ${date.day}"
   }
 }

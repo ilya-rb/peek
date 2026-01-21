@@ -32,6 +32,7 @@ internal interface TasksScreenContract {
     val showAddTaskSheet: Boolean,
     val expandedSections: Set<TimeOfDay>,
     val selectedDate: LocalDate,
+    val today: LocalDate,
     val eventSink: (Event) -> Unit,
   ) : CircuitUiState
 

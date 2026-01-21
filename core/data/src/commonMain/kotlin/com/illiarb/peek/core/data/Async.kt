@@ -24,6 +24,13 @@ public sealed class Async<out T> {
     }
   }
 
+  public fun errorOrNull(): Throwable? {
+    return when (this) {
+      is Error -> error
+      else -> null
+    }
+  }
+
   public fun <R> map(mapper: (T) -> R): Async<R> {
     return when (this) {
       is Content -> Content(mapper(this.content), this.contentRefreshing, this.suppressedError)
@@ -43,6 +50,20 @@ public sealed class Async<out T> {
       }
 
       else -> this::class
+    }
+  }
+
+  public fun <R> mergeWith(other: Async<R>): Async<Pair<T, R>> {
+    return when {
+      this is Loading || other is Loading -> Loading
+      this is Content && other is Content -> {
+        Content(
+          content = this.content to other.content,
+          contentRefreshing = this.contentRefreshing || other.contentRefreshing,
+        )
+      }
+
+      else -> Error(requireNotNull(this.errorOrNull() ?: other.errorOrNull()))
     }
   }
 

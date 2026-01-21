@@ -4,27 +4,20 @@ CREATE TABLE IF NOT EXISTS tasks (
     is_habit INTEGER NOT NULL DEFAULT 0,
     time_of_day TEXT,
     created_at INTEGER NOT NULL,
-    created_for_date TEXT,
+    created_for_date INTEGER NOT NULL,
     archived INTEGER NOT NULL DEFAULT 0,
-    CHECK (time_of_day IN ('MORNING', 'MIDDAY', 'EVENING'))
+
+    CHECK (length(title) <= 300),
+    CHECK (time_of_day IN ('Morning', 'Midday', 'Evening'))
 );
 
 CREATE TABLE IF NOT EXISTS task_completions (
     task_id TEXT NOT NULL,
-    date TEXT NOT NULL,
+    date INTEGER NOT NULL,
     completed_at INTEGER NOT NULL,
     PRIMARY KEY (task_id, date),
     FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE
 );
-
-allActiveTasks:
-SELECT * FROM tasks WHERE archived = 0;
-
-allHabits:
-SELECT * FROM tasks WHERE is_habit = 1 AND archived = 0;
-
-taskById:
-SELECT * FROM tasks WHERE id = :id;
 
 insertTask:
 INSERT INTO tasks (id, title, is_habit, time_of_day, created_at, created_for_date, archived)
@@ -52,14 +45,16 @@ SELECT
     tasks.archived,
     CASE WHEN task_completions.task_id IS NOT NULL THEN 1 ELSE 0 END AS is_completed
 FROM tasks
-LEFT JOIN task_completions ON tasks.id = task_completions.task_id AND task_completions.date = :date
+LEFT JOIN task_completions
+    ON tasks.id = task_completions.task_id
+    AND task_completions.date = :date
 WHERE tasks.archived = 0
 AND (tasks.is_habit = 1 OR (tasks.is_habit = 0 AND tasks.created_for_date = :date))
 ORDER BY
     CASE tasks.time_of_day
-        WHEN 'MORNING' THEN 1
-        WHEN 'MIDDAY' THEN 2
-        WHEN 'EVENING' THEN 3
+        WHEN 'Morning' THEN 1
+        WHEN 'Midday' THEN 2
+        WHEN 'Evening' THEN 3
         ELSE 0
     END,
     tasks.created_at;
@@ -87,3 +82,25 @@ allCompletions:
 SELECT task_id, date
 FROM task_completions
 ORDER BY date DESC;
+
+notCompletedTasksInRange:
+SELECT
+    tasks.id,
+    tasks.title,
+    tasks.is_habit,
+    tasks.time_of_day,
+    tasks.created_at,
+    tasks.created_for_date,
+    tasks.archived,
+    0 AS is_completed
+FROM tasks
+LEFT JOIN task_completions
+    ON tasks.id = task_completions.task_id
+    AND task_completions.date = tasks.created_for_date
+WHERE tasks.archived = 0
+    AND tasks.is_habit = 0
+    AND tasks.time_of_day IS NULL
+    AND tasks.created_for_date >= :startDate
+    AND tasks.created_for_date < :endDate
+    AND task_completions.task_id IS NULL
+ORDER BY tasks.created_for_date DESC, tasks.created_at;

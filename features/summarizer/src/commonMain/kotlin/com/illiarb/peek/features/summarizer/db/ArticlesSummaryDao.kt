@@ -1,6 +1,6 @@
 package com.illiarb.peek.features.summarizer.db
 
-import com.illiarb.peek.core.coroutines.AppDispatchers
+import com.illiarb.peek.core.coroutines.CoroutineDispatchers
 import com.illiarb.peek.core.coroutines.suspendRunCatching
 import com.illiarb.peek.core.types.Url
 import com.illiarb.peek.features.summarizer.Database
@@ -13,12 +13,12 @@ import kotlinx.coroutines.withContext
 @Inject
 @InternalApi
 internal class ArticlesSummaryDao(
-  private val appDispatchers: AppDispatchers,
+  private val coroutineDispatchers: CoroutineDispatchers,
   @InternalApi private val db: Database,
 ) {
 
   suspend fun summaryByUrl(url: Url): Result<ArticleSummary?> {
-    return withContext(appDispatchers.io) {
+    return withContext(coroutineDispatchers.io) {
       suspendRunCatching {
         db.summariesQueries.summaryByUrl(url.url).executeAsOneOrNull()?.toDomain()
       }
@@ -26,7 +26,7 @@ internal class ArticlesSummaryDao(
   }
 
   suspend fun saveSummary(summary: ArticleSummary): Result<Unit> {
-    return withContext(appDispatchers.io) {
+    return withContext(coroutineDispatchers.io) {
       suspendRunCatching {
         db.summariesQueries.saveSummary(
           url = summary.url.url,

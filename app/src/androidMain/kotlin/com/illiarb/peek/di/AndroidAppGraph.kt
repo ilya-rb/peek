@@ -9,7 +9,7 @@ import com.illiarb.peek.core.appinfo.di.AppConfigurationsBindings
 import com.illiarb.peek.core.arch.AppInitializer
 import com.illiarb.peek.core.arch.di.AppCoroutineScope
 import com.illiarb.peek.core.arch.di.AppScope
-import com.illiarb.peek.core.coroutines.AppDispatchers
+import com.illiarb.peek.core.coroutines.CoroutineDispatchers
 import com.illiarb.peek.core.data.di.CoreDataBindings
 import com.illiarb.peek.core.network.di.NetworkBindings
 import com.illiarb.peek.core.workscheduler.Worker
@@ -46,13 +46,13 @@ internal interface AndroidAppGraph : AppGraph {
   val imageLoader: ImageLoader
   val activityProviders: Map<KClass<out Activity>, Provider<Activity>>
   val appInitializers: Set<AppInitializer>
-  val appDispatchers: AppDispatchers
+  val coroutineDispatchers: CoroutineDispatchers
 
   @AppCoroutineScope
   val appCoroutineScope: CoroutineScope
 
   @Provides
-  fun provideAppDispatchers(): AppDispatchers = AppDispatchers()
+  fun provideAppDispatchers(): CoroutineDispatchers = CoroutineDispatchers()
 
   @Provides
   @AppCoroutineScope

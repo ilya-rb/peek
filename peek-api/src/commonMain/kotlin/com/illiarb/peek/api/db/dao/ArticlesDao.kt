@@ -6,7 +6,7 @@ import com.illiarb.peek.api.Database
 import com.illiarb.peek.api.di.InternalApi
 import com.illiarb.peek.api.domain.Article
 import com.illiarb.peek.api.domain.NewsSourceKind
-import com.illiarb.peek.core.coroutines.AppDispatchers
+import com.illiarb.peek.core.coroutines.CoroutineDispatchers
 import com.illiarb.peek.core.coroutines.suspendRunCatching
 import com.illiarb.peek.core.logging.Logger
 import com.illiarb.peek.core.types.Url
@@ -21,11 +21,11 @@ import kotlin.time.Instant
 @Inject
 internal class ArticlesDao(
   @InternalApi private val db: Database,
-  private val appDispatchers: AppDispatchers,
+  private val coroutineDispatchers: CoroutineDispatchers,
 ) {
 
   suspend fun articlesOfKind(sourceKind: NewsSourceKind): Result<List<Article>?> {
-    return withContext(appDispatchers.io) {
+    return withContext(coroutineDispatchers.io) {
       suspendRunCatching {
         db.articlesQueries.articlesOfKind(sourceKind.name).executeAsList()
           .map { entity -> entity.asArticle() }
@@ -35,7 +35,7 @@ internal class ArticlesDao(
   }
 
   suspend fun articleByUrl(url: Url): Result<Article?> {
-    return withContext(appDispatchers.io) {
+    return withContext(coroutineDispatchers.io) {
       suspendRunCatching {
         db.articlesQueries.articleByUrl(url.url).executeAsOneOrNull()?.asArticle()
       }
@@ -43,7 +43,7 @@ internal class ArticlesDao(
   }
 
   suspend fun saveArticle(article: Article): Result<Unit> {
-    return withContext(appDispatchers.io) {
+    return withContext(coroutineDispatchers.io) {
       suspendRunCatching {
         db.articlesQueries.setSaved(
           saved = if (article.saved) 1L else 0L,
@@ -63,11 +63,11 @@ internal class ArticlesDao(
           entity.asArticle()
         }
       }
-      .flowOn(appDispatchers.io)
+      .flowOn(coroutineDispatchers.io)
   }
 
   suspend fun saveArticles(articles: List<Article>): Result<Unit> {
-    return withContext(appDispatchers.io) {
+    return withContext(coroutineDispatchers.io) {
       suspendRunCatching {
         db.transactionWithResult {
           articles.forEach(::insertArticle)
@@ -77,7 +77,7 @@ internal class ArticlesDao(
   }
 
   suspend fun savedArticlesUrls(): Result<List<Url>> {
-    return withContext(appDispatchers.io) {
+    return withContext(coroutineDispatchers.io) {
       suspendRunCatching {
         db.articlesQueries.savedArticlesUrls().executeAsList().map { Url(it) }
       }
@@ -85,7 +85,7 @@ internal class ArticlesDao(
   }
 
   suspend fun deleteArticlesOlderThan(duration: Duration): Result<Unit> {
-    return with(appDispatchers.io) {
+    return with(coroutineDispatchers.io) {
       suspendRunCatching {
         val deleted =
           db.articlesQueries.deleteArticlesOlderThan(duration.inWholeMilliseconds).await()
