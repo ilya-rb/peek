@@ -30,8 +30,8 @@ import com.illiarb.peek.api.domain.NewsSource
 import com.illiarb.peek.api.domain.NewsSourceKind
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.uikit.core.components.cell.SelectableCircleAvatar
-import com.illiarb.peek.uikit.core.components.dnd.rememberReorderableState
-import com.illiarb.peek.uikit.core.components.dnd.reorderableContainer
+import com.illiarb.peek.uikit.core.components.dnd.rememberDragAndDropState
+import com.illiarb.peek.uikit.core.components.dnd.dragAndDropContainer
 import com.illiarb.peek.uikit.core.components.dnd.reorderableItems
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.dou_logo
@@ -59,7 +59,7 @@ internal fun ServicesScreen(
     mutableStateOf(state.sources.content.toPersistentList())
   }
   val listState = rememberLazyListState()
-  val reorderableState = rememberReorderableState(
+  val reorderableState = rememberDragAndDropState(
     listState = listState,
     draggableItemsCount = items.size,
     onMove = { from, to ->
@@ -86,7 +86,7 @@ internal fun ServicesScreen(
     LazyColumn(
       state = listState,
       verticalArrangement = Arrangement.spacedBy(8.dp),
-      modifier = Modifier.reorderableContainer(reorderableState)
+      modifier = Modifier.dragAndDropContainer(reorderableState)
         .navigationBarsPadding()
         .padding(bottom = 24.dp, top = 16.dp)
     ) {

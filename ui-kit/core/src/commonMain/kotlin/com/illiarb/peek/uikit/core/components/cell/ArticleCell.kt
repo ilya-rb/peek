@@ -13,12 +13,14 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -34,10 +36,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.illiarb.peek.uikit.core.components.popup.ShareAction
 import com.illiarb.peek.uikit.core.components.popup.SummarizeAction
+import com.illiarb.peek.uikit.core.preview.PreviewTheme
 
 @Composable
 public fun ArticleCell(
@@ -56,8 +60,18 @@ public fun ArticleCell(
     verticalAlignment = Alignment.CenterVertically,
     modifier = modifier.clickable(onClick = onClick),
   ) {
-    ArticleContent(title = title, subtitle = subtitle, caption = caption, badge = badge)
-    ArticleActions(saved, onBookmarkClick, onSummarizeClick, onShareClick)
+    ArticleContent(
+      title = title,
+      subtitle = subtitle,
+      caption = caption,
+      badge = badge
+    )
+    ArticleActions(
+      articleSaved = saved,
+      onBookmarkClick = onBookmarkClick,
+      onSummarizeClick = onSummarizeClick,
+      onShareClick = onShareClick
+    )
   }
 }
 
@@ -239,4 +253,78 @@ private fun MoreIcon() {
     tint = MaterialTheme.colorScheme.primary,
     contentDescription = null,
   )
+}
+
+@Composable
+@Preview
+private fun ArticlePreviewLight() {
+  ArticleCellPreview(darkTheme = false)
+}
+
+@Composable
+@Preview
+private fun ArticlePreviewDark() {
+  ArticleCellPreview(darkTheme = true)
+}
+
+@Composable
+@Preview
+private fun ArticlePreviewSavedLight() {
+  ArticleCellPreviewSaved(darkTheme = false)
+}
+
+@Composable
+@Preview
+private fun ArticlePreviewSavedDark() {
+  ArticleCellPreviewSaved(darkTheme = true)
+}
+
+@Composable
+private fun ArticleCellPreview(darkTheme: Boolean) {
+  PreviewTheme(darkTheme) {
+    LazyColumn {
+      items(
+        count = 3,
+        key = { index -> index },
+        itemContent = {
+          ArticleCell(
+            title = "Title Title Title Title Title Title ".repeat(2),
+            subtitle = "Caption",
+            caption = "12 Nov 2025",
+            saved = false,
+            onClick = {},
+            onBookmarkClick = {},
+            onSummarizeClick = {},
+            onShareClick = {},
+          )
+          HorizontalDivider()
+        }
+      )
+    }
+  }
+}
+
+@Composable
+private fun ArticleCellPreviewSaved(darkTheme: Boolean) {
+  PreviewTheme(darkTheme) {
+    LazyColumn {
+      items(
+        count = 3,
+        key = { index -> index },
+        itemContent = {
+          ArticleCell(
+            title = "Title Title Title Title Title Title ".repeat(2),
+            subtitle = null,
+            caption = null,
+            saved = true,
+            onClick = {},
+            onBookmarkClick = {},
+            onSummarizeClick = {},
+            onShareClick = {},
+          )
+          HorizontalDivider()
+        }
+      )
+    }
+  }
 }

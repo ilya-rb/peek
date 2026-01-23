@@ -27,8 +27,8 @@ import com.illiarb.peek.features.navigation.map.SummaryScreen
 import com.illiarb.peek.features.summarizer.ui.SummaryScreenContract.Event
 import com.illiarb.peek.features.summarizer.ui.SummaryScreenContract.State.ArticleWithSummary
 import com.illiarb.peek.uikit.core.components.cell.ErrorEmptyState
-import com.illiarb.peek.uikit.core.components.shimmer.ShimmerBox
-import com.illiarb.peek.uikit.core.components.shimmer.ShimmerColumn
+import com.illiarb.peek.uikit.core.atom.shimmer.ShimmerBox
+import com.illiarb.peek.uikit.core.atom.shimmer.ShimmerColumn
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_action_close
 import com.illiarb.peek.uikit.resources.acsb_action_open_in_browser

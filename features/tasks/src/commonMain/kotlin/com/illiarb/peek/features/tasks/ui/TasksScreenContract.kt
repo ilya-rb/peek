@@ -33,6 +33,7 @@ internal interface TasksScreenContract {
     val expandedSections: Set<TimeOfDay>,
     val selectedDate: LocalDate,
     val today: LocalDate,
+    val taskToUncheck: Task? = null,
     val eventSink: (Event) -> Unit,
   ) : CircuitUiState
 
@@ -52,6 +53,9 @@ internal interface TasksScreenContract {
       val timeOfDay: TimeOfDay,
       val dismissSheet: Boolean,
     ) : Event
+    data class UncheckConfirmationRequested(val task: Task) : Event
+    data object UncheckConfirmed : Event
+    data object UncheckCancelled : Event
   }
 }
 

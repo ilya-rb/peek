@@ -9,12 +9,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.CollectionsBookmark
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,10 +26,10 @@ import com.illiarb.peek.features.navigation.map.SummaryScreen
 import com.illiarb.peek.features.navigation.map.showScreenOverlay
 import com.illiarb.peek.uikit.core.components.cell.EmptyState
 import com.illiarb.peek.uikit.core.components.cell.ErrorEmptyState
-import com.illiarb.peek.uikit.core.model.VectorIcon
+import com.illiarb.peek.uikit.core.components.navigation.UiKitTopAppBar
+import com.illiarb.peek.uikit.core.image.VectorIcon
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_icon_bookmarks_empty
-import com.illiarb.peek.uikit.resources.acsb_navigation_back
 import com.illiarb.peek.uikit.resources.bookmarks_empty
 import com.illiarb.peek.uikit.resources.bookmarks_screen_title
 import com.slack.circuit.overlay.OverlayEffect
@@ -57,17 +54,12 @@ internal fun BookmarksScreen(
 
   Scaffold(
     topBar = {
-      CenterAlignedTopAppBar(
+      UiKitTopAppBar(
         title = {
           Text(stringResource(Res.string.bookmarks_screen_title))
         },
-        navigationIcon = {
-          IconButton(onClick = { eventSink.invoke(Event.NavigationButtonClicked) }) {
-            Icon(
-              imageVector = Icons.AutoMirrored.Default.ArrowBack,
-              contentDescription = stringResource(Res.string.acsb_navigation_back),
-            )
-          }
+        onNavigationButtonClick = {
+          eventSink.invoke(Event.NavigationButtonClicked)
         },
         actions = {
           Icon(

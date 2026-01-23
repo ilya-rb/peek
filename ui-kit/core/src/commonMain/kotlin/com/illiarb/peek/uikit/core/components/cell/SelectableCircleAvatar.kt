@@ -25,9 +25,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.illiarb.peek.uikit.core.preview.PreviewTheme
+import com.illiarb.peek.uikit.resources.Res
+import com.illiarb.peek.uikit.resources.hn_logo
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.vectorResource
 
@@ -124,5 +130,61 @@ private fun Modifier.selectedBorder(
         style = Stroke(width = strokeWidthPx),
       )
     }
+  }
+}
+
+@Preview
+@Composable
+private fun SelectableCircleAvatarFullPreviewLight() {
+  PreviewTheme(darkMode = false) {
+    SelectableCircleAvatarFullPreview()
+  }
+}
+
+@Preview
+@Composable
+private fun SelectableCircleAvatarFullPreviewDark() {
+  PreviewTheme(darkMode = true) {
+    SelectableCircleAvatarFullPreview()
+  }
+}
+
+@Composable
+private fun SelectableCircleAvatarFullPreview() {
+  SelectableCircleAvatar(
+    image = Res.drawable.hn_logo,
+    state = AvatarState.Selected,
+    onClick = {}
+  )
+}
+
+@Preview
+@Composable
+private fun SelectableCircleAvatarStatesPreview() {
+  PreviewTheme(darkMode = false) {
+    SelectableCircleAvatarStatesPreviewContent()
+  }
+}
+
+@Composable
+private fun SelectableCircleAvatarStatesPreviewContent() {
+  Row(
+    horizontalArrangement = Arrangement.spacedBy(16.dp)
+  ) {
+    SelectableCircleAvatar(
+      image = Res.drawable.hn_logo,
+      state = AvatarState.Default,
+      onClick = {}
+    )
+    SelectableCircleAvatar(
+      image = Res.drawable.hn_logo,
+      state = AvatarState.Selected,
+      onClick = {}
+    )
+    SelectableCircleAvatar(
+      image = Res.drawable.hn_logo,
+      state = AvatarState.Unselected,
+      onClick = {}
+    )
   }
 }

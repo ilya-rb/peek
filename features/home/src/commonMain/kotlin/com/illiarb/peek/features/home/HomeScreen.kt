@@ -21,7 +21,6 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -43,13 +42,14 @@ import com.illiarb.peek.features.home.articles.ArticlesLoading
 import com.illiarb.peek.features.navigation.map.ServicesScreen
 import com.illiarb.peek.features.navigation.map.SummaryScreen
 import com.illiarb.peek.features.navigation.map.showScreenOverlay
-import com.illiarb.peek.uikit.core.components.BorderState
-import com.illiarb.peek.uikit.core.components.BorderedIcon
-import com.illiarb.peek.uikit.core.components.HorizontalList
-import com.illiarb.peek.uikit.core.components.TextSwitcher
+import com.illiarb.peek.uikit.core.atom.BorderState
+import com.illiarb.peek.uikit.core.atom.HorizontalList
+import com.illiarb.peek.uikit.core.atom.ContentSwitcher
+import com.illiarb.peek.uikit.core.atom.bordered
 import com.illiarb.peek.uikit.core.components.cell.AvatarState
 import com.illiarb.peek.uikit.core.components.cell.ErrorEmptyState
 import com.illiarb.peek.uikit.core.components.cell.SelectableCircleAvatar
+import com.illiarb.peek.uikit.core.components.navigation.UiKitTopAppBar
 import com.illiarb.peek.uikit.core.components.text.DateFormats
 import com.illiarb.peek.uikit.core.theme.UiKitColors
 import com.illiarb.peek.uikit.resources.Res
@@ -114,11 +114,10 @@ internal fun HomeScreen(state: HomeScreenContract.State, modifier: Modifier = Mo
         .nestedScroll(bottomBarBehavior.nestedScrollConnection)
         .nestedScroll(topBarBehavior.nestedScrollConnection),
       topBar = {
-        TopAppBar(
+        UiKitTopAppBar(
           scrollBehavior = topBarBehavior,
-          colors = TopAppBarDefaults.topAppBarColors(
-            scrolledContainerColor = Color.Transparent,
-          ),
+          showNavigationButton = false,
+          colors = TopAppBarDefaults.topAppBarColors(scrolledContainerColor = Color.Transparent),
           modifier = Modifier.hazeEffect(state = hazeState, style = hazeStyle),
           title = {
             TopBarTitle(
@@ -152,7 +151,7 @@ private fun TopBarTitle(
 
   val selectedSource = state.newsSources[state.selectedNewsSourceIndex]
 
-  TextSwitcher(
+  ContentSwitcher(
     first = { modifier ->
       Text(stringResource(Res.string.home_screen_title), modifier)
     },
@@ -185,12 +184,11 @@ private fun TopBarActions(
       TasksIndicator.HasIncompleteTasks -> BorderState.Pulsating(UiKitColors.orange)
       TasksIndicator.AllTasksCompleted -> BorderState.Static(UiKitColors.green)
     }
-    BorderedIcon(borderState = borderState) {
-      Icon(
-        imageVector = Icons.Filled.CheckCircle,
-        contentDescription = stringResource(Res.string.acsb_action_tasks),
-      )
-    }
+    Icon(
+      modifier = Modifier.bordered(borderState),
+      imageVector = Icons.Filled.CheckCircle,
+      contentDescription = stringResource(Res.string.acsb_action_tasks),
+    )
   }
   IconButton(onClick = { eventSink.invoke(Event.BookmarksClicked) }) {
     Icon(

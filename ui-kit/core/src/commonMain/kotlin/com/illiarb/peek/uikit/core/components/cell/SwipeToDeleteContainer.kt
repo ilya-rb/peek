@@ -7,6 +7,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -14,7 +16,9 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,8 +37,10 @@ import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.illiarb.peek.uikit.core.model.VectorIcon
+import com.illiarb.peek.uikit.core.image.VectorIcon
+import com.illiarb.peek.uikit.core.preview.PreviewTheme
 import kotlin.math.abs
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -146,5 +152,44 @@ private fun DeleteBackground(
         .padding(end = 16.dp)
         .scale(bounceScale)
     )
+  }
+}
+
+@Preview
+@Composable
+private fun SwipeToDeleteContainerFullPreviewLight() {
+  PreviewTheme(darkMode = false) {
+    SwipeToDeleteContainerFullPreview()
+  }
+}
+
+@Preview
+@Composable
+private fun SwipeToDeleteContainerFullPreviewDark() {
+  PreviewTheme(darkMode = true) {
+    SwipeToDeleteContainerFullPreview()
+  }
+}
+
+@Composable
+private fun SwipeToDeleteContainerFullPreview() {
+  SwipeToDeleteContainer(
+    onDelete = {},
+    enabled = true,
+    deleteIcon = VectorIcon(
+      imageVector = Icons.Filled.Delete,
+      contentDescription = "Delete"
+    )
+  ) {
+    Surface(
+      modifier = Modifier.fillMaxWidth().height(56.dp),
+      color = MaterialTheme.colorScheme.surfaceContainer
+    ) {
+      Text(
+        text = "Swipe to delete",
+        modifier = Modifier.padding(16.dp),
+        style = MaterialTheme.typography.bodyLarge
+      )
+    }
   }
 }

@@ -46,7 +46,7 @@ import com.illiarb.peek.features.tasks.domain.TimeOfDay.Evening
 import com.illiarb.peek.features.tasks.domain.TimeOfDay.Midday
 import com.illiarb.peek.features.tasks.domain.TimeOfDay.Morning
 import com.illiarb.peek.uikit.core.components.cell.SwitchCell
-import com.illiarb.peek.uikit.core.model.VectorIcon
+import com.illiarb.peek.uikit.core.image.VectorIcon
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_action_close
 import com.illiarb.peek.uikit.resources.acsb_icon_task_habit

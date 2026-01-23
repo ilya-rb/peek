@@ -7,7 +7,6 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,12 +19,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AssignmentLate
 import androidx.compose.material.icons.filled.Brightness3
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.ExpandLess
@@ -33,7 +30,6 @@ import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material.icons.filled.WbTwilight
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -57,13 +53,16 @@ import com.illiarb.peek.features.tasks.domain.TimeOfDay.Evening
 import com.illiarb.peek.features.tasks.domain.TimeOfDay.Midday
 import com.illiarb.peek.features.tasks.domain.TimeOfDay.Morning
 import com.illiarb.peek.features.tasks.ui.TasksScreenContract.Event
-import com.illiarb.peek.uikit.core.components.cell.CheckableListItem
+import com.illiarb.peek.uikit.core.components.cell.CheckableRow
 import com.illiarb.peek.uikit.core.components.cell.EmptyState
 import com.illiarb.peek.uikit.core.components.cell.ErrorEmptyState
 import com.illiarb.peek.uikit.core.components.cell.SwipeToDeleteContainer
-import com.illiarb.peek.uikit.core.components.cell.TaskLoadingCell
+import com.illiarb.peek.uikit.core.components.cell.loading.TaskLoadingCell
+import com.illiarb.peek.uikit.core.components.navigation.UiKitTopAppBar
+import com.illiarb.peek.uikit.core.components.bottomsheet.ActionsBottomSheet
+import com.illiarb.peek.uikit.core.components.bottomsheet.ButtonModel
 import com.illiarb.peek.uikit.core.components.text.DateFormats
-import com.illiarb.peek.uikit.core.model.VectorIcon
+import com.illiarb.peek.uikit.core.image.VectorIcon
 import com.illiarb.peek.uikit.core.theme.UiKitColors
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_action_add_task
@@ -74,14 +73,18 @@ import com.illiarb.peek.uikit.resources.acsb_icon_next_day
 import com.illiarb.peek.uikit.resources.acsb_icon_previous_day
 import com.illiarb.peek.uikit.resources.acsb_icon_task_overdue
 import com.illiarb.peek.uikit.resources.acsb_icon_tasks_empty
-import com.illiarb.peek.uikit.resources.acsb_navigation_back
+import com.illiarb.peek.uikit.resources.common_action_cancel
 import com.illiarb.peek.uikit.resources.tasks_empty_title
 import com.illiarb.peek.uikit.resources.tasks_group_anytime
+import com.illiarb.peek.uikit.resources.tasks_group_routines
+import com.illiarb.peek.uikit.resources.tasks_section_completed
 import com.illiarb.peek.uikit.resources.tasks_section_evening
 import com.illiarb.peek.uikit.resources.tasks_section_midday
 import com.illiarb.peek.uikit.resources.tasks_section_morning
-import com.illiarb.peek.uikit.resources.tasks_title
 import com.illiarb.peek.uikit.resources.tasks_today_title
+import com.illiarb.peek.uikit.resources.tasks_uncheck_confirm_action
+import com.illiarb.peek.uikit.resources.tasks_uncheck_confirm_description
+import com.illiarb.peek.uikit.resources.tasks_uncheck_confirm_title
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -107,30 +110,39 @@ internal fun TasksScreen(
     )
   }
 
+  if (state.taskToUncheck != null) {
+    ActionsBottomSheet(
+      title = stringResource(Res.string.tasks_uncheck_confirm_title),
+      description = stringResource(Res.string.tasks_uncheck_confirm_description),
+      onDismiss = { eventSink(Event.UncheckCancelled) },
+      primaryButton = ButtonModel(
+        stringResource(Res.string.tasks_uncheck_confirm_action),
+        onClick = {
+          eventSink(Event.UncheckConfirmed)
+        }
+      ),
+      secondaryButton = ButtonModel(
+        stringResource(Res.string.common_action_cancel),
+        onClick = {
+          eventSink(Event.UncheckCancelled)
+        }
+      ),
+    )
+  }
+
   Scaffold(
     modifier = modifier,
     topBar = {
-      CenterAlignedTopAppBar(
+      UiKitTopAppBar(
         title = {
-          Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-              text = stringResource(Res.string.tasks_title),
-              style = MaterialTheme.typography.titleSmall,
-            )
-            DateSelector(
-              selectedDate = state.selectedDate,
-              onPreviousClicked = { eventSink(Event.PreviousDayClicked) },
-              onNextClicked = { eventSink(Event.NextDayClicked) },
-            )
-          }
+          DateSelector(
+            selectedDate = state.selectedDate,
+            onPreviousClicked = { eventSink(Event.PreviousDayClicked) },
+            onNextClicked = { eventSink(Event.NextDayClicked) },
+          )
         },
-        navigationIcon = {
-          IconButton(onClick = { eventSink(Event.NavigateBack) }) {
-            Icon(
-              imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-              contentDescription = stringResource(Res.string.acsb_navigation_back),
-            )
-          }
+        onNavigationButtonClick = {
+          eventSink(Event.NavigateBack)
         },
         actions = {
           when (val stats = state.statistics) {
@@ -218,6 +230,10 @@ private fun TasksList(
     modifier = Modifier.fillMaxSize(),
     contentPadding = contentPadding,
   ) {
+    item(key = "routines_header") {
+      RoutinesHeader()
+    }
+
     tasks.minus(Anytime).forEach { (timeOfDay, sectionTasks) ->
       if (sectionTasks.isNotEmpty()) {
         item(key = "header_${timeOfDay.name}") {
@@ -233,8 +249,10 @@ private fun TasksList(
           items = if (expandedSections.contains(timeOfDay)) sectionTasks else emptyList(),
           key = { _, task -> task.id },
         ) { index, task ->
+          val enabled = selectedDate >= today
           SwipeToDeleteContainer(
             onDelete = { onTaskDeleted(task.id) },
+            enabled = enabled && !task.completed,
             modifier = Modifier
               .fillMaxWidth()
               .padding(horizontal = 16.dp)
@@ -245,10 +263,11 @@ private fun TasksList(
               shape = groupShape(index, sectionTasks.size),
               color = MaterialTheme.colorScheme.surfaceContainer,
             ) {
-              CheckableListItem(
-                text = task.title,
+              CheckableRow(
+                title = task.title,
                 checked = task.completed,
                 onCheckedChange = { onTaskToggled(task) },
+                enabled = enabled,
                 modifier = Modifier.fillMaxWidth(),
               )
             }
@@ -257,13 +276,13 @@ private fun TasksList(
       }
     }
 
-    item {
+    item(key = "tasks_header") {
       TasksHeader()
     }
 
     val anytimeTasks = tasks[Anytime].orEmpty()
     if (anytimeTasks.isEmpty()) {
-      item {
+      item(key = "tasks_empty") {
         TasksEmpty(PaddingValues())
       }
     } else {
@@ -271,15 +290,17 @@ private fun TasksList(
         items = anytimeTasks,
         key = { it.id },
       ) { task ->
+        val enabled = selectedDate >= today && task.createdForDate >= today
         SwipeToDeleteContainer(
           onDelete = { onTaskDeleted(task.id) },
+          enabled = enabled && !task.completed,
           modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 4.dp)
             .animateItem(fadeInSpec = null),
         ) {
-          CheckableListItem(
-            text = task.title,
+          CheckableRow(
+            title = task.title,
             checked = task.completed,
             subtitle = if (selectedDate == task.createdForDate) {
               null
@@ -287,8 +308,9 @@ private fun TasksList(
               DateFormats.formatDate(task.createdForDate, today)
             },
             onCheckedChange = { onTaskToggled(task) },
+            enabled = enabled,
             trailingContent = {
-              if (task.createdForDate < today) {
+              if (task.createdForDate < selectedDate) {
                 Icon(
                   imageVector = Icons.Filled.AssignmentLate,
                   contentDescription = stringResource(Res.string.acsb_icon_task_overdue),
@@ -308,12 +330,22 @@ private fun TasksList(
 }
 
 @Composable
+private fun RoutinesHeader(modifier: Modifier = Modifier) {
+  Text(
+    text = stringResource(Res.string.tasks_group_routines),
+    style = MaterialTheme.typography.titleLarge,
+    color = MaterialTheme.colorScheme.onSurfaceVariant,
+    modifier = modifier.padding(horizontal = 16.dp).padding(top = 16.dp, bottom = 16.dp),
+  )
+}
+
+@Composable
 private fun TasksHeader(modifier: Modifier = Modifier) {
   Text(
     text = stringResource(Res.string.tasks_group_anytime),
     style = MaterialTheme.typography.titleLarge,
     color = MaterialTheme.colorScheme.onSurfaceVariant,
-    modifier = modifier.padding(horizontal = 16.dp).padding(top = 32.dp, bottom = 16.dp),
+    modifier = modifier.padding(horizontal = 16.dp).padding(top = 24.dp, bottom = 16.dp),
   )
 }
 
@@ -344,16 +376,16 @@ private fun TimeOfDaySectionHeader(
       modifier = Modifier.padding(start = 8.dp).padding(vertical = 16.dp),
     )
 
-    Spacer(modifier = Modifier.weight(1f))
-
     if (allTasksCompleted) {
-      Icon(
-        imageVector = Icons.Default.Check,
-        contentDescription = null,
-        modifier = Modifier.size(20.dp).padding(end = 4.dp),
-        tint = UiKitColors.green,
+      Text(
+        text = " · ${stringResource(Res.string.tasks_section_completed)}",
+        style = MaterialTheme.typography.labelLarge,
+        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+        modifier = Modifier.padding(vertical = 16.dp),
       )
     }
+
+    Spacer(modifier = Modifier.weight(1f))
 
     Icon(
       imageVector = if (isExpanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,

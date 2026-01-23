@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
@@ -23,7 +22,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
@@ -47,17 +45,17 @@ import com.illiarb.peek.features.navigation.map.SummaryScreen
 import com.illiarb.peek.features.navigation.map.showOverlay
 import com.illiarb.peek.features.navigation.map.showScreenOverlay
 import com.illiarb.peek.features.reader.ReaderScreenContract.Event
-import com.illiarb.peek.uikit.core.components.TopAppBarTitleLoading
-import com.illiarb.peek.uikit.core.components.WebView
-import com.illiarb.peek.uikit.core.components.cell.ArticleReaderLoading
+import com.illiarb.peek.uikit.core.components.navigation.TopAppBarTitleLoading
+import com.illiarb.peek.uikit.core.atom.WebView
+import com.illiarb.peek.uikit.core.components.cell.loading.ArticleReaderLoading
 import com.illiarb.peek.uikit.core.components.cell.ErrorEmptyState
+import com.illiarb.peek.uikit.core.components.navigation.UiKitTopAppBar
 import com.illiarb.peek.uikit.core.components.popup.OpenInBrowserAction
 import com.illiarb.peek.uikit.core.components.popup.ShareAction
 import com.illiarb.peek.uikit.core.components.popup.SummarizeAction
 import com.illiarb.peek.uikit.core.configuration.getScreenWidth
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_action_more
-import com.illiarb.peek.uikit.resources.acsb_navigation_back
 import com.illiarb.peek.uikit.resources.common_action_cancel
 import com.illiarb.peek.uikit.resources.reader_remove_bookmark_confirm
 import com.illiarb.peek.uikit.resources.reader_remove_bookmark_title
@@ -124,19 +122,14 @@ internal fun ReaderScreen(
     modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     contentWindowInsets = WindowInsets(0, 0, 0, 0),
     topBar = {
-      TopAppBar(
+      UiKitTopAppBar(
         modifier = Modifier.withProgressLine(progress),
         scrollBehavior = scrollBehavior,
         colors = TopAppBarDefaults.topAppBarColors(
           scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
         ),
-        navigationIcon = {
-          IconButton(onClick = { eventSink.invoke(Event.NavigationIconClicked) }) {
-            Icon(
-              imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-              contentDescription = stringResource(Res.string.acsb_navigation_back),
-            )
-          }
+        onNavigationButtonClick = {
+          eventSink.invoke(Event.NavigationIconClicked)
         },
         actions = {
           ReaderActions(state)

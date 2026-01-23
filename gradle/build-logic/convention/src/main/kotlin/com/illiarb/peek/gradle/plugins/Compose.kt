@@ -1,12 +1,12 @@
 package com.illiarb.peek.gradle.plugins
 
 import com.android.build.gradle.BaseExtension
+import com.illiarb.peek.gradle.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.invoke
-import org.jetbrains.compose.ComposePlugin
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
@@ -21,7 +21,6 @@ class Compose : Plugin<Project> {
     }
 
     composeCompiler {
-      enableStrongSkippingMode.set(true)
       //https://issuetracker.google.com/issues/338842143
       includeSourceInformation.set(true)
 
@@ -29,30 +28,24 @@ class Compose : Plugin<Project> {
       if (!configurationFile.asFile.exists()) {
         throw IllegalArgumentException("Cannot find compose stability configuration file")
       }
-      stabilityConfigurationFile.set(configurationFile)
+      stabilityConfigurationFiles.add(configurationFile)
     }
 
-    val composeDependencies = ComposePlugin.Dependencies(target)
-
     kotlin {
+      sourceSets {
+        commonMain.dependencies {
+          implementation(libs.findLibrary("compose-runtime").get())
+          implementation(libs.findLibrary("compose-ui").get())
+          implementation(libs.findLibrary("compose-components-resources").get())
+          implementation(libs.findLibrary("compose-material3").get())
+          implementation(libs.findLibrary("compose-material3IconsExtended").get())
+          implementation(libs.findLibrary("compose-preview").get())
+        }
+      }
+
       compilerOptions {
         optIn.add("androidx.compose.material3.ExperimentalMaterial3Api")
         optIn.add("dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi")
-      }
-
-      sourceSets {
-        androidMain.dependencies {
-          implementation(composeDependencies.preview)
-        }
-
-        commonMain.dependencies {
-          implementation(composeDependencies.runtime)
-          implementation(composeDependencies.foundation)
-          implementation(composeDependencies.ui)
-          implementation(composeDependencies.components.resources)
-          implementation(composeDependencies.material3)
-          implementation(composeDependencies.materialIconsExtended)
-        }
       }
     }
 
@@ -60,7 +53,7 @@ class Compose : Plugin<Project> {
       buildFeatures.compose = true
 
       dependencies {
-        add("debugImplementation", composeDependencies.uiTooling)
+        add("debugImplementation", libs.findLibrary("compose-uiTooling").get())
       }
     }
   }

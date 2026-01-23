@@ -61,6 +61,9 @@ internal class TasksScreenPresenter(
     var expandedSections by rememberRetained {
       mutableStateOf<Set<TimeOfDay>?>(null)
     }
+    var taskToUncheck by rememberRetained {
+      mutableStateOf<Task?>(null)
+    }
     val tasks by produceRetainedState<Async<ImmutableMap<TimeOfDay, List<Task>>>>(
       initialValue = Async.Loading,
       key1 = reloadTrigger,
@@ -94,6 +97,7 @@ internal class TasksScreenPresenter(
       expandedSections = expandedSections.orEmpty(),
       selectedDate = selectedDate,
       today = now.date,
+      taskToUncheck = taskToUncheck,
       eventSink = { event ->
         when (event) {
           is Event.NavigateBack -> navigator.pop()
@@ -126,16 +130,45 @@ internal class TasksScreenPresenter(
           }
 
           is Event.TaskToggled -> {
-            coroutineScope.launch {
-              tasksService.toggleCompletion(event.task, selectedDate).onFailure {
-                messageDispatcher.sendMessage(
-                  Message(
-                    content = getString(Res.string.tasks_update_error),
-                    type = MessageType.ERROR,
+            if (event.task.completed) {
+              taskToUncheck = event.task
+            } else {
+              coroutineScope.launch {
+                tasksService.toggleCompletion(event.task, selectedDate).onFailure {
+                  messageDispatcher.sendMessage(
+                    Message(
+                      content = getString(Res.string.tasks_update_error),
+                      type = MessageType.ERROR,
+                    )
                   )
-                )
+                }
               }
             }
+          }
+
+          is Event.UncheckConfirmationRequested -> {
+            taskToUncheck = event.task
+          }
+
+          is Event.UncheckConfirmed -> {
+            val task = taskToUncheck
+            taskToUncheck = null
+            if (task != null) {
+              coroutineScope.launch {
+                tasksService.toggleCompletion(task, selectedDate).onFailure {
+                  messageDispatcher.sendMessage(
+                    Message(
+                      content = getString(Res.string.tasks_update_error),
+                      type = MessageType.ERROR,
+                    )
+                  )
+                }
+              }
+            }
+          }
+
+          is Event.UncheckCancelled -> {
+            taskToUncheck = null
           }
 
           is Event.TaskDeleted -> {

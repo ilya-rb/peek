@@ -5,14 +5,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Dataset
 import androidx.compose.material.icons.filled.Palette
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,15 +16,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.illiarb.peek.core.appinfo.DebugConfig
 import com.illiarb.peek.features.settings.SettingsScreenContract.Event
-import com.illiarb.peek.uikit.core.components.cell.NumberPickerCell
 import com.illiarb.peek.uikit.core.components.cell.RowCell
 import com.illiarb.peek.uikit.core.components.cell.SwitchCell
-import com.illiarb.peek.uikit.core.model.VectorIcon
+import com.illiarb.peek.uikit.core.components.navigation.UiKitTopAppBar
+import com.illiarb.peek.uikit.core.image.VectorIcon
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_icon_appearance
 import com.illiarb.peek.uikit.resources.acsb_icon_debug
-import com.illiarb.peek.uikit.resources.acsb_navigation_back
 import com.illiarb.peek.uikit.resources.settings_appearance_title
+import com.illiarb.peek.uikit.resources.settings_article_retention_dialog_title
 import com.illiarb.peek.uikit.resources.settings_article_retention_subtitle
 import com.illiarb.peek.uikit.resources.settings_article_retention_title
 import com.illiarb.peek.uikit.resources.settings_dark_theme_title
@@ -47,18 +43,13 @@ internal fun SettingsScreen(
 
   Scaffold(
     topBar = {
-      CenterAlignedTopAppBar(
+      UiKitTopAppBar(
         title = {
           Text(stringResource(Res.string.settings_screen_title))
         },
-        navigationIcon = {
-          IconButton(onClick = { events.invoke(Event.NavigationIconClick) }) {
-            Icon(
-              imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-              contentDescription = stringResource(Res.string.acsb_navigation_back),
-            )
-          }
-        }
+        onNavigationButtonClick = {
+          events.invoke(Event.NavigationIconClick)
+        },
       )
     }
   ) { innerPadding ->
@@ -75,6 +66,16 @@ private fun SettingsContent(
   state: SettingsScreenContract.State,
 ) {
   val events = state.events
+
+  if (state.showArticlesRetentionSelector) {
+    ArticlesRetentionSelector(
+      title = stringResource(Res.string.settings_article_retention_dialog_title),
+      currentValue = state.articleRetentionDays,
+      options = state.articleRetentionDaysOptions,
+      onDismiss = { events(Event.ArticlesRetentionSelectorDismissed) },
+      onSelected = { events(Event.ArticleRetentionDaysChanged(it)) }
+    )
+  }
 
   SettingsHeader(
     text = stringResource(Res.string.settings_appearance_title),
@@ -107,19 +108,13 @@ private fun SettingsContent(
       contentDescription = stringResource(Res.string.settings_data_title),
     ),
   )
-  NumberPickerCell(
-    text = stringResource(Res.string.settings_article_retention_title),
+  RowCell(
+    title = stringResource(Res.string.settings_article_retention_title),
     subtitle = stringResource(
       Res.string.settings_article_retention_subtitle,
       state.articleRetentionDays
     ),
-    value = state.articleRetentionDays,
-    options = state.articleRetentionDaysOptions,
-    onValueSelected = { days ->
-      events.invoke(Event.ArticleRetentionDaysChanged(days))
-    },
   )
-
   if (state.debugSettings != null) {
     SettingsHeader(
       modifier = Modifier.padding(top = 16.dp),
@@ -144,9 +139,11 @@ private fun SettingsHeader(
 ) {
   RowCell(
     modifier = modifier.padding(bottom = 8.dp),
-    text = text,
-    startIcon = icon.imageVector,
-    startIconContentDescription = icon.contentDescription,
+    title = text,
+    startIcon = VectorIcon(
+      icon.imageVector,
+      icon.contentDescription
+    ),
   )
   HorizontalDivider()
 }

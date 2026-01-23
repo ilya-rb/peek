@@ -1,6 +1,9 @@
 package com.illiarb.peek.uikit.core.components.text
 
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
+import com.illiarb.peek.uikit.core.preview.PreviewTheme
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.duration_hours_ago
 import com.illiarb.peek.uikit.resources.duration_less_then_a_minute
@@ -9,6 +12,9 @@ import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 public object DateFormats {
 
@@ -25,7 +31,7 @@ public object DateFormats {
 
   public fun formatDate(dateToFormat: LocalDate, currentDate: LocalDate): String {
     val month = dateToFormat.month.name.lowercase().replaceFirstChar { it.uppercase() }
-    val monthShort = month.take(3)
+    val monthShort = month.take(3).uppercase()
 
     return buildString {
       append(monthShort)
@@ -37,5 +43,52 @@ public object DateFormats {
         append(dateToFormat.year)
       }
     }
+  }
+}
+
+@Preview
+@Composable
+private fun DateFormatsTimestampPreview() {
+  PreviewTheme(darkMode = false) {
+    Text(text = DateFormats.formatTimestamp(2.hours + 30.minutes))
+  }
+}
+
+@Preview
+@Composable
+private fun DateFormatsTimestampMinutesPreview() {
+  PreviewTheme(darkMode = false) {
+    Text(text = DateFormats.formatTimestamp(15.minutes))
+  }
+}
+
+@Preview
+@Composable
+private fun DateFormatsTimestampLessThanMinutePreview() {
+  PreviewTheme(darkMode = false) {
+    Text(text = DateFormats.formatTimestamp(30.seconds))
+  }
+}
+
+@Preview
+@Composable
+private fun DateFormatsDatePreview() {
+  PreviewTheme(darkMode = false) {
+    val currentDate = LocalDate(2026, 1, 23)
+    val dateToFormat = LocalDate(2026, 1, 15)
+    Text(text = DateFormats.formatDate(dateToFormat, currentDate))
+  }
+}
+
+@Preview
+@Composable
+private fun DateFormatsDateWithYearPreview() {
+  PreviewTheme(darkMode = false) {
+    Text(
+      text = DateFormats.formatDate(
+        dateToFormat = LocalDate(2025, 12, 25),
+        currentDate = LocalDate(2026, 1, 23),
+      )
+    )
   }
 }

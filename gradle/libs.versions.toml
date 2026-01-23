@@ -18,6 +18,8 @@ buildConfig = "0.17.1"
 circuit = "0.32.0"
 coil = "3.3.0"
 compose-plugin = "1.10.0"
+compose-material3Version = "1.9.0"
+compose-materialIconsExtended = "1.7.3"
 detekt = "1.23.8"
 doctor = "0.12.1"
 haze = "1.7.1"
@@ -65,6 +67,16 @@ androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", versi
 androidx-datastore = { module = "androidx.datastore:datastore-preferences-core", version.ref = "androidx-datastore" }
 androidx-webkit = { module = "androidx.webkit:webkit", version.ref = "androidx-webkit" }
 androidx-work = { module = "androidx.work:work-runtime-ktx", version.ref = "androidx-work" }
+
+# All used inside conventional plugin
+compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-plugin" }
+compose-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose-plugin" }
+compose-uiTooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "compose-plugin" }
+compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose-plugin" }
+compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-plugin" }
+compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "compose-plugin" }
+compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "compose-material3Version" }
+compose-material3IconsExtended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "compose-materialIconsExtended" }
 
 circuit-core = { module = "com.slack.circuit:circuit-foundation", version.ref = "circuit" }
 circuit-overlay = { module = "com.slack.circuit:circuit-overlay", version.ref = "circuit" }
