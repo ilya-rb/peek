@@ -1,34 +1,33 @@
 package com.illiarb.peek.features.settings
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Dataset
 import androidx.compose.material.icons.filled.Palette
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.illiarb.peek.core.appinfo.DebugConfig
 import com.illiarb.peek.features.settings.SettingsScreenContract.Event
-import com.illiarb.peek.uikit.core.components.cell.NumberPickerCell
+import com.illiarb.peek.uikit.core.components.cell.ListHeader
+import com.illiarb.peek.uikit.core.components.cell.ListHeaderStyle
 import com.illiarb.peek.uikit.core.components.cell.RowCell
-import com.illiarb.peek.uikit.core.components.cell.SwitchCell
-import com.illiarb.peek.uikit.core.model.VectorIcon
+import com.illiarb.peek.uikit.core.components.cell.RowCellContract.EndContent
+import com.illiarb.peek.uikit.core.components.navigation.UiKitTopAppBar
+import com.illiarb.peek.uikit.core.components.navigation.UiKitTopAppBarTitle
+import com.illiarb.peek.uikit.core.image.VectorIcon
+import com.illiarb.peek.uikit.core.model.TextModel
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_icon_appearance
 import com.illiarb.peek.uikit.resources.acsb_icon_debug
-import com.illiarb.peek.uikit.resources.acsb_navigation_back
 import com.illiarb.peek.uikit.resources.settings_appearance_title
+import com.illiarb.peek.uikit.resources.settings_article_retention_dialog_title
 import com.illiarb.peek.uikit.resources.settings_article_retention_subtitle
 import com.illiarb.peek.uikit.resources.settings_article_retention_title
 import com.illiarb.peek.uikit.resources.settings_dark_theme_title
@@ -47,25 +46,18 @@ internal fun SettingsScreen(
 
   Scaffold(
     topBar = {
-      CenterAlignedTopAppBar(
+      UiKitTopAppBar(
         title = {
-          Text(stringResource(Res.string.settings_screen_title))
+          UiKitTopAppBarTitle(stringResource(Res.string.settings_screen_title))
         },
-        navigationIcon = {
-          IconButton(onClick = { events.invoke(Event.NavigationIconClick) }) {
-            Icon(
-              imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-              contentDescription = stringResource(Res.string.acsb_navigation_back),
-            )
-          }
-        }
+        onNavigationButtonClick = {
+          events.invoke(Event.NavigationIconClick)
+        },
       )
     }
   ) { innerPadding ->
-    Box(modifier = modifier.padding(innerPadding).fillMaxSize()) {
-      Column {
-        SettingsContent(state)
-      }
+    Column(modifier = modifier.fillMaxSize().padding(innerPadding)) {
+      SettingsContent(state)
     }
   }
 }
@@ -76,6 +68,16 @@ private fun SettingsContent(
 ) {
   val events = state.events
 
+  if (state.showArticlesRetentionSelector) {
+    ArticlesRetentionSelector(
+      title = stringResource(Res.string.settings_article_retention_dialog_title),
+      currentValue = state.articleRetentionDays,
+      options = state.articleRetentionDaysOptions,
+      onDismiss = { events(Event.ArticlesRetentionSelectorDismissed) },
+      onSelected = { events(Event.ArticleRetentionDaysChanged(it)) }
+    )
+  }
+
   SettingsHeader(
     text = stringResource(Res.string.settings_appearance_title),
     icon = VectorIcon(
@@ -83,20 +85,19 @@ private fun SettingsContent(
       contentDescription = stringResource(Res.string.acsb_icon_appearance),
     ),
   )
-  SwitchCell(
-    switchChecked = state.dynamicColorsEnabled,
-    text = stringResource(Res.string.settings_dynamic_colors_title),
-    subtitle = stringResource(Res.string.settings_dynamic_colors_subtitle),
-    onChecked = { checked ->
-      events.invoke(Event.MaterialColorsToggleChecked(checked))
+  RowCell(
+    title = TextModel(stringResource(Res.string.settings_dynamic_colors_title)),
+    subtitle = TextModel(stringResource(Res.string.settings_dynamic_colors_subtitle)),
+    endContent = EndContent.Switch(state.dynamicColorsEnabled),
+    modifier = Modifier.clickable {
+      events.invoke(Event.MaterialColorsToggleChecked(!state.dynamicColorsEnabled))
     }
   )
-  SwitchCell(
-    switchChecked = state.darkThemeEnabled,
-    text = stringResource(Res.string.settings_dark_theme_title),
-    subtitle = null,
-    onChecked = { checked ->
-      events.invoke(Event.DarkThemeEnabledChecked(checked))
+  RowCell(
+    title = TextModel(stringResource(Res.string.settings_dark_theme_title)),
+    endContent = EndContent.Switch(state.darkThemeEnabled),
+    modifier = Modifier.clickable {
+      events.invoke(Event.DarkThemeEnabledChecked(!state.darkThemeEnabled))
     }
   )
   SettingsHeader(
@@ -107,19 +108,18 @@ private fun SettingsContent(
       contentDescription = stringResource(Res.string.settings_data_title),
     ),
   )
-  NumberPickerCell(
-    text = stringResource(Res.string.settings_article_retention_title),
-    subtitle = stringResource(
-      Res.string.settings_article_retention_subtitle,
-      state.articleRetentionDays
+  RowCell(
+    title = TextModel(stringResource(Res.string.settings_article_retention_title)),
+    subtitle = TextModel(
+      stringResource(
+        Res.string.settings_article_retention_subtitle,
+        state.articleRetentionDays
+      )
     ),
-    value = state.articleRetentionDays,
-    options = state.articleRetentionDaysOptions,
-    onValueSelected = { days ->
-      events.invoke(Event.ArticleRetentionDaysChanged(days))
+    modifier = Modifier.clickable {
+      events(Event.ArticlesRetentionSelectorClicked)
     },
   )
-
   if (state.debugSettings != null) {
     SettingsHeader(
       modifier = Modifier.padding(top = 16.dp),
@@ -142,11 +142,11 @@ private fun SettingsHeader(
   text: String,
   icon: VectorIcon,
 ) {
-  RowCell(
+  ListHeader(
     modifier = modifier.padding(bottom = 8.dp),
-    text = text,
-    startIcon = icon.imageVector,
-    startIconContentDescription = icon.contentDescription,
+    style = ListHeaderStyle.Medium,
+    title = text,
+    startIcon = icon,
   )
   HorizontalDivider()
 }
@@ -157,12 +157,13 @@ private fun DebugSettings(
   settings: DebugConfig,
   onNetworkDelayChanged: (Boolean) -> Unit,
 ) {
-  SwitchCell(
-    modifier = modifier,
-    switchChecked = settings.networkDelayEnabled,
-    text = "Network request delay",
-    subtitle = "Delay each network request by 3 sec",
-    onChecked = onNetworkDelayChanged,
+  RowCell(
+    title = TextModel("Network request delay"),
+    subtitle = TextModel("Delay each network request by 3 sec"),
+    endContent = EndContent.Switch(settings.networkDelayEnabled),
+    modifier = modifier.clickable {
+      onNetworkDelayChanged(!settings.networkDelayEnabled)
+    }
   )
 }
 

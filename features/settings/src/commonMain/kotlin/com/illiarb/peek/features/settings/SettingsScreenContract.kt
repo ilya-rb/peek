@@ -27,11 +27,14 @@ internal interface SettingsScreenContract {
     val darkThemeEnabled: Boolean,
     val articleRetentionDays: Int,
     val articleRetentionDaysOptions: ImmutableList<Int>,
+    val showArticlesRetentionSelector: Boolean,
     val debugSettings: DebugConfig?,
   ) : CircuitUiState
 
   sealed interface Event {
     data object NavigationIconClick : Event
+    data object ArticlesRetentionSelectorDismissed : Event
+    data object ArticlesRetentionSelectorClicked : Event
     data class MaterialColorsToggleChecked(val checked: Boolean) : Event
     data class DarkThemeEnabledChecked(val checked: Boolean) : Event
     data class ArticleRetentionDaysChanged(val days: Int) : Event

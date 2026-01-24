@@ -11,7 +11,6 @@ import com.illiarb.peek.core.data.mapContent
 import com.illiarb.peek.features.tasks.TasksService
 import com.illiarb.peek.features.tasks.domain.HabitStatistics
 import com.illiarb.peek.features.tasks.domain.Task
-import com.illiarb.peek.features.tasks.domain.TaskDraft
 import com.illiarb.peek.features.tasks.domain.TimeOfDay
 import com.illiarb.peek.features.tasks.ui.TasksScreenContract.Event
 import com.illiarb.peek.uikit.messages.Message
@@ -61,6 +60,9 @@ internal class TasksScreenPresenter(
     var expandedSections by rememberRetained {
       mutableStateOf<Set<TimeOfDay>?>(null)
     }
+    var taskToUncheck by rememberRetained {
+      mutableStateOf<Task?>(null)
+    }
     val tasks by produceRetainedState<Async<ImmutableMap<TimeOfDay, List<Task>>>>(
       initialValue = Async.Loading,
       key1 = reloadTrigger,
@@ -94,6 +96,7 @@ internal class TasksScreenPresenter(
       expandedSections = expandedSections.orEmpty(),
       selectedDate = selectedDate,
       today = now.date,
+      taskToUncheck = taskToUncheck,
       eventSink = { event ->
         when (event) {
           is Event.NavigateBack -> navigator.pop()
@@ -108,13 +111,7 @@ internal class TasksScreenPresenter(
               showAddTaskSheet = false
             }
             coroutineScope.launch {
-              val draft = TaskDraft(
-                title = event.title,
-                habit = event.isHabit,
-                timeOfDay = event.timeOfDay,
-                forDate = selectedDate,
-              )
-              tasksService.createTask(draft).onFailure {
+              tasksService.createTask(event.draft).onFailure {
                 messageDispatcher.sendMessage(
                   Message(
                     content = getString(Res.string.tasks_create_error),
@@ -126,21 +123,47 @@ internal class TasksScreenPresenter(
           }
 
           is Event.TaskToggled -> {
-            coroutineScope.launch {
-              tasksService.toggleCompletion(event.task, selectedDate).onFailure {
-                messageDispatcher.sendMessage(
-                  Message(
-                    content = getString(Res.string.tasks_update_error),
-                    type = MessageType.ERROR,
+            if (event.task.completed) {
+              taskToUncheck = event.task
+            } else {
+              coroutineScope.launch {
+                tasksService.toggleCompletion(event.task, selectedDate).onFailure {
+                  messageDispatcher.sendMessage(
+                    Message(
+                      content = getString(Res.string.tasks_update_error),
+                      type = MessageType.ERROR,
+                    )
                   )
-                )
+                }
               }
             }
           }
 
+          is Event.UncheckConfirmed -> {
+            val task = taskToUncheck
+            taskToUncheck = null
+
+            if (task != null) {
+              coroutineScope.launch {
+                tasksService.toggleCompletion(task, selectedDate).onFailure {
+                  messageDispatcher.sendMessage(
+                    Message(
+                      content = getString(Res.string.tasks_update_error),
+                      type = MessageType.ERROR,
+                    )
+                  )
+                }
+              }
+            }
+          }
+
+          is Event.UncheckCancelled -> {
+            taskToUncheck = null
+          }
+
           is Event.TaskDeleted -> {
             coroutineScope.launch {
-              tasksService.deleteTask(event.taskId).fold(
+              tasksService.deleteTask(event.task.id).fold(
                 onSuccess = {
                   messageDispatcher.sendMessage(
                     Message(

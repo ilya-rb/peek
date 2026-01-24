@@ -7,6 +7,7 @@ import com.illiarb.peek.features.navigation.map.TasksScreen
 import com.illiarb.peek.features.tasks.TasksService
 import com.illiarb.peek.features.tasks.domain.HabitStatistics
 import com.illiarb.peek.features.tasks.domain.Task
+import com.illiarb.peek.features.tasks.domain.TaskDraft
 import com.illiarb.peek.features.tasks.domain.TimeOfDay
 import com.illiarb.peek.features.tasks.ui.TasksScreenContract.State
 import com.illiarb.peek.uikit.messages.MessageDispatcher
@@ -27,31 +28,29 @@ internal interface TasksScreenContract {
 
   @Immutable
   data class State(
-    val tasks: Async<ImmutableMap<TimeOfDay, List<Task>>>,
-    val statistics: Async<HabitStatistics>,
-    val showAddTaskSheet: Boolean,
     val expandedSections: Set<TimeOfDay>,
     val selectedDate: LocalDate,
+    val showAddTaskSheet: Boolean,
+    val statistics: Async<HabitStatistics>,
+    val taskToUncheck: Task? = null,
+    val tasks: Async<ImmutableMap<TimeOfDay, List<Task>>>,
     val today: LocalDate,
     val eventSink: (Event) -> Unit,
   ) : CircuitUiState
 
   sealed interface Event : CircuitUiEvent {
-    data object NavigateBack : Event
+    data class AddTaskSubmitted(val draft: TaskDraft, val dismissSheet: Boolean) : Event
+    data class SectionToggled(val timeOfDay: TimeOfDay) : Event
+    data class TaskDeleted(val task: Task) : Event
+    data class TaskToggled(val task: Task) : Event
     data object AddTaskClicked : Event
     data object AddTaskDismissed : Event
     data object ErrorRetryClicked : Event
-    data object PreviousDayClicked : Event
+    data object NavigateBack : Event
     data object NextDayClicked : Event
-    data class TaskToggled(val task: Task) : Event
-    data class TaskDeleted(val taskId: String) : Event
-    data class SectionToggled(val timeOfDay: TimeOfDay) : Event
-    data class AddTaskSubmitted(
-      val title: String,
-      val isHabit: Boolean,
-      val timeOfDay: TimeOfDay,
-      val dismissSheet: Boolean,
-    ) : Event
+    data object PreviousDayClicked : Event
+    data object UncheckCancelled : Event
+    data object UncheckConfirmed : Event
   }
 }
 

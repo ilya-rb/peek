@@ -3,13 +3,16 @@ package com.illiarb.peek.features.settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import com.illiarb.peek.core.appinfo.AppConfiguration
 import com.illiarb.peek.features.settings.SettingsScreenContract.Event
 import com.illiarb.peek.features.settings.data.SettingsService
 import com.illiarb.peek.features.settings.data.SettingsService.Settings
 import com.slack.circuit.retained.collectAsRetainedState
+import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import kotlinx.collections.immutable.toImmutableList
@@ -35,6 +38,10 @@ internal class SettingsScreenPresenter(
       }
     }
 
+    var showArticlesRetentionSelector: Boolean by rememberRetained {
+      mutableStateOf(false)
+    }
+
     val debugSettings by appConfiguration.debugConfig()
       .collectAsRetainedState(initial = null)
 
@@ -44,6 +51,7 @@ internal class SettingsScreenPresenter(
       articleRetentionDays = settings.articlesRetentionDays,
       articleRetentionDaysOptions = articlesRetentionDaysOptions,
       debugSettings = debugSettings,
+      showArticlesRetentionSelector = showArticlesRetentionSelector,
       events = { event ->
         when (event) {
           is Event.NavigationIconClick -> {
@@ -70,6 +78,9 @@ internal class SettingsScreenPresenter(
               }
             }
           }
+
+          is Event.ArticlesRetentionSelectorClicked -> showArticlesRetentionSelector = true
+          is Event.ArticlesRetentionSelectorDismissed -> showArticlesRetentionSelector = false
         }
       }
     )

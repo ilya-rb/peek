@@ -8,18 +8,17 @@
   <string name="service_dou_name">DOU</string>
   <string name="service_hacker_news_name">Hacker News</string>
 
-  <plurals name="duration_reading_time">
-    <item quantity="one">%1$d minute</item>
-    <item quantity="zero">Less than a minute</item>
-    <item quantity="other">%1$d minutes</item>
-  </plurals>
-
   <plurals name="duration_hours_ago">
-    <item quantity="one">Updated an hour ago</item>
-    <item quantity="other">Updated %1$d hours ago</item>
+    <item quantity="one">An hour ago</item>
+    <item quantity="other">%1$d hours ago</item>
   </plurals>
 
-  <string name="duration_minutes_ago">Updated %1$d minutes ago</string>
-  <string name="duration_less_then_a_minute">Updated less than a minute ago</string>
+  <plurals name="duration_days_ago">
+    <item quantity="one">Yesterday</item>
+    <item quantity="other">%1$d days ago</item>
+  </plurals>
+
+  <string name="duration_minutes_ago">%1$d minutes ago</string>
+  <string name="duration_less_then_a_minute">Less than a minute ago</string>
 
 </resources>
