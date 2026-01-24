@@ -175,42 +175,16 @@ public fun RowCell(
 
 @Preview
 @Composable
-private fun RowCellFullPreviewLight() {
+private fun RowCellStatesPreviewLight() {
   PreviewTheme(darkMode = false) {
-    RowCellFullPreview()
+    RowCellStatesPreviewContent()
   }
 }
 
 @Preview
 @Composable
-private fun RowCellFullPreviewDark() {
+private fun RowCellStatesPreviewDark() {
   PreviewTheme(darkMode = true) {
-    RowCellFullPreview()
-  }
-}
-
-@Composable
-private fun RowCellFullPreview() {
-  RowCell(
-    title = TextModel("Settings"),
-    subtitle = TextModel("Configure your preferences"),
-    startContent = StartContent.Icon(
-      VectorIcon(
-        imageVector = Icons.Filled.Settings,
-        contentDescription = "Settings icon"
-      )
-    ),
-    endAction = EndAction.Action(
-      text = "Edit",
-      onClick = {}
-    )
-  )
-}
-
-@Preview
-@Composable
-private fun RowCellStatesPreview() {
-  PreviewTheme(darkMode = false) {
     RowCellStatesPreviewContent()
   }
 }
