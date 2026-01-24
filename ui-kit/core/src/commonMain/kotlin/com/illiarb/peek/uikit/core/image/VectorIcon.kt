@@ -1,6 +1,7 @@
 package com.illiarb.peek.uikit.core.image
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 
@@ -9,4 +10,5 @@ public data class VectorIcon(
   val imageVector: ImageVector,
   val contentDescription: String,
   val tint: Color? = null,
+  val modifier: Modifier = Modifier,
 )

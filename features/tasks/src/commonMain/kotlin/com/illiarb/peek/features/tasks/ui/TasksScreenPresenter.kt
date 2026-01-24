@@ -11,7 +11,6 @@ import com.illiarb.peek.core.data.mapContent
 import com.illiarb.peek.features.tasks.TasksService
 import com.illiarb.peek.features.tasks.domain.HabitStatistics
 import com.illiarb.peek.features.tasks.domain.Task
-import com.illiarb.peek.features.tasks.domain.TaskDraft
 import com.illiarb.peek.features.tasks.domain.TimeOfDay
 import com.illiarb.peek.features.tasks.ui.TasksScreenContract.Event
 import com.illiarb.peek.uikit.messages.Message
@@ -112,13 +111,7 @@ internal class TasksScreenPresenter(
               showAddTaskSheet = false
             }
             coroutineScope.launch {
-              val draft = TaskDraft(
-                title = event.title,
-                habit = event.isHabit,
-                timeOfDay = event.timeOfDay,
-                forDate = selectedDate,
-              )
-              tasksService.createTask(draft).onFailure {
+              tasksService.createTask(event.draft).onFailure {
                 messageDispatcher.sendMessage(
                   Message(
                     content = getString(Res.string.tasks_create_error),
@@ -153,6 +146,7 @@ internal class TasksScreenPresenter(
           is Event.UncheckConfirmed -> {
             val task = taskToUncheck
             taskToUncheck = null
+
             if (task != null) {
               coroutineScope.launch {
                 tasksService.toggleCompletion(task, selectedDate).onFailure {

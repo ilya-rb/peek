@@ -5,12 +5,8 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -18,12 +14,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.EventRepeat
-import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -36,21 +28,24 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import com.illiarb.peek.features.tasks.domain.TaskDraft
 import com.illiarb.peek.features.tasks.domain.TimeOfDay
 import com.illiarb.peek.features.tasks.domain.TimeOfDay.Anytime
 import com.illiarb.peek.features.tasks.domain.TimeOfDay.Evening
 import com.illiarb.peek.features.tasks.domain.TimeOfDay.Midday
 import com.illiarb.peek.features.tasks.domain.TimeOfDay.Morning
+import com.illiarb.peek.uikit.core.atom.HorizontalButtons
+import com.illiarb.peek.uikit.core.components.cell.ListHeader
 import com.illiarb.peek.uikit.core.components.cell.RowCell
 import com.illiarb.peek.uikit.core.components.cell.RowCellContract.EndAction
 import com.illiarb.peek.uikit.core.components.cell.RowCellContract.StartContent
 import com.illiarb.peek.uikit.core.components.cell.RowCellContract.TextModel
 import com.illiarb.peek.uikit.core.image.VectorIcon
+import com.illiarb.peek.uikit.core.model.ButtonModel
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_action_close
 import com.illiarb.peek.uikit.resources.acsb_icon_task_habit
@@ -65,17 +60,14 @@ import com.illiarb.peek.uikit.resources.tasks_time_of_day_evening
 import com.illiarb.peek.uikit.resources.tasks_time_of_day_midday
 import com.illiarb.peek.uikit.resources.tasks_time_of_day_morning
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun AddTaskBottomSheet(
+  selectedDate: LocalDate,
   onDismiss: () -> Unit,
-  onSubmit: (
-    title: String,
-    isHabit: Boolean,
-    timeOfDay: TimeOfDay,
-    dismissSheet: Boolean,
-  ) -> Unit,
+  onSubmit: (draft: TaskDraft, dismissSheet: Boolean) -> Unit,
 ) {
   var taskTitle by remember { mutableStateOf("") }
   var isHabit by remember { mutableStateOf(false) }
@@ -84,29 +76,33 @@ internal fun AddTaskBottomSheet(
   val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
   val coroutineScope = rememberCoroutineScope()
 
-  val dismissSheet: () -> Unit = remember {
-    {
-      coroutineScope.launch {
-        sheetState.hide()
-        onDismiss()
-      }
+  fun withSheetClose(onClosed: () -> Unit) {
+    coroutineScope.launch {
+      sheetState.hide()
+      onClosed()
     }
   }
-  val submitTask: () -> Unit = remember {
-    {
-      coroutineScope.launch {
-        sheetState.hide()
-        val selectedTimeOfDay = if (isHabit) timeOfDay else Anytime
-        onSubmit(taskTitle.trim(), isHabit, selectedTimeOfDay, true)
-      }
-    }
+
+  fun createDraft(): TaskDraft {
+    return TaskDraft(
+      title = taskTitle.trim(),
+      habit = isHabit,
+      timeOfDay = if (isHabit) timeOfDay else Anytime,
+      forDate = selectedDate,
+    )
   }
 
   ModalBottomSheet(
     sheetState = sheetState,
-    onDismissRequest = dismissSheet,
+    onDismissRequest = {
+      withSheetClose { onDismiss() }
+    },
   ) {
-    BottomSheetHeader(onCloseClicked = dismissSheet)
+    BottomSheetHeader(
+      onCloseClicked = {
+        withSheetClose { onDismiss() }
+      }
+    )
 
     OutlinedTextField(
       value = taskTitle,
@@ -117,7 +113,7 @@ internal fun AddTaskBottomSheet(
       keyboardActions = KeyboardActions(
         onDone = {
           if (taskTitle.isNotBlank()) {
-            submitTask()
+            withSheetClose { onSubmit(createDraft(), true) }
           }
         }
       ),
@@ -153,14 +149,17 @@ internal fun AddTaskBottomSheet(
     ButtonsFooter(
       enabled = taskTitle.isNotBlank(),
       onAddNext = {
-        val selectedTimeOfDay = if (isHabit) timeOfDay else Anytime
-        onSubmit(taskTitle.trim(), isHabit, selectedTimeOfDay, false)
+        onSubmit(createDraft(), false)
 
         isHabit = false
         taskTitle = ""
         timeOfDay = Morning
       },
-      onSubmit = submitTask,
+      onSubmit = {
+        withSheetClose {
+          onSubmit(createDraft(), true)
+        }
+      },
     )
   }
 }
@@ -203,33 +202,18 @@ private fun BottomSheetHeader(
   modifier: Modifier = Modifier,
   onCloseClicked: () -> Unit,
 ) {
-  Column(
-    modifier = modifier
-      .fillMaxWidth()
-      .padding(horizontal = 16.dp)
-      .navigationBarsPadding()
-  ) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-      Text(
-        text = stringResource(Res.string.tasks_add_title),
-        style = MaterialTheme.typography.titleLarge,
-      )
-      Spacer(Modifier.weight(1f))
-      IconButton(
-        onClick = onCloseClicked,
-        content = {
-          Icon(
-            imageVector = Icons.Filled.Close,
-            contentDescription = stringResource(Res.string.acsb_action_close),
-            modifier = Modifier
-              .clip(CircleShape)
-              .background(MaterialTheme.colorScheme.surfaceContainer)
-              .padding(8.dp)
-          )
-        },
-      )
-    }
-  }
+  ListHeader(
+    title = stringResource(Res.string.tasks_add_title),
+    endIcon = VectorIcon(
+      imageVector = Icons.Filled.Close,
+      contentDescription = stringResource(Res.string.acsb_action_close),
+      modifier = Modifier
+        .clip(CircleShape)
+        .background(MaterialTheme.colorScheme.surfaceContainer)
+        .padding(8.dp)
+        .clickable(onClick = onCloseClicked)
+    ),
+  )
 }
 
 @Composable
@@ -239,25 +223,21 @@ private fun ButtonsFooter(
   onSubmit: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Row(
-    horizontalArrangement = Arrangement.spacedBy(8.dp),
-    modifier = modifier
-      .fillMaxWidth()
-      .padding(horizontal = 16.dp, vertical = 16.dp)
-  ) {
-    OutlinedButton(
-      modifier = Modifier.weight(1f),
+  HorizontalButtons(
+    secondary = ButtonModel(
+      text = stringResource(Res.string.tasks_add_add_next),
       enabled = enabled,
       onClick = onAddNext,
-      content = { Text(stringResource(Res.string.tasks_add_add_next)) }
-    )
-    Button(
-      modifier = Modifier.weight(1f),
+    ),
+    primary = ButtonModel(
+      text = stringResource(Res.string.tasks_add_submit),
       enabled = enabled,
       onClick = onSubmit,
-      content = { Text(stringResource(Res.string.tasks_add_submit)) }
-    )
-  }
+    ),
+    modifier = Modifier
+      .padding(horizontal = 16.dp)
+      .padding(top = 24.dp, bottom = 16.dp),
+  )
 }
 
 @Composable

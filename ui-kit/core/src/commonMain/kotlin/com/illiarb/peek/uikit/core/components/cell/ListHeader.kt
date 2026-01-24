@@ -80,7 +80,7 @@ public fun ListHeader(
       Icon(
         imageVector = endIcon.imageVector,
         contentDescription = endIcon.contentDescription,
-        modifier = Modifier.size(20.dp),
+        modifier = endIcon.modifier.size(20.dp),
       )
     }
   }

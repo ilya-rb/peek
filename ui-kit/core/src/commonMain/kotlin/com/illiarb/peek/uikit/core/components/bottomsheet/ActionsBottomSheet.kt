@@ -1,31 +1,22 @@
 package com.illiarb.peek.uikit.core.components.bottomsheet
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.illiarb.peek.uikit.core.atom.HorizontalButtons
+import com.illiarb.peek.uikit.core.model.ButtonModel
 import com.illiarb.peek.uikit.core.preview.PreviewTheme
 import kotlinx.coroutines.launch
-
-@Immutable
-public data class ButtonModel(
-  val text: String,
-  val onClick: () -> Unit,
-)
 
 @Composable
 public fun ActionsBottomSheet(
@@ -40,12 +31,10 @@ public fun ActionsBottomSheet(
   val coroutineScope = rememberCoroutineScope()
   val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-  fun (() -> Unit).withSheetDismissal(): () -> Unit {
-    return {
-      coroutineScope.launch {
-        sheetState.hide()
-        invoke()
-      }
+  fun withSheetClose(onClosed: () -> Unit) {
+    coroutineScope.launch {
+      sheetState.hide()
+      onClosed()
     }
   }
 
@@ -53,10 +42,7 @@ public fun ActionsBottomSheet(
     modifier = modifier,
     sheetState = sheetState,
     onDismissRequest = {
-      coroutineScope.launch {
-        sheetState.hide()
-        onDismiss()
-      }
+      withSheetClose { onDismiss() }
     },
   ) {
     Column(
@@ -82,27 +68,27 @@ public fun ActionsBottomSheet(
       content()
 
       if (primaryButton != null || secondaryButton != null) {
-        Row(
-          horizontalArrangement = Arrangement.spacedBy(8.dp),
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 24.dp, bottom = 16.dp)
-        ) {
-          if (secondaryButton != null) {
-            OutlinedButton(
-              modifier = Modifier.weight(1f),
-              onClick = secondaryButton.onClick.withSheetDismissal(),
-              content = { Text(secondaryButton.text) }
+        HorizontalButtons(
+          modifier = modifier.padding(top = 24.dp, bottom = 16.dp),
+          primary = primaryButton?.let { button ->
+            button.copy(
+              onClick = {
+                withSheetClose {
+                  button.onClick()
+                }
+              }
+            )
+          },
+          secondary = secondaryButton?.let { button ->
+            button.copy(
+              onClick = {
+                withSheetClose {
+                  button.onClick()
+                }
+              }
             )
           }
-          if (primaryButton != null) {
-            Button(
-              modifier = Modifier.weight(1f),
-              onClick = primaryButton.onClick.withSheetDismissal(),
-              content = { Text(primaryButton.text) }
-            )
-          }
-        }
+        )
       }
     }
   }

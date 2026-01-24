@@ -29,7 +29,6 @@ import com.illiarb.peek.features.tasks.ui.components.TaskCell
 import com.illiarb.peek.features.tasks.ui.components.TimeOfDayHeader
 import com.illiarb.peek.uikit.core.atom.IconCounter
 import com.illiarb.peek.uikit.core.components.bottomsheet.ActionsBottomSheet
-import com.illiarb.peek.uikit.core.components.bottomsheet.ButtonModel
 import com.illiarb.peek.uikit.core.components.cell.EmptyState
 import com.illiarb.peek.uikit.core.components.cell.ErrorEmptyState
 import com.illiarb.peek.uikit.core.components.cell.ListHeader
@@ -38,6 +37,7 @@ import com.illiarb.peek.uikit.core.components.date.DateSelector
 import com.illiarb.peek.uikit.core.components.navigation.UiKitTopAppBar
 import com.illiarb.peek.uikit.core.components.navigation.UiKitTopAppBarStyle
 import com.illiarb.peek.uikit.core.image.VectorIcon
+import com.illiarb.peek.uikit.core.model.ButtonModel
 import com.illiarb.peek.uikit.core.theme.UiKitColors
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_action_add_task
@@ -62,9 +62,10 @@ internal fun TasksScreen(
 
   if (state.showAddTaskSheet) {
     AddTaskBottomSheet(
+      selectedDate = state.selectedDate,
       onDismiss = { eventSink(Event.AddTaskDismissed) },
-      onSubmit = { title, isHabit, timeOfDay, dismissSheet ->
-        eventSink(Event.AddTaskSubmitted(title, isHabit, timeOfDay, dismissSheet))
+      onSubmit = { draft, dismissSheet ->
+        eventSink(Event.AddTaskSubmitted(draft, dismissSheet))
       },
     )
   }

@@ -30,7 +30,6 @@ import com.illiarb.peek.features.navigation.map.showScreenOverlay
 import com.illiarb.peek.features.reader.ReaderScreenContract.Event
 import com.illiarb.peek.uikit.core.atom.WebView
 import com.illiarb.peek.uikit.core.components.bottomsheet.ActionsBottomSheet
-import com.illiarb.peek.uikit.core.components.bottomsheet.ButtonModel
 import com.illiarb.peek.uikit.core.components.cell.ErrorEmptyState
 import com.illiarb.peek.uikit.core.components.dropdown.OpenInBrowserAction
 import com.illiarb.peek.uikit.core.components.dropdown.ShareAction
@@ -40,6 +39,7 @@ import com.illiarb.peek.uikit.core.components.navigation.ProgressModel
 import com.illiarb.peek.uikit.core.components.navigation.UiKitTopAppBar
 import com.illiarb.peek.uikit.core.components.navigation.UiKitTopAppBarTitle
 import com.illiarb.peek.uikit.core.components.navigation.UiKitTopAppBarTitleLoading
+import com.illiarb.peek.uikit.core.model.ButtonModel
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_action_more
 import com.illiarb.peek.uikit.resources.common_action_cancel
