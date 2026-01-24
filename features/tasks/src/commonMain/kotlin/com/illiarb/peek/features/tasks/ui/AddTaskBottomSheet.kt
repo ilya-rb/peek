@@ -201,6 +201,7 @@ private fun BottomSheetHeader(
   onCloseClicked: () -> Unit,
 ) {
   ListHeader(
+    modifier = modifier,
     title = stringResource(Res.string.tasks_add_title),
     onEndIconClick = onCloseClicked,
     endIcon = VectorIcon(
