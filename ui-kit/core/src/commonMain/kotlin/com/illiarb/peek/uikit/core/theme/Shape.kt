@@ -5,12 +5,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Shapes
 import androidx.compose.ui.unit.dp
 
-private val corneredShapeRadius = 24.dp
-
-internal val UiKitShapes = Shapes(
+public val UiKitShapes: Shapes = Shapes(
   extraSmall = CircleShape,
   small = CircleShape,
-  medium = RoundedCornerShape(corneredShapeRadius),
-  large = RoundedCornerShape(corneredShapeRadius),
-  extraLarge = RoundedCornerShape(corneredShapeRadius),
+  medium = RoundedCornerShape(24.dp),
+  large = RoundedCornerShape(16.dp),
+  extraLarge = RoundedCornerShape(16.dp),
 )

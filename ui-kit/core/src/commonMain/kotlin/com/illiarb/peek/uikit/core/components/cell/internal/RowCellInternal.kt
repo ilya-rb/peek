@@ -14,14 +14,14 @@ internal fun RowCellInternal(
   modifier: Modifier = Modifier,
   title: @Composable () -> Unit,
   subtitle: @Composable () -> Unit,
-  startIcon: @Composable () -> Unit,
+  startContent: @Composable (Modifier) -> Unit,
   endContent: @Composable () -> Unit,
 ) {
   Row(
     verticalAlignment = Alignment.CenterVertically,
     modifier = modifier.padding(horizontal = 16.dp, vertical = 8.dp),
   ) {
-    startIcon.invoke()
+    startContent(Modifier.padding(end = 16.dp))
 
     Column {
       title.invoke()

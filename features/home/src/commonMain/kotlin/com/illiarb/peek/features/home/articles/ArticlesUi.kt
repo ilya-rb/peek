@@ -12,8 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.illiarb.peek.api.domain.Article
 import com.illiarb.peek.uikit.core.components.cell.ArticleCell
-import com.illiarb.peek.uikit.core.components.cell.loading.ArticleLoadingCell
 import com.illiarb.peek.uikit.core.components.cell.EmptyState
+import com.illiarb.peek.uikit.core.components.cell.loading.ArticleLoadingCell
 import com.illiarb.peek.uikit.core.image.VectorIcon
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_icon_articles_empty
@@ -38,10 +38,7 @@ internal fun ArticlesLoading(modifier: Modifier = Modifier, contentPadding: Padd
       count = 5,
       itemContent = {
         ArticleLoadingCell()
-
-        HorizontalDivider(
-          color = DividerDefaults.color.copy(alpha = 0.5f)
-        )
+        HorizontalDivider(color = DividerDefaults.color.copy(alpha = 0.5f))
       }
     )
   }

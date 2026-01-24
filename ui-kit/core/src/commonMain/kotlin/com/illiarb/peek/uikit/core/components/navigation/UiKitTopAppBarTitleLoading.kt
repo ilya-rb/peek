@@ -10,7 +10,7 @@ import com.illiarb.peek.uikit.core.preview.PreviewTheme
 import com.valentinilk.shimmer.shimmer
 
 @Composable
-public fun TopAppBarTitleLoading() {
+public fun UiKitTopAppBarTitleLoading() {
   ShimmerBox(
     Modifier
       .size(height = 16.dp, width = 80.dp)
@@ -20,16 +20,16 @@ public fun TopAppBarTitleLoading() {
 
 @Preview
 @Composable
-private fun TopAppBarTitleLoadingPreview() {
+private fun UiKitTopAppBarTitleLoadingPreview() {
   PreviewTheme(darkMode = false) {
-    TopAppBarTitleLoading()
+    UiKitTopAppBarTitleLoading()
   }
 }
 
 @Preview
 @Composable
-private fun TopAppBarTitleLoadingPreviewDark() {
+private fun UiKitTopAppBarTitleLoadingPreviewDark() {
   PreviewTheme(darkMode = true) {
-    TopAppBarTitleLoading()
+    UiKitTopAppBarTitleLoading()
   }
 }

@@ -35,13 +35,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -53,14 +51,15 @@ import com.illiarb.peek.features.tasks.domain.TimeOfDay.Evening
 import com.illiarb.peek.features.tasks.domain.TimeOfDay.Midday
 import com.illiarb.peek.features.tasks.domain.TimeOfDay.Morning
 import com.illiarb.peek.features.tasks.ui.TasksScreenContract.Event
+import com.illiarb.peek.uikit.core.atom.BoxListItemContainer
+import com.illiarb.peek.uikit.core.components.bottomsheet.ActionsBottomSheet
+import com.illiarb.peek.uikit.core.components.bottomsheet.ButtonModel
 import com.illiarb.peek.uikit.core.components.cell.CheckableRow
 import com.illiarb.peek.uikit.core.components.cell.EmptyState
 import com.illiarb.peek.uikit.core.components.cell.ErrorEmptyState
 import com.illiarb.peek.uikit.core.components.cell.SwipeToDeleteContainer
 import com.illiarb.peek.uikit.core.components.cell.loading.TaskLoadingCell
 import com.illiarb.peek.uikit.core.components.navigation.UiKitTopAppBar
-import com.illiarb.peek.uikit.core.components.bottomsheet.ActionsBottomSheet
-import com.illiarb.peek.uikit.core.components.bottomsheet.ButtonModel
 import com.illiarb.peek.uikit.core.components.text.DateFormats
 import com.illiarb.peek.uikit.core.image.VectorIcon
 import com.illiarb.peek.uikit.core.theme.UiKitColors
@@ -258,11 +257,7 @@ private fun TasksList(
               .padding(horizontal = 16.dp)
               .animateItem(fadeInSpec = null),
           ) {
-            Surface(
-              modifier = Modifier.fillMaxWidth(),
-              shape = groupShape(index, sectionTasks.size),
-              color = MaterialTheme.colorScheme.surfaceContainer,
-            ) {
+            BoxListItemContainer(index, sectionTasks.size) {
               CheckableRow(
                 title = task.title,
                 checked = task.completed,
@@ -495,13 +490,4 @@ private fun TimeOfDay.getIcon(): ImageVector = when (this) {
   Midday -> Icons.Filled.WbSunny
   Evening -> Icons.Filled.Brightness3
   Anytime -> throw IllegalArgumentException("Anytime not supported")
-}
-
-private fun groupShape(position: Int, itemsCount: Int): Shape {
-  return when {
-    itemsCount == 1 -> RoundedCornerShape(16.dp)
-    position == 0 -> RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
-    position == itemsCount - 1 -> RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
-    else -> RoundedCornerShape(0.dp)
-  }
 }

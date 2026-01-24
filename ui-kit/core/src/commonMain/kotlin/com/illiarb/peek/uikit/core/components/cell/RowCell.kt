@@ -7,11 +7,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -19,41 +21,93 @@ import com.illiarb.peek.uikit.core.components.cell.internal.RowCellInternal
 import com.illiarb.peek.uikit.core.image.VectorIcon
 import com.illiarb.peek.uikit.core.preview.PreviewTheme
 import com.illiarb.peek.uikit.core.theme.UiKitShapes
+import org.jetbrains.compose.resources.DrawableResource
+
+@Immutable
+public sealed interface StartImage {
+
+  public data class Icon(val icon: VectorIcon) : StartImage
+
+  public data class Avatar(val image: DrawableResource) : StartImage
+}
+
+@Immutable
+public sealed interface EndAction {
+
+  public data class Icon(
+    val icon: VectorIcon,
+    val modifier: Modifier = Modifier,
+  ) : EndAction
+
+  public data class Action(
+    val text: String,
+    val onClick: () -> Unit,
+  ) : EndAction
+}
 
 @Composable
 public fun RowCell(
   modifier: Modifier = Modifier,
   title: String,
   subtitle: String? = null,
-  startIcon: VectorIcon? = null,
-  endActionText: String? = null,
-  onEndActionClicked: () -> Unit = {},
+  startImage: StartImage? = null,
+  endAction: EndAction? = null,
 ) {
   RowCellInternal(
     modifier = modifier,
     title = {
       Text(text = title, style = MaterialTheme.typography.bodyLarge)
     },
-    startIcon = {
-      if (startIcon != null) {
-        Icon(
-          modifier = Modifier.padding(end = 16.dp),
-          imageVector = startIcon.imageVector,
-          contentDescription = startIcon.contentDescription,
+    subtitle = {
+      if (subtitle != null) {
+        Text(
+          text = subtitle,
+          style = MaterialTheme.typography.bodyMedium,
+          color = MaterialTheme.colorScheme.primary,
         )
       }
     },
-    subtitle = {
-      if (subtitle != null) {
-        Text(text = subtitle, style = MaterialTheme.typography.bodySmall)
+    startContent = { modifier ->
+      if (startImage != null) {
+        when (startImage) {
+          is StartImage.Icon -> {
+            Icon(
+              startImage.icon.imageVector,
+              startImage.icon.contentDescription,
+              modifier,
+            )
+          }
+
+          is StartImage.Avatar -> {
+            SelectableCircleAvatar(
+              modifier = modifier,
+              image = startImage.image,
+              state = AvatarState.Default,
+              onClick = {},
+            )
+          }
+        }
       }
     },
     endContent = {
-      if (endActionText != null) {
-        TextButton(
-          onClick = onEndActionClicked,
-          content = { Text(text = endActionText) },
-        )
+      if (endAction != null) {
+        when (endAction) {
+          is EndAction.Action -> {
+            TextButton(
+              onClick = endAction.onClick,
+              content = { Text(text = endAction.text) },
+            )
+          }
+
+          is EndAction.Icon -> {
+            Icon(
+              imageVector = endAction.icon.imageVector,
+              contentDescription = endAction.icon.contentDescription,
+              modifier = endAction.modifier,
+              tint = endAction.icon.tint ?: LocalContentColor.current,
+            )
+          }
+        }
       }
     }
   )
@@ -80,12 +134,16 @@ private fun RowCellFullPreview() {
   RowCell(
     title = "Settings",
     subtitle = "Configure your preferences",
-    startIcon = VectorIcon(
-      imageVector = Icons.Filled.Settings,
-      contentDescription = "Settings icon"
+    startImage = StartImage.Icon(
+      VectorIcon(
+        imageVector = Icons.Filled.Settings,
+        contentDescription = "Settings icon"
+      )
     ),
-    endActionText = "Edit",
-    onEndActionClicked = {}
+    endAction = EndAction.Action(
+      text = "Edit",
+      onClick = {}
+    )
   )
 }
 
@@ -119,9 +177,11 @@ private fun RowCellStatesPreviewContent() {
     RowPreviewBox {
       RowCell(
         title = "With icon",
-        startIcon = VectorIcon(
-          imageVector = Icons.Filled.Settings,
-          contentDescription = "Icon"
+        startImage = StartImage.Icon(
+          VectorIcon(
+            imageVector = Icons.Filled.Settings,
+            contentDescription = "Icon"
+          )
         )
       )
     }
@@ -129,8 +189,10 @@ private fun RowCellStatesPreviewContent() {
     RowPreviewBox {
       RowCell(
         title = "With action",
-        endActionText = "Action",
-        onEndActionClicked = {}
+        endAction = EndAction.Action(
+          text = "Action",
+          onClick = {}
+        )
       )
     }
 
@@ -138,9 +200,11 @@ private fun RowCellStatesPreviewContent() {
       RowCell(
         title = "With subtitle and icon",
         subtitle = "Subtitle text",
-        startIcon = VectorIcon(
-          imageVector = Icons.Filled.Settings,
-          contentDescription = "Icon"
+        startImage = StartImage.Icon(
+          VectorIcon(
+            imageVector = Icons.Filled.Settings,
+            contentDescription = "Icon"
+          )
         )
       )
     }
@@ -149,20 +213,26 @@ private fun RowCellStatesPreviewContent() {
       RowCell(
         title = "With subtitle and action",
         subtitle = "Subtitle text",
-        endActionText = "Action",
-        onEndActionClicked = {}
+        endAction = EndAction.Action(
+          text = "Action",
+          onClick = {}
+        )
       )
     }
 
     RowPreviewBox {
       RowCell(
         title = "With icon and action",
-        startIcon = VectorIcon(
-          imageVector = Icons.Filled.Settings,
-          contentDescription = "Icon"
+        startImage = StartImage.Icon(
+          VectorIcon(
+            imageVector = Icons.Filled.Settings,
+            contentDescription = "Icon"
+          )
         ),
-        endActionText = "Action",
-        onEndActionClicked = {}
+        endAction = EndAction.Action(
+          text = "Action",
+          onClick = {}
+        )
       )
     }
   }

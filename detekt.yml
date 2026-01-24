@@ -29,3 +29,5 @@ style:
     excludeImports:
   MagicNumber:
     active: false
+  UnusedPrivateMember:
+    allowedNames: 'ignored|expected|.*PreviewLight|.*PreviewDark|.*Preview'

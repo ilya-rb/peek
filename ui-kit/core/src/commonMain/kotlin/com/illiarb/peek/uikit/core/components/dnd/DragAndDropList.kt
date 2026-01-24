@@ -3,16 +3,12 @@ package com.illiarb.peek.uikit.core.components.dnd
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.background
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 
 private val SwapAnimationSpec = spring(
@@ -24,7 +20,7 @@ public fun <T : Any> LazyListScope.reorderableItems(
   items: List<T>,
   state: DragAndDropState,
   key: (T) -> Any,
-  content: @Composable (itemModifier: Modifier, dragHandleModifier: Modifier, item: T) -> Unit,
+  content: @Composable (index: Int, itemModifier: Modifier, dragHandleModifier: Modifier, item: T) -> Unit,
 ) {
   itemsIndexed(
     items = items,
@@ -38,7 +34,6 @@ public fun <T : Any> LazyListScope.reorderableItems(
         isDragging -> Modifier
           .graphicsLayer { translationY = state.currentDelta() }
           .zIndex(1f)
-          .background(MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp))
 
         isDropping -> Modifier.graphicsLayer { translationY = state.currentDelta() }
 
@@ -48,7 +43,7 @@ public fun <T : Any> LazyListScope.reorderableItems(
 
     val dragHandleModifier = Modifier.dragHandle(state, index)
 
-    content(itemModifier, dragHandleModifier, item)
+    content(index, itemModifier, dragHandleModifier, item)
   }
 }
 

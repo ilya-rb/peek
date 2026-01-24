@@ -1,38 +1,33 @@
 package com.illiarb.peek.features.home.services
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DragHandle
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.illiarb.peek.api.domain.NewsSource
 import com.illiarb.peek.api.domain.NewsSourceKind
 import com.illiarb.peek.core.data.Async
-import com.illiarb.peek.uikit.core.components.cell.SelectableCircleAvatar
-import com.illiarb.peek.uikit.core.components.dnd.rememberDragAndDropState
+import com.illiarb.peek.uikit.core.atom.BoxListItemContainer
+import com.illiarb.peek.uikit.core.components.cell.EndAction
+import com.illiarb.peek.uikit.core.components.cell.ListHeader
+import com.illiarb.peek.uikit.core.components.cell.RowCell
+import com.illiarb.peek.uikit.core.components.cell.StartImage
 import com.illiarb.peek.uikit.core.components.dnd.dragAndDropContainer
+import com.illiarb.peek.uikit.core.components.dnd.rememberDragAndDropState
 import com.illiarb.peek.uikit.core.components.dnd.reorderableItems
+import com.illiarb.peek.uikit.core.image.VectorIcon
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.dou_logo
 import com.illiarb.peek.uikit.resources.ft_logo
@@ -73,29 +68,27 @@ internal fun ServicesScreen(
   )
 
   Column(modifier = modifier) {
-    Text(
-      text = stringResource(Res.string.services_diaog_title),
-      style = MaterialTheme.typography.titleMedium,
-      textAlign = TextAlign.Center,
-      modifier = Modifier.fillMaxWidth()
-        .padding(horizontal = 16.dp)
-        .clip(RoundedCornerShape(16.dp))
-        .background(MaterialTheme.colorScheme.surfaceContainer)
-        .padding(8.dp),
-    )
+    ListHeader(stringResource(Res.string.services_diaog_title))
+
     LazyColumn(
       state = listState,
-      verticalArrangement = Arrangement.spacedBy(8.dp),
-      modifier = Modifier.dragAndDropContainer(reorderableState)
+      modifier = Modifier
+        .dragAndDropContainer(reorderableState)
+        .padding(vertical = 8.dp)
         .navigationBarsPadding()
-        .padding(bottom = 24.dp, top = 16.dp)
     ) {
       reorderableItems(
         items = items,
         state = reorderableState,
         key = { source -> source.kind },
-        content = { itemModifier, dragHandleModifier, source ->
-          ServiceItem(source, itemModifier, dragHandleModifier)
+        content = { index, itemModifier, dragHandleModifier, source ->
+          BoxListItemContainer(
+            index = index,
+            itemsCount = items.size,
+            modifier = itemModifier.fillMaxWidth().padding(horizontal = 16.dp),
+          ) {
+            ServiceItem(source, dragHandleModifier)
+          }
         },
       )
     }
@@ -105,39 +98,30 @@ internal fun ServicesScreen(
 @Composable
 private fun ServiceItem(
   source: NewsSource,
-  modifier: Modifier,
   dragHandleModifier: Modifier,
+  modifier: Modifier = Modifier,
 ) {
-  Row(
-    verticalAlignment = Alignment.CenterVertically,
-    modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp)
-  ) {
-    SelectableCircleAvatar(
-      image = when (source.kind) {
+  RowCell(
+    modifier = modifier,
+    title = when (source.kind) {
+      NewsSourceKind.Dou -> stringResource(Res.string.service_dou_name)
+      NewsSourceKind.HackerNews -> stringResource(Res.string.service_hacker_news_name)
+      NewsSourceKind.Ft -> stringResource(Res.string.service_ft_name)
+    },
+    startImage = StartImage.Avatar(
+      when (source.kind) {
         NewsSourceKind.HackerNews -> Res.drawable.hn_logo
         NewsSourceKind.Dou -> Res.drawable.dou_logo
         NewsSourceKind.Ft -> Res.drawable.ft_logo
-      },
-      onClick = {
       }
-    )
-
-    Text(
-      modifier = Modifier.padding(start = 16.dp),
-      text = when (source.kind) {
-        NewsSourceKind.Dou -> stringResource(Res.string.service_dou_name)
-        NewsSourceKind.HackerNews -> stringResource(Res.string.service_hacker_news_name)
-        NewsSourceKind.Ft -> stringResource(Res.string.service_ft_name)
-      }
-    )
-
-    Spacer(Modifier.weight(1f))
-
-    Icon(
+    ),
+    endAction = EndAction.Icon(
       modifier = dragHandleModifier,
-      imageVector = Icons.Filled.DragHandle,
-      tint = MaterialTheme.colorScheme.primary,
-      contentDescription = null,
+      icon = VectorIcon(
+        Icons.Filled.DragHandle,
+        contentDescription = "",
+        tint = MaterialTheme.colorScheme.primary
+      )
     )
-  }
+  )
 }

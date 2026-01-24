@@ -1,6 +1,5 @@
 package com.illiarb.peek.uikit.core.components.cell
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -51,7 +49,7 @@ public fun ErrorEmptyState(
   image: VectorIcon? = VectorIcon(
     imageVector = Icons.Outlined.Error,
     contentDescription = stringResource(Res.string.acsb_icon_error),
-    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.error),
+    tint = MaterialTheme.colorScheme.error,
   ),
   buttonText: String = stringResource(Res.string.common_error_default_action),
   buttonIcon: VectorIcon? = null,
@@ -93,11 +91,11 @@ internal fun EmptyStateInternal(
       verticalArrangement = Arrangement.Center,
     ) {
       if (image != null) {
-        Image(
-          modifier = Modifier.size(120.dp).padding(top = 16.dp),
+        Icon(
           imageVector = image.imageVector,
           contentDescription = image.contentDescription,
-          colorFilter = image.colorFilter ?: ColorFilter.tint(iconsColor),
+          modifier = Modifier.size(120.dp).padding(top = 16.dp),
+          tint = image.tint ?: iconsColor,
         )
       }
 

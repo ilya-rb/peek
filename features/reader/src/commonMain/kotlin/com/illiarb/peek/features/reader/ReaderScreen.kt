@@ -15,7 +15,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -45,14 +44,15 @@ import com.illiarb.peek.features.navigation.map.SummaryScreen
 import com.illiarb.peek.features.navigation.map.showOverlay
 import com.illiarb.peek.features.navigation.map.showScreenOverlay
 import com.illiarb.peek.features.reader.ReaderScreenContract.Event
-import com.illiarb.peek.uikit.core.components.navigation.TopAppBarTitleLoading
 import com.illiarb.peek.uikit.core.atom.WebView
-import com.illiarb.peek.uikit.core.components.cell.loading.ArticleReaderLoading
 import com.illiarb.peek.uikit.core.components.cell.ErrorEmptyState
+import com.illiarb.peek.uikit.core.components.cell.loading.ArticleReaderLoading
+import com.illiarb.peek.uikit.core.components.dropdown.OpenInBrowserAction
+import com.illiarb.peek.uikit.core.components.dropdown.ShareAction
+import com.illiarb.peek.uikit.core.components.dropdown.SummarizeAction
+import com.illiarb.peek.uikit.core.components.dropdown.UiKitDropdown
 import com.illiarb.peek.uikit.core.components.navigation.UiKitTopAppBar
-import com.illiarb.peek.uikit.core.components.popup.OpenInBrowserAction
-import com.illiarb.peek.uikit.core.components.popup.ShareAction
-import com.illiarb.peek.uikit.core.components.popup.SummarizeAction
+import com.illiarb.peek.uikit.core.components.navigation.UiKitTopAppBarTitleLoading
 import com.illiarb.peek.uikit.core.configuration.getScreenWidth
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_action_more
@@ -163,7 +163,7 @@ private fun ReaderActions(state: ReaderScreenContract.State) {
       )
     }
 
-    DropdownMenu(
+    UiKitDropdown(
       expanded = state.showTopBarPopup,
       onDismissRequest = { eventSink.invoke(Event.TopBarMenuDismissed) },
     ) {
@@ -183,7 +183,7 @@ private fun ReaderActions(state: ReaderScreenContract.State) {
 @Composable
 private fun ReaderTitle(article: Async<Article>) {
   when (article) {
-    is Async.Loading, is Async.Error -> TopAppBarTitleLoading()
+    is Async.Loading, is Async.Error -> UiKitTopAppBarTitleLoading()
     is Async.Content -> {
       Column {
         Text(

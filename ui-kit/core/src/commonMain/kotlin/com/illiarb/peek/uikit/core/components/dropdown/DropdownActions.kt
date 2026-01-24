@@ -1,4 +1,4 @@
-package com.illiarb.peek.uikit.core.components.popup
+package com.illiarb.peek.uikit.core.components.dropdown
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.OpenInNew

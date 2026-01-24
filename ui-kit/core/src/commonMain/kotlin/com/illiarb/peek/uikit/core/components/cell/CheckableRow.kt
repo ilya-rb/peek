@@ -187,7 +187,7 @@ private fun CheckableRowDisabledPreviewDark() {
 
 @Preview
 @Composable
-private fun CheckableRowTrailingIconDark() {
+private fun CheckableRowTrailingIconPreviewDark() {
   PreviewTheme(darkMode = true) {
     CheckableRow(
       title = "Disabled item",
@@ -208,7 +208,7 @@ private fun CheckableRowTrailingIconDark() {
 
 @Preview
 @Composable
-private fun CheckableRowTrailingIconLight() {
+private fun CheckableRowTrailingIconPreviewLight() {
   PreviewTheme(darkMode = false) {
     CheckableRow(
       title = "Disabled item",

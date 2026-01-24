@@ -39,8 +39,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import com.illiarb.peek.uikit.core.components.popup.ShareAction
-import com.illiarb.peek.uikit.core.components.popup.SummarizeAction
+import com.illiarb.peek.uikit.core.components.dropdown.ShareAction
+import com.illiarb.peek.uikit.core.components.dropdown.SummarizeAction
+import com.illiarb.peek.uikit.core.components.dropdown.UiKitDropdown
 import com.illiarb.peek.uikit.core.preview.PreviewTheme
 
 @Composable
@@ -235,7 +236,7 @@ private fun ArticlePopupMenu(
       }
     }
 
-    DropdownMenu(
+    UiKitDropdown(
       expanded = expanded,
       onDismissRequest = onDismiss,
       offset = DpOffset((-8).dp, 0.dp),
@@ -269,13 +270,13 @@ private fun ArticlePreviewDark() {
 
 @Composable
 @Preview
-private fun ArticlePreviewSavedLight() {
+private fun ArticleSavedPreviewLight() {
   ArticleCellPreviewSaved(darkTheme = false)
 }
 
 @Composable
 @Preview
-private fun ArticlePreviewSavedDark() {
+private fun ArticleSavedPreviewDark() {
   ArticleCellPreviewSaved(darkTheme = true)
 }
 

@@ -30,11 +30,15 @@ public fun UiKitTopAppBar(
   TopAppBar(
     title = title,
     modifier = modifier,
+    colors = colors,
     scrollBehavior = scrollBehavior,
     actions = actions,
     navigationIcon = {
       if (showNavigationButton) {
-        UiKitBackButton(onNavigationButtonClick, modifier = Modifier.padding(start = 8.dp))
+        UiKitBackButton(
+          onNavigationButtonClick,
+          modifier = Modifier.padding(horizontal = 8.dp),
+        )
       }
     }
   )

@@ -1,5 +1,6 @@
 package com.illiarb.peek.features.settings
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,6 +10,7 @@ import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Dataset
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.illiarb.peek.core.appinfo.DebugConfig
 import com.illiarb.peek.features.settings.SettingsScreenContract.Event
+import com.illiarb.peek.uikit.core.components.cell.ListHeader
 import com.illiarb.peek.uikit.core.components.cell.RowCell
 import com.illiarb.peek.uikit.core.components.cell.SwitchCell
 import com.illiarb.peek.uikit.core.components.navigation.UiKitTopAppBar
@@ -114,6 +117,9 @@ private fun SettingsContent(
       Res.string.settings_article_retention_subtitle,
       state.articleRetentionDays
     ),
+    modifier = Modifier.clickable {
+      events(Event.ArticlesRetentionSelectorClicked)
+    },
   )
   if (state.debugSettings != null) {
     SettingsHeader(
@@ -137,10 +143,11 @@ private fun SettingsHeader(
   text: String,
   icon: VectorIcon,
 ) {
-  RowCell(
+  ListHeader(
     modifier = modifier.padding(bottom = 8.dp),
     title = text,
-    startIcon = VectorIcon(
+    style = MaterialTheme.typography.bodyLarge,
+    icon = VectorIcon(
       icon.imageVector,
       icon.contentDescription
     ),
