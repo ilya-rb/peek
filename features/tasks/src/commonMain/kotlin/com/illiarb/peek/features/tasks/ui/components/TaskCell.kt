@@ -23,7 +23,9 @@ import com.illiarb.peek.uikit.core.model.TextModel
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_icon_task_overdue
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.minus
 import org.jetbrains.compose.resources.stringResource
+import kotlin.time.Duration.Companion.days
 
 @Composable
 internal fun LazyItemScope.TaskCell(
@@ -61,8 +63,11 @@ internal fun LazyItemScope.TaskCell(
           }
         ),
         subtitle = if (showOverdue && selectedDate != task.createdForDate) {
+          val overdueDate = currentDate.minus(task.createdForDate).days.days
+
           TextModel(
-            DateFormats.formatDate(task.createdForDate, currentDate)
+            text = DateFormats.formatTimestamp(overdueDate),
+            color = MaterialTheme.colorScheme.error,
           )
         } else {
           null

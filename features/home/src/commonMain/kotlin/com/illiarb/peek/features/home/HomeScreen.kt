@@ -56,6 +56,7 @@ import com.illiarb.peek.uikit.resources.acsb_action_bookmarks
 import com.illiarb.peek.uikit.resources.acsb_action_reorder_services
 import com.illiarb.peek.uikit.resources.acsb_action_settings
 import com.illiarb.peek.uikit.resources.acsb_action_tasks
+import com.illiarb.peek.uikit.resources.home_screen_articles_updated
 import com.illiarb.peek.uikit.resources.home_screen_title
 import com.slack.circuit.overlay.OverlayEffect
 import dev.chrisbanes.haze.HazeState
@@ -158,7 +159,10 @@ private fun TopBarTitle(
         modifier = modifier,
         title = selectedSource.name,
         subtitle = state.articlesLastUpdatedTime?.let { time ->
-          DateFormats.formatTimestamp(Clock.System.now() - time)
+          stringResource(
+            Res.string.home_screen_articles_updated,
+            DateFormats.formatTimestamp(Clock.System.now() - time).lowercase(),
+          )
         },
       )
     },

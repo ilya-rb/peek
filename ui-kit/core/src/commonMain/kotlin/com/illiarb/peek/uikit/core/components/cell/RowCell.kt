@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.illiarb.peek.uikit.core.atom.AvatarState
@@ -132,6 +133,7 @@ public fun RowCell(
         text = title.text,
         style = MaterialTheme.typography.bodyLarge,
         textDecoration = title.decoration,
+        color = title.color ?: Color.Unspecified,
       )
 
       if (subtitle != null) {
@@ -139,7 +141,7 @@ public fun RowCell(
           text = subtitle.text,
           textDecoration = subtitle.decoration,
           style = MaterialTheme.typography.bodyMedium,
-          color = MaterialTheme.colorScheme.primary,
+          color = subtitle.color ?: MaterialTheme.colorScheme.primary,
         )
       }
     }

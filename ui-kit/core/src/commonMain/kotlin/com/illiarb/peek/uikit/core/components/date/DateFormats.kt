@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.illiarb.peek.uikit.core.preview.PreviewTheme
 import com.illiarb.peek.uikit.resources.Res
+import com.illiarb.peek.uikit.resources.duration_days_ago
 import com.illiarb.peek.uikit.resources.duration_hours_ago
 import com.illiarb.peek.uikit.resources.duration_less_then_a_minute
 import com.illiarb.peek.uikit.resources.duration_minutes_ago
@@ -20,9 +21,10 @@ public object DateFormats {
 
   @Composable
   public fun formatTimestamp(time: Duration): String {
-    return time.toComponents { hours, minutes, _, _ ->
+    return time.toComponents { days, hours, minutes, _, _ ->
       when {
-        hours > 0 -> pluralStringResource(Res.plurals.duration_hours_ago, hours.toInt(), hours)
+        days > 0 -> pluralStringResource(Res.plurals.duration_days_ago, days.toInt(), days)
+        hours > 0 -> pluralStringResource(Res.plurals.duration_hours_ago, hours, hours)
         minutes > 1 -> stringResource(Res.string.duration_minutes_ago, minutes)
         else -> stringResource(Res.string.duration_less_then_a_minute)
       }
