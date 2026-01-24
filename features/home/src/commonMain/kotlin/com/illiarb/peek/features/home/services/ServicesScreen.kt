@@ -106,7 +106,7 @@ private fun ServiceItem(
 ) {
   RowCell(
     style = RowCellContract.Style.Condensed,
-    modifier = modifier,
+    modifier = modifier.then(dragHandleModifier),
     title = TextModel(
       when (source.kind) {
         NewsSourceKind.Dou -> stringResource(Res.string.service_dou_name)
@@ -122,7 +122,6 @@ private fun ServiceItem(
       }
     ),
     endContent = EndContent.Icon(
-      modifier = dragHandleModifier,
       icon = VectorIcon(
         imageVector = Icons.Filled.DragHandle,
         contentDescription = stringResource(Res.string.acsb_icon_drag_handle),

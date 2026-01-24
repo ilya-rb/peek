@@ -32,6 +32,8 @@ import com.illiarb.peek.uikit.core.components.cell.RowCellContract.EndContent
 import com.illiarb.peek.uikit.core.components.cell.RowCellContract.StartContent
 import com.illiarb.peek.uikit.core.image.VectorIcon
 import com.illiarb.peek.uikit.core.model.TextModel
+import com.illiarb.peek.uikit.core.model.asContainerModifier
+import com.illiarb.peek.uikit.core.model.contentPadding
 import com.illiarb.peek.uikit.core.preview.PreviewTheme
 import com.illiarb.peek.uikit.core.theme.UiKitShapes
 import com.illiarb.peek.uikit.resources.Res
@@ -58,10 +60,7 @@ public interface RowCellContract {
   @Immutable
   public sealed interface EndContent {
 
-    public data class Icon(
-      val icon: VectorIcon,
-      val modifier: Modifier = Modifier,
-    ) : EndContent
+    public data class Icon(val icon: VectorIcon) : EndContent
 
     public data class Content(
       val text: String,
@@ -153,7 +152,7 @@ private fun RowStartContent(content: StartContent) {
         modifier = startContentModifier,
         checked = content.checked,
         onCheckedChange = null,
-        enabled = true,
+        enabled = content.enabled,
       )
     }
   }
@@ -173,8 +172,10 @@ private fun RowEndContent(content: EndContent) {
       Icon(
         imageVector = content.icon.imageVector,
         contentDescription = content.icon.contentDescription,
-        modifier = content.modifier,
         tint = content.icon.tint ?: LocalContentColor.current,
+        modifier = content.icon.style
+          .asContainerModifier()
+          .padding(content.icon.style.contentPadding()),
       )
     }
 

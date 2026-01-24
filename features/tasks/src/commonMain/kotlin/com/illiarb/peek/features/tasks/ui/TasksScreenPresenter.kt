@@ -139,10 +139,6 @@ internal class TasksScreenPresenter(
             }
           }
 
-          is Event.UncheckConfirmationRequested -> {
-            taskToUncheck = event.task
-          }
-
           is Event.UncheckConfirmed -> {
             val task = taskToUncheck
             taskToUncheck = null

@@ -61,7 +61,7 @@ private fun IconCounterPreviewLight() {
 @Preview
 @Composable
 private fun IconCounterPreviewDark() {
-  PreviewTheme(darkMode = false) {
+  PreviewTheme(darkMode = true) {
     IconCounter(
       icon = VectorIcon(
         imageVector = Icons.Filled.LocalFireDepartment,

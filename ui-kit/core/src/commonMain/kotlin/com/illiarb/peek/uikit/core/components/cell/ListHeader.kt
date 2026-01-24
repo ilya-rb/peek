@@ -1,5 +1,6 @@
 package com.illiarb.peek.uikit.core.components.cell
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +20,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.illiarb.peek.uikit.core.image.VectorIcon
+import com.illiarb.peek.uikit.core.model.IconStyle
+import com.illiarb.peek.uikit.core.model.asContainerModifier
+import com.illiarb.peek.uikit.core.model.contentPadding
 import com.illiarb.peek.uikit.core.preview.PreviewTheme
 
 public sealed interface ListHeaderStyle {
@@ -34,6 +38,7 @@ public fun ListHeader(
   modifier: Modifier = Modifier,
   startIcon: VectorIcon? = null,
   endIcon: VectorIcon? = null,
+  onEndIconClick: (() -> Unit)? = null,
 ) {
   ListHeader(
     title = { style, modifier -> Text(title, modifier, style = style) },
@@ -41,6 +46,7 @@ public fun ListHeader(
     modifier = modifier,
     startIcon = startIcon,
     endIcon = endIcon,
+    onEndIconClick = onEndIconClick,
   )
 }
 
@@ -51,6 +57,7 @@ public fun ListHeader(
   modifier: Modifier = Modifier,
   startIcon: VectorIcon? = null,
   endIcon: VectorIcon? = null,
+  onEndIconClick: (() -> Unit)? = null,
 ) {
   Row(
     verticalAlignment = Alignment.CenterVertically,
@@ -65,14 +72,20 @@ public fun ListHeader(
         modifier = Modifier.size(20.dp),
       )
     }
-    val style = when (style) {
+    val textStyle = when (style) {
       ListHeaderStyle.Regular -> MaterialTheme.typography.titleLarge
       ListHeaderStyle.Medium -> MaterialTheme.typography.titleMedium
       ListHeaderStyle.Small -> MaterialTheme.typography.titleSmall
     }
-    val modifier = Modifier.padding(start = if (startIcon != null) 8.dp else 0.dp)
+    val textModifier = Modifier.padding(
+      start = if (startIcon != null) {
+        8.dp
+      } else {
+        0.dp
+      }
+    )
 
-    title(style, modifier)
+    title(textStyle, textModifier)
 
     if (endIcon != null) {
       Spacer(Modifier.weight(1f))
@@ -80,7 +93,16 @@ public fun ListHeader(
       Icon(
         imageVector = endIcon.imageVector,
         contentDescription = endIcon.contentDescription,
-        modifier = endIcon.modifier.size(20.dp),
+        modifier = endIcon.style.asContainerModifier()
+          .then(
+            if (onEndIconClick != null) {
+              Modifier.clickable(onClick = onEndIconClick)
+            } else {
+              Modifier
+            }
+          )
+          .padding(endIcon.style.contentPadding())
+          .size(20.dp),
       )
     }
   }
@@ -130,12 +152,16 @@ private fun ListHeaderStatesPreviewContent() {
         Text("Section Title", style = style, modifier = modifier)
       }
     )
-
     ListHeader(
       title = { style, modifier ->
         Text("With icon", style = style, modifier = modifier)
       },
-      startIcon = VectorIcon(Icons.Filled.Settings, contentDescription = "")
+      startIcon = VectorIcon(Icons.Filled.Settings, contentDescription = ""),
+      endIcon = VectorIcon(
+        imageVector = Icons.Filled.Settings,
+        contentDescription = "",
+        style = IconStyle.CircleBackground,
+      ),
     )
   }
 }

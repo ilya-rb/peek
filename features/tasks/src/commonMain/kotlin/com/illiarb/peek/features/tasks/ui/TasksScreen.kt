@@ -71,7 +71,7 @@ internal fun TasksScreen(
   }
 
   if (state.taskToUncheck != null) {
-    ConfirmDeletionBottomSheet(
+    ConfirmUncheckBottomSheet(
       onDismiss = { eventSink(Event.UncheckCancelled) },
       onConfirm = { eventSink(Event.UncheckConfirmed) },
     )
@@ -219,7 +219,7 @@ private fun TasksList(
           key = { _, task -> task.id },
         ) { index, task ->
           TaskCell(
-            currentDate = today,
+            today = today,
             enabled = selectedDate >= today,
             index = index,
             itemsCount = sectionTasks.size,
@@ -250,7 +250,7 @@ private fun TasksList(
         key = { _, task -> task.id },
       ) { index, task ->
         TaskCell(
-          currentDate = today,
+          today = today,
           enabled = selectedDate >= today && task.createdForDate >= today,
           index = index,
           itemsCount = anytimeTasks.size,
@@ -266,7 +266,7 @@ private fun TasksList(
 }
 
 @Composable
-private fun ConfirmDeletionBottomSheet(
+private fun ConfirmUncheckBottomSheet(
   onDismiss: () -> Unit,
   onConfirm: () -> Unit,
 ) {
@@ -284,4 +284,3 @@ private fun ConfirmDeletionBottomSheet(
     ),
   )
 }
-

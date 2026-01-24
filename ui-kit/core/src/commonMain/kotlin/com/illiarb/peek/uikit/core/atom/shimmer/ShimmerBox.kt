@@ -19,7 +19,7 @@ public fun ShimmerBox(
   Box(
     modifier = modifier
       .clip(RoundedCornerShape(8.dp))
-      .background(ShimmerSpec.color)
+      .background(ShimmerSpec.color())
   )
 }
 

@@ -51,7 +51,7 @@ internal fun ArticlesRetentionSelector(
       LazyColumn(modifier = Modifier.padding(vertical = 8.dp)) {
         items(
           count = options.size,
-          key = { option -> option },
+          key = { index -> options[index] },
           itemContent = { index ->
             val option = options[index]
 

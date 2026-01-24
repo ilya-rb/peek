@@ -69,7 +69,7 @@ public fun ActionsBottomSheet(
 
       if (primaryButton != null || secondaryButton != null) {
         HorizontalButtons(
-          modifier = modifier.padding(top = 24.dp, bottom = 16.dp),
+          modifier = Modifier.padding(top = 24.dp, bottom = 16.dp),
           primary = primaryButton?.let { button ->
             button.copy(
               onClick = {

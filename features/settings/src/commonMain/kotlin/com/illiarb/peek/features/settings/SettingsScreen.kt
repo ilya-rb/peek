@@ -19,10 +19,10 @@ import com.illiarb.peek.uikit.core.components.cell.ListHeader
 import com.illiarb.peek.uikit.core.components.cell.ListHeaderStyle
 import com.illiarb.peek.uikit.core.components.cell.RowCell
 import com.illiarb.peek.uikit.core.components.cell.RowCellContract.EndContent
-import com.illiarb.peek.uikit.core.model.TextModel
 import com.illiarb.peek.uikit.core.components.navigation.UiKitTopAppBar
 import com.illiarb.peek.uikit.core.components.navigation.UiKitTopAppBarTitle
 import com.illiarb.peek.uikit.core.image.VectorIcon
+import com.illiarb.peek.uikit.core.model.TextModel
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_icon_appearance
 import com.illiarb.peek.uikit.resources.acsb_icon_debug
@@ -146,10 +146,7 @@ private fun SettingsHeader(
     modifier = modifier.padding(bottom = 8.dp),
     style = ListHeaderStyle.Medium,
     title = text,
-    startIcon = VectorIcon(
-      icon.imageVector,
-      icon.contentDescription
-    ),
+    startIcon = icon,
   )
   HorizontalDivider()
 }

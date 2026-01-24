@@ -43,7 +43,6 @@ internal interface TasksScreenContract {
     data class SectionToggled(val timeOfDay: TimeOfDay) : Event
     data class TaskDeleted(val task: Task) : Event
     data class TaskToggled(val task: Task) : Event
-    data class UncheckConfirmationRequested(val task: Task) : Event
     data object AddTaskClicked : Event
     data object AddTaskDismissed : Event
     data object ErrorRetryClicked : Event

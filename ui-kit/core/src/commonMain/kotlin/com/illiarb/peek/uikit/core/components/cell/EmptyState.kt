@@ -94,7 +94,7 @@ internal fun EmptyStateInternal(
         Icon(
           imageVector = image.imageVector,
           contentDescription = image.contentDescription,
-          modifier = Modifier.size(120.dp).padding(top = 16.dp),
+          modifier = Modifier.padding(top = 16.dp).size(120.dp),
           tint = image.tint ?: iconsColor,
         )
       }

@@ -29,7 +29,6 @@ import kotlin.time.Duration.Companion.days
 
 @Composable
 internal fun LazyItemScope.TaskCell(
-  currentDate: LocalDate,
   enabled: Boolean,
   index: Int,
   itemsCount: Int,
@@ -38,6 +37,7 @@ internal fun LazyItemScope.TaskCell(
   selectedDate: LocalDate,
   showOverdue: Boolean,
   task: Task,
+  today: LocalDate,
   modifier: Modifier = Modifier,
 ) {
   SwipeToDeleteContainer(
@@ -63,7 +63,7 @@ internal fun LazyItemScope.TaskCell(
           }
         ),
         subtitle = if (showOverdue && selectedDate != task.createdForDate) {
-          val overdueDate = currentDate.minus(task.createdForDate).days.days
+          val overdueDate = today.minus(task.createdForDate).days.days
 
           TextModel(
             text = DateFormats.formatTimestamp(overdueDate),

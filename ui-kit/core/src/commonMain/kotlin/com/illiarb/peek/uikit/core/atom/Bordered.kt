@@ -46,7 +46,7 @@ public fun Modifier.bordered(borderState: BorderState): Modifier {
       .padding(padding)
 
     is BorderState.Pulsating -> {
-      val infiniteTransition = rememberInfiniteTransition()
+      val infiniteTransition = rememberInfiniteTransition(label = "BorderPulsating")
       val alpha by infiniteTransition.animateFloat(
         initialValue = 0.3f,
         targetValue = 1f,

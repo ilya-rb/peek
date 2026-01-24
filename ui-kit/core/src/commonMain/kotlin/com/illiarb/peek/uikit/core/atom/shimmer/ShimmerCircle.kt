@@ -18,7 +18,7 @@ public fun ShimmerCircle(
   Box(
     modifier = modifier
       .clip(CircleShape)
-      .background(ShimmerSpec.color)
+      .background(ShimmerSpec.color())
   )
 }
 

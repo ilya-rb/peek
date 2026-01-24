@@ -3,12 +3,10 @@ package com.illiarb.peek.features.tasks.ui
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -29,7 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.illiarb.peek.features.tasks.domain.TaskDraft
@@ -43,9 +40,10 @@ import com.illiarb.peek.uikit.core.components.cell.ListHeader
 import com.illiarb.peek.uikit.core.components.cell.RowCell
 import com.illiarb.peek.uikit.core.components.cell.RowCellContract.EndContent
 import com.illiarb.peek.uikit.core.components.cell.RowCellContract.StartContent
-import com.illiarb.peek.uikit.core.model.TextModel
 import com.illiarb.peek.uikit.core.image.VectorIcon
 import com.illiarb.peek.uikit.core.model.ButtonModel
+import com.illiarb.peek.uikit.core.model.IconStyle
+import com.illiarb.peek.uikit.core.model.TextModel
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_action_close
 import com.illiarb.peek.uikit.resources.acsb_icon_task_habit
@@ -204,14 +202,11 @@ private fun BottomSheetHeader(
 ) {
   ListHeader(
     title = stringResource(Res.string.tasks_add_title),
+    onEndIconClick = onCloseClicked,
     endIcon = VectorIcon(
       imageVector = Icons.Filled.Close,
       contentDescription = stringResource(Res.string.acsb_action_close),
-      modifier = modifier
-        .clip(CircleShape)
-        .background(MaterialTheme.colorScheme.surfaceContainer)
-        .padding(8.dp)
-        .clickable(onClick = onCloseClicked)
+      style = IconStyle.CircleBackground,
     ),
   )
 }
