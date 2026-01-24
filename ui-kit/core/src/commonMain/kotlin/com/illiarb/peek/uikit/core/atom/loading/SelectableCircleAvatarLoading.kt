@@ -1,4 +1,4 @@
-package com.illiarb.peek.uikit.core.components.cell.loading
+package com.illiarb.peek.uikit.core.atom.loading
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
