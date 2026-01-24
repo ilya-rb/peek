@@ -9,18 +9,19 @@ import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Dataset
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.illiarb.peek.core.appinfo.DebugConfig
 import com.illiarb.peek.features.settings.SettingsScreenContract.Event
 import com.illiarb.peek.uikit.core.components.cell.ListHeader
+import com.illiarb.peek.uikit.core.components.cell.ListHeaderStyle
 import com.illiarb.peek.uikit.core.components.cell.RowCell
-import com.illiarb.peek.uikit.core.components.cell.SwitchCell
+import com.illiarb.peek.uikit.core.components.cell.RowCellContract.EndAction
+import com.illiarb.peek.uikit.core.components.cell.RowCellContract.TextModel
 import com.illiarb.peek.uikit.core.components.navigation.UiKitTopAppBar
+import com.illiarb.peek.uikit.core.components.navigation.UiKitTopAppBarTitle
 import com.illiarb.peek.uikit.core.image.VectorIcon
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_icon_appearance
@@ -47,7 +48,7 @@ internal fun SettingsScreen(
     topBar = {
       UiKitTopAppBar(
         title = {
-          Text(stringResource(Res.string.settings_screen_title))
+          UiKitTopAppBarTitle(stringResource(Res.string.settings_screen_title))
         },
         onNavigationButtonClick = {
           events.invoke(Event.NavigationIconClick)
@@ -84,20 +85,19 @@ private fun SettingsContent(
       contentDescription = stringResource(Res.string.acsb_icon_appearance),
     ),
   )
-  SwitchCell(
-    switchChecked = state.dynamicColorsEnabled,
-    text = stringResource(Res.string.settings_dynamic_colors_title),
-    subtitle = stringResource(Res.string.settings_dynamic_colors_subtitle),
-    onChecked = { checked ->
-      events.invoke(Event.MaterialColorsToggleChecked(checked))
+  RowCell(
+    title = TextModel(stringResource(Res.string.settings_dynamic_colors_title)),
+    subtitle = TextModel(stringResource(Res.string.settings_dynamic_colors_subtitle)),
+    endAction = EndAction.Switch(state.dynamicColorsEnabled),
+    modifier = Modifier.clickable {
+      events.invoke(Event.MaterialColorsToggleChecked(!state.dynamicColorsEnabled))
     }
   )
-  SwitchCell(
-    switchChecked = state.darkThemeEnabled,
-    text = stringResource(Res.string.settings_dark_theme_title),
-    subtitle = null,
-    onChecked = { checked ->
-      events.invoke(Event.DarkThemeEnabledChecked(checked))
+  RowCell(
+    title = TextModel(stringResource(Res.string.settings_dark_theme_title)),
+    endAction = EndAction.Switch(state.darkThemeEnabled),
+    modifier = Modifier.clickable {
+      events.invoke(Event.DarkThemeEnabledChecked(!state.darkThemeEnabled))
     }
   )
   SettingsHeader(
@@ -109,10 +109,12 @@ private fun SettingsContent(
     ),
   )
   RowCell(
-    title = stringResource(Res.string.settings_article_retention_title),
-    subtitle = stringResource(
-      Res.string.settings_article_retention_subtitle,
-      state.articleRetentionDays
+    title = TextModel(stringResource(Res.string.settings_article_retention_title)),
+    subtitle = TextModel(
+      stringResource(
+        Res.string.settings_article_retention_subtitle,
+        state.articleRetentionDays
+      )
     ),
     modifier = Modifier.clickable {
       events(Event.ArticlesRetentionSelectorClicked)
@@ -142,9 +144,9 @@ private fun SettingsHeader(
 ) {
   ListHeader(
     modifier = modifier.padding(bottom = 8.dp),
+    style = ListHeaderStyle.Medium,
     title = text,
-    style = MaterialTheme.typography.bodyLarge,
-    icon = VectorIcon(
+    startIcon = VectorIcon(
       icon.imageVector,
       icon.contentDescription
     ),
@@ -158,12 +160,13 @@ private fun DebugSettings(
   settings: DebugConfig,
   onNetworkDelayChanged: (Boolean) -> Unit,
 ) {
-  SwitchCell(
-    modifier = modifier,
-    switchChecked = settings.networkDelayEnabled,
-    text = "Network request delay",
-    subtitle = "Delay each network request by 3 sec",
-    onChecked = onNetworkDelayChanged,
+  RowCell(
+    title = TextModel("Network request delay"),
+    subtitle = TextModel("Delay each network request by 3 sec"),
+    endAction = EndAction.Switch(settings.networkDelayEnabled),
+    modifier = modifier.clickable {
+      onNetworkDelayChanged(!settings.networkDelayEnabled)
+    }
   )
 }
 

@@ -18,7 +18,11 @@ public fun UiKitTopAppBarTitle(
   Column(modifier = modifier) {
     Text(
       text = title,
-      style = MaterialTheme.typography.bodyLarge,
+      style = if (subtitle == null) {
+        MaterialTheme.typography.titleLarge
+      } else {
+        MaterialTheme.typography.bodyLarge
+      },
       maxLines = 1,
       overflow = TextOverflow.Ellipsis,
     )

@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.CollectionsBookmark
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -60,10 +61,12 @@ internal fun BookmarksScreen(
         },
         onNavigationButtonClick = { eventSink.invoke(Event.NavigationButtonClicked) },
         actions = {
-          Icon(
-            imageVector = Icons.Filled.Search,
-            contentDescription = stringResource(Res.string.acsb_icon_search),
-          )
+          IconButton(onClick = {}) {
+            Icon(
+              imageVector = Icons.Filled.Search,
+              contentDescription = stringResource(Res.string.acsb_icon_search),
+            )
+          }
         }
       )
     },

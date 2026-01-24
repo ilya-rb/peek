@@ -1,4 +1,4 @@
-package com.illiarb.peek.uikit.core.components.text
+package com.illiarb.peek.uikit.core.components.date
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable

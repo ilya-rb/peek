@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -30,9 +31,15 @@ public data class ProgressModel(
   val progress: () -> Float,
 )
 
+public sealed interface UiKitTopAppBarStyle {
+  public data object Default : UiKitTopAppBarStyle
+  public data object Centered : UiKitTopAppBarStyle
+}
+
 @Composable
 public fun UiKitTopAppBar(
   title: @Composable () -> Unit,
+  style: UiKitTopAppBarStyle = UiKitTopAppBarStyle.Default,
   showNavigationButton: Boolean = true,
   onNavigationButtonClick: () -> Unit = {},
   colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(),
@@ -41,27 +48,45 @@ public fun UiKitTopAppBar(
   modifier: Modifier = Modifier,
   actions: @Composable RowScope.() -> Unit = {},
 ) {
-  TopAppBar(
-    title = title,
-    modifier = modifier.let {
-      if (progress != null) {
-        it.withProgressLine(progress.progress)
-      } else {
-        it
-      }
-    },
-    colors = colors,
-    scrollBehavior = scrollBehavior,
-    actions = actions,
-    navigationIcon = {
-      if (showNavigationButton) {
-        UiKitBackButton(
-          onNavigationButtonClick,
-          modifier = Modifier.padding(horizontal = 8.dp),
-        )
-      }
+  val modifier = modifier.let {
+    if (progress != null) {
+      it.withProgressLine(progress.progress)
+    } else {
+      it
     }
-  )
+  }
+  val navigationIcon = @Composable {
+    if (showNavigationButton) {
+      UiKitBackButton(
+        onNavigationButtonClick,
+        modifier = Modifier.padding(horizontal = 8.dp),
+      )
+    }
+  }
+
+  when (style) {
+    UiKitTopAppBarStyle.Centered -> {
+      CenterAlignedTopAppBar(
+        title = title,
+        modifier = modifier,
+        colors = colors,
+        scrollBehavior = scrollBehavior,
+        actions = actions,
+        navigationIcon = navigationIcon
+      )
+    }
+
+    UiKitTopAppBarStyle.Default -> {
+      TopAppBar(
+        title = title,
+        modifier = modifier,
+        colors = colors,
+        scrollBehavior = scrollBehavior,
+        actions = actions,
+        navigationIcon = navigationIcon
+      )
+    }
+  }
 }
 
 @Composable

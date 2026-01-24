@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -20,7 +19,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -42,15 +40,16 @@ import com.illiarb.peek.features.home.articles.ArticlesLoading
 import com.illiarb.peek.features.navigation.map.ServicesScreen
 import com.illiarb.peek.features.navigation.map.SummaryScreen
 import com.illiarb.peek.features.navigation.map.showScreenOverlay
+import com.illiarb.peek.uikit.core.atom.AvatarState
 import com.illiarb.peek.uikit.core.atom.BorderState
-import com.illiarb.peek.uikit.core.atom.HorizontalList
 import com.illiarb.peek.uikit.core.atom.ContentSwitcher
+import com.illiarb.peek.uikit.core.atom.HorizontalList
+import com.illiarb.peek.uikit.core.atom.SelectableCircleAvatar
 import com.illiarb.peek.uikit.core.atom.bordered
-import com.illiarb.peek.uikit.core.components.cell.AvatarState
 import com.illiarb.peek.uikit.core.components.cell.ErrorEmptyState
-import com.illiarb.peek.uikit.core.components.cell.SelectableCircleAvatar
+import com.illiarb.peek.uikit.core.components.date.DateFormats
 import com.illiarb.peek.uikit.core.components.navigation.UiKitTopAppBar
-import com.illiarb.peek.uikit.core.components.text.DateFormats
+import com.illiarb.peek.uikit.core.components.navigation.UiKitTopAppBarTitle
 import com.illiarb.peek.uikit.core.theme.UiKitColors
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_action_bookmarks
@@ -148,24 +147,20 @@ private fun TopBarTitle(
   if (state.newsSources.isEmpty()) {
     return
   }
-
   val selectedSource = state.newsSources[state.selectedNewsSourceIndex]
 
   ContentSwitcher(
     first = { modifier ->
-      Text(stringResource(Res.string.home_screen_title), modifier)
+      UiKitTopAppBarTitle(stringResource(Res.string.home_screen_title), modifier = modifier)
     },
     second = { modifier ->
-      Column(modifier) {
-        Text(selectedSource.name, style = MaterialTheme.typography.bodyLarge)
-        state.articlesLastUpdatedTime?.let { time ->
-          Text(
-            text = DateFormats.formatTimestamp(Clock.System.now() - time),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.primaryFixedDim,
-          )
-        }
-      }
+      UiKitTopAppBarTitle(
+        modifier = modifier,
+        title = selectedSource.name,
+        subtitle = state.articlesLastUpdatedTime?.let { time ->
+          DateFormats.formatTimestamp(Clock.System.now() - time)
+        },
+      )
     },
     containerHeightDp = TopAppBarDefaults.TopAppBarExpandedHeight.value.toInt(),
     switchEvery = 5.seconds,

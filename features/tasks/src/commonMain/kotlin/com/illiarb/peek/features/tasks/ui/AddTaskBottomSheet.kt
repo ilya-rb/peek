@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -45,7 +46,10 @@ import com.illiarb.peek.features.tasks.domain.TimeOfDay.Anytime
 import com.illiarb.peek.features.tasks.domain.TimeOfDay.Evening
 import com.illiarb.peek.features.tasks.domain.TimeOfDay.Midday
 import com.illiarb.peek.features.tasks.domain.TimeOfDay.Morning
-import com.illiarb.peek.uikit.core.components.cell.SwitchCell
+import com.illiarb.peek.uikit.core.components.cell.RowCell
+import com.illiarb.peek.uikit.core.components.cell.RowCellContract.EndAction
+import com.illiarb.peek.uikit.core.components.cell.RowCellContract.StartContent
+import com.illiarb.peek.uikit.core.components.cell.RowCellContract.TextModel
 import com.illiarb.peek.uikit.core.image.VectorIcon
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_action_close
@@ -122,18 +126,20 @@ internal fun AddTaskBottomSheet(
         .padding(top = 16.dp),
     )
 
-    SwitchCell(
-      text = stringResource(Res.string.tasks_add_habit_title),
-      subtitle = stringResource(Res.string.tasks_add_habit_subtitle),
-      startIcon = VectorIcon(
-        imageVector = Icons.Filled.EventRepeat,
-        contentDescription = stringResource(Res.string.acsb_icon_task_habit),
+    RowCell(
+      title = TextModel(stringResource(Res.string.tasks_add_habit_title)),
+      subtitle = TextModel(stringResource(Res.string.tasks_add_habit_subtitle)),
+      startContent = StartContent.Icon(
+        VectorIcon(
+          imageVector = Icons.Filled.EventRepeat,
+          contentDescription = stringResource(Res.string.acsb_icon_task_habit),
+        )
       ),
-      switchChecked = isHabit,
-      onChecked = { isHabit = it },
+      endAction = EndAction.Switch(isHabit),
       modifier = Modifier
         .fillMaxWidth()
-        .padding(top = 16.dp),
+        .padding(top = 16.dp)
+        .clickable { isHabit = !isHabit }
     )
 
     AnimatedVisibility(

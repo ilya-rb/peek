@@ -14,7 +14,6 @@
   <string name="tasks_section_midday">Midday</string>
   <string name="tasks_section_evening">Evening</string>
   <string name="tasks_group_routines">Routines</string>
-  <string name="tasks_section_completed">Completed</string>
   <string name="tasks_empty_add">Add task</string>
   <string name="tasks_empty_title">No tasks for today</string>
   <string name="tasks_group_anytime">Tasks</string>
@@ -25,4 +24,5 @@
   <string name="tasks_uncheck_confirm_title">Uncheck task?</string>
   <string name="tasks_uncheck_confirm_description">This will mark the task as incomplete.</string>
   <string name="tasks_uncheck_confirm_action">Uncheck</string>
+  <string name="tasks_section_completed">Completed</string>
 </resources>

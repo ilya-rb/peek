@@ -173,7 +173,7 @@ internal class TasksScreenPresenter(
 
           is Event.TaskDeleted -> {
             coroutineScope.launch {
-              tasksService.deleteTask(event.taskId).fold(
+              tasksService.deleteTask(event.task.id).fold(
                 onSuccess = {
                   messageDispatcher.sendMessage(
                     Message(

@@ -20,10 +20,11 @@ import com.illiarb.peek.api.domain.NewsSource
 import com.illiarb.peek.api.domain.NewsSourceKind
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.uikit.core.atom.BoxListItemContainer
-import com.illiarb.peek.uikit.core.components.cell.EndAction
 import com.illiarb.peek.uikit.core.components.cell.ListHeader
 import com.illiarb.peek.uikit.core.components.cell.RowCell
-import com.illiarb.peek.uikit.core.components.cell.StartImage
+import com.illiarb.peek.uikit.core.components.cell.RowCellContract.EndAction
+import com.illiarb.peek.uikit.core.components.cell.RowCellContract.StartContent
+import com.illiarb.peek.uikit.core.components.cell.RowCellContract.TextModel
 import com.illiarb.peek.uikit.core.components.dnd.dragAndDropContainer
 import com.illiarb.peek.uikit.core.components.dnd.rememberDragAndDropState
 import com.illiarb.peek.uikit.core.components.dnd.reorderableItems
@@ -69,7 +70,7 @@ internal fun ServicesScreen(
   )
 
   Column(modifier = modifier) {
-    ListHeader(stringResource(Res.string.services_diaog_title))
+    ListHeader(title = stringResource(Res.string.services_diaog_title))
 
     LazyColumn(
       state = listState,
@@ -104,12 +105,14 @@ private fun ServiceItem(
 ) {
   RowCell(
     modifier = modifier,
-    title = when (source.kind) {
-      NewsSourceKind.Dou -> stringResource(Res.string.service_dou_name)
-      NewsSourceKind.HackerNews -> stringResource(Res.string.service_hacker_news_name)
-      NewsSourceKind.Ft -> stringResource(Res.string.service_ft_name)
-    },
-    startImage = StartImage.Avatar(
+    title = TextModel(
+      when (source.kind) {
+        NewsSourceKind.Dou -> stringResource(Res.string.service_dou_name)
+        NewsSourceKind.HackerNews -> stringResource(Res.string.service_hacker_news_name)
+        NewsSourceKind.Ft -> stringResource(Res.string.service_ft_name)
+      }
+    ),
+    startContent = StartContent.Avatar(
       when (source.kind) {
         NewsSourceKind.HackerNews -> Res.drawable.hn_logo
         NewsSourceKind.Dou -> Res.drawable.dou_logo

@@ -42,7 +42,11 @@ internal fun ArticlesRetentionSelector(
       modifier = Modifier.fillMaxWidth().navigationBarsPadding(),
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-      ListHeader(title)
+      ListHeader(
+        title = { style, modifier ->
+          Text(title, modifier, style = style)
+        }
+      )
 
       LazyColumn(modifier = Modifier.padding(vertical = 8.dp)) {
         items(

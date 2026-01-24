@@ -1,4 +1,4 @@
-package com.illiarb.peek.uikit.core.components.cell
+package com.illiarb.peek.uikit.core.components.swipe
 
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState

@@ -1,4 +1,4 @@
-package com.illiarb.peek.uikit.core.components.cell
+package com.illiarb.peek.uikit.core.atom
 
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
