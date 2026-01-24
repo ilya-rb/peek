@@ -1,7 +1,6 @@
-package com.illiarb.peek.uikit.core.components.cell.loading
+package com.illiarb.peek.features.reader
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -13,17 +12,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.illiarb.peek.uikit.core.atom.shimmer.ShimmerBox
+import com.illiarb.peek.uikit.core.atom.shimmer.ShimmerColumn
 import com.illiarb.peek.uikit.core.preview.PreviewTheme
-import com.valentinilk.shimmer.shimmer
 
 @Composable
-public fun ArticleReaderLoading() {
-  Column(
-    modifier = Modifier
-      .fillMaxSize()
-      .background(MaterialTheme.colorScheme.surfaceContainer)
-      .shimmer()
-  ) {
+internal fun ReaderLoading(modifier: Modifier = Modifier) {
+  ShimmerColumn(modifier = modifier.background(MaterialTheme.colorScheme.surfaceContainer)) {
     ShimmerBox(
       modifier = Modifier
         .padding(16.dp)
@@ -65,7 +59,7 @@ public fun ArticleReaderLoading() {
 @Composable
 private fun ArticleReaderLoadingPreviewLight() {
   PreviewTheme(darkMode = false) {
-    ArticleReaderLoading()
+    ReaderLoading(modifier = Modifier.fillMaxSize())
   }
 }
 
@@ -73,6 +67,7 @@ private fun ArticleReaderLoadingPreviewLight() {
 @Composable
 private fun ArticleReaderLoadingPreviewDark() {
   PreviewTheme(darkMode = true) {
-    ArticleReaderLoading()
+    ReaderLoading(modifier = Modifier.fillMaxSize())
   }
 }
+

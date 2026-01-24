@@ -34,7 +34,7 @@ public fun ActionsBottomSheet(
   primaryButton: ButtonModel? = null,
   secondaryButton: ButtonModel? = null,
   content: @Composable () -> Unit = {},
-  onDismiss: () -> Unit = {},
+  onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val coroutineScope = rememberCoroutineScope()
@@ -116,6 +116,7 @@ private fun ActionsBottomSheetPreview() {
       title = "Delete item?",
       description = "This action cannot be undone.",
       primaryButton = ButtonModel("Delete") {},
+      onDismiss = {},
     )
   }
 }
@@ -128,6 +129,7 @@ private fun ActionsBottomSheetPreviewDark() {
       title = "Delete item?",
       description = "This action cannot be undone.",
       primaryButton = ButtonModel("Delete") {},
+      onDismiss = {},
     )
   }
 }
@@ -141,6 +143,7 @@ private fun ActionsBottomSheetWithSecondaryPreview() {
       description = "This will mark the task as incomplete.",
       primaryButton = ButtonModel("Uncheck") {},
       secondaryButton = ButtonModel("Cancel") {},
+      onDismiss = {},
     )
   }
 }
@@ -154,6 +157,7 @@ private fun ActionsBottomSheetWithSecondaryPreviewDark() {
       description = "This will mark the task as incomplete.",
       primaryButton = ButtonModel("Uncheck") {},
       secondaryButton = ButtonModel("Cancel") {},
+      onDismiss = {},
     )
   }
 }

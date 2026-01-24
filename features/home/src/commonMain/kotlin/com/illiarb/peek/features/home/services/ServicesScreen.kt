@@ -29,6 +29,7 @@ import com.illiarb.peek.uikit.core.components.dnd.rememberDragAndDropState
 import com.illiarb.peek.uikit.core.components.dnd.reorderableItems
 import com.illiarb.peek.uikit.core.image.VectorIcon
 import com.illiarb.peek.uikit.resources.Res
+import com.illiarb.peek.uikit.resources.acsb_icon_drag_handle
 import com.illiarb.peek.uikit.resources.dou_logo
 import com.illiarb.peek.uikit.resources.ft_logo
 import com.illiarb.peek.uikit.resources.hn_logo
@@ -118,8 +119,8 @@ private fun ServiceItem(
     endAction = EndAction.Icon(
       modifier = dragHandleModifier,
       icon = VectorIcon(
-        Icons.Filled.DragHandle,
-        contentDescription = "",
+        imageVector = Icons.Filled.DragHandle,
+        contentDescription = stringResource(Res.string.acsb_icon_drag_handle),
         tint = MaterialTheme.colorScheme.primary
       )
     )

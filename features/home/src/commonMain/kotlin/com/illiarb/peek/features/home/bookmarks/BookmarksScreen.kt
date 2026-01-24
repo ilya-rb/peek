@@ -13,11 +13,9 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.CollectionsBookmark
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.home.articles.ArticlesContent
 import com.illiarb.peek.features.home.articles.ArticlesLoading
@@ -27,9 +25,11 @@ import com.illiarb.peek.features.navigation.map.showScreenOverlay
 import com.illiarb.peek.uikit.core.components.cell.EmptyState
 import com.illiarb.peek.uikit.core.components.cell.ErrorEmptyState
 import com.illiarb.peek.uikit.core.components.navigation.UiKitTopAppBar
+import com.illiarb.peek.uikit.core.components.navigation.UiKitTopAppBarTitle
 import com.illiarb.peek.uikit.core.image.VectorIcon
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_icon_bookmarks_empty
+import com.illiarb.peek.uikit.resources.acsb_icon_search
 import com.illiarb.peek.uikit.resources.bookmarks_empty
 import com.illiarb.peek.uikit.resources.bookmarks_screen_title
 import com.slack.circuit.overlay.OverlayEffect
@@ -56,16 +56,13 @@ internal fun BookmarksScreen(
     topBar = {
       UiKitTopAppBar(
         title = {
-          Text(stringResource(Res.string.bookmarks_screen_title))
+          UiKitTopAppBarTitle(title = stringResource(Res.string.bookmarks_screen_title))
         },
-        onNavigationButtonClick = {
-          eventSink.invoke(Event.NavigationButtonClicked)
-        },
+        onNavigationButtonClick = { eventSink.invoke(Event.NavigationButtonClicked) },
         actions = {
           Icon(
             imageVector = Icons.Filled.Search,
-            contentDescription = null,
-            modifier = Modifier.padding(end = 8.dp),
+            contentDescription = stringResource(Res.string.acsb_icon_search),
           )
         }
       )
@@ -128,7 +125,7 @@ private fun BookmarksEmpty(
     EmptyState(
       title = stringResource(Res.string.bookmarks_empty),
       image = VectorIcon(
-        Icons.Outlined.CollectionsBookmark,
+        imageVector = Icons.Outlined.CollectionsBookmark,
         contentDescription = stringResource(Res.string.acsb_icon_bookmarks_empty),
       )
     )

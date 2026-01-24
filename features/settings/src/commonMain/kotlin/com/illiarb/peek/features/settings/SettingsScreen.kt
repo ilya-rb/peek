@@ -1,7 +1,6 @@
 package com.illiarb.peek.features.settings
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -56,10 +55,8 @@ internal fun SettingsScreen(
       )
     }
   ) { innerPadding ->
-    Box(modifier = modifier.padding(innerPadding).fillMaxSize()) {
-      Column {
-        SettingsContent(state)
-      }
+    Column(modifier = modifier.fillMaxSize().padding(innerPadding)) {
+      SettingsContent(state)
     }
   }
 }

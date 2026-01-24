@@ -10,9 +10,9 @@ import com.illiarb.peek.uikit.core.preview.PreviewTheme
 import com.valentinilk.shimmer.shimmer
 
 @Composable
-public fun UiKitTopAppBarTitleLoading() {
+public fun UiKitTopAppBarTitleLoading(modifier: Modifier = Modifier) {
   ShimmerBox(
-    Modifier
+    modifier
       .size(height = 16.dp, width = 80.dp)
       .shimmer()
   )

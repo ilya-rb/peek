@@ -47,15 +47,15 @@ internal interface TasksScreenContract {
     data class TaskToggled(val task: Task) : Event
     data class TaskDeleted(val taskId: String) : Event
     data class SectionToggled(val timeOfDay: TimeOfDay) : Event
+    data class UncheckConfirmationRequested(val task: Task) : Event
+    data object UncheckConfirmed : Event
+    data object UncheckCancelled : Event
     data class AddTaskSubmitted(
       val title: String,
       val isHabit: Boolean,
       val timeOfDay: TimeOfDay,
       val dismissSheet: Boolean,
     ) : Event
-    data class UncheckConfirmationRequested(val task: Task) : Event
-    data object UncheckConfirmed : Event
-    data object UncheckCancelled : Event
   }
 }
 
