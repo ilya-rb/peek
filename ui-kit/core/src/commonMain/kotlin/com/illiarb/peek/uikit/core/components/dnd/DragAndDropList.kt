@@ -20,7 +20,12 @@ public fun <T : Any> LazyListScope.reorderableItems(
   items: List<T>,
   state: DragAndDropState,
   key: (T) -> Any,
-  content: @Composable (index: Int, itemModifier: Modifier, dragHandleModifier: Modifier, item: T) -> Unit,
+  content: @Composable (
+    index: Int,
+    itemModifier: Modifier,
+    dragHandleModifier: Modifier,
+    item: T,
+  ) -> Unit,
 ) {
   itemsIndexed(
     items = items,

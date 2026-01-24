@@ -18,8 +18,8 @@ import com.illiarb.peek.features.settings.SettingsScreenContract.Event
 import com.illiarb.peek.uikit.core.components.cell.ListHeader
 import com.illiarb.peek.uikit.core.components.cell.ListHeaderStyle
 import com.illiarb.peek.uikit.core.components.cell.RowCell
-import com.illiarb.peek.uikit.core.components.cell.RowCellContract.EndAction
-import com.illiarb.peek.uikit.core.components.cell.RowCellContract.TextModel
+import com.illiarb.peek.uikit.core.components.cell.RowCellContract.EndContent
+import com.illiarb.peek.uikit.core.model.TextModel
 import com.illiarb.peek.uikit.core.components.navigation.UiKitTopAppBar
 import com.illiarb.peek.uikit.core.components.navigation.UiKitTopAppBarTitle
 import com.illiarb.peek.uikit.core.image.VectorIcon
@@ -88,14 +88,14 @@ private fun SettingsContent(
   RowCell(
     title = TextModel(stringResource(Res.string.settings_dynamic_colors_title)),
     subtitle = TextModel(stringResource(Res.string.settings_dynamic_colors_subtitle)),
-    endAction = EndAction.Switch(state.dynamicColorsEnabled),
+    endContent = EndContent.Switch(state.dynamicColorsEnabled),
     modifier = Modifier.clickable {
       events.invoke(Event.MaterialColorsToggleChecked(!state.dynamicColorsEnabled))
     }
   )
   RowCell(
     title = TextModel(stringResource(Res.string.settings_dark_theme_title)),
-    endAction = EndAction.Switch(state.darkThemeEnabled),
+    endContent = EndContent.Switch(state.darkThemeEnabled),
     modifier = Modifier.clickable {
       events.invoke(Event.DarkThemeEnabledChecked(!state.darkThemeEnabled))
     }
@@ -163,7 +163,7 @@ private fun DebugSettings(
   RowCell(
     title = TextModel("Network request delay"),
     subtitle = TextModel("Delay each network request by 3 sec"),
-    endAction = EndAction.Switch(settings.networkDelayEnabled),
+    endContent = EndContent.Switch(settings.networkDelayEnabled),
     modifier = modifier.clickable {
       onNetworkDelayChanged(!settings.networkDelayEnabled)
     }

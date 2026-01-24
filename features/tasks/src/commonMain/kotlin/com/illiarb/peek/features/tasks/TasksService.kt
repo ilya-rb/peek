@@ -52,7 +52,7 @@ internal class DefaultTasksService(
     ) { currentTasks, overdueTasks ->
       currentTasks.mergeWith(overdueTasks)
     }.mapContent { (current, overdue) ->
-      current + overdue
+      (current + overdue).distinctBy { it.id }
     }
   }
 

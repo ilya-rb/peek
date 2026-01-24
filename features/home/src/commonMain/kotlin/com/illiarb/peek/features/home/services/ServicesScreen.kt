@@ -22,13 +22,14 @@ import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.uikit.core.atom.BoxListItemContainer
 import com.illiarb.peek.uikit.core.components.cell.ListHeader
 import com.illiarb.peek.uikit.core.components.cell.RowCell
-import com.illiarb.peek.uikit.core.components.cell.RowCellContract.EndAction
+import com.illiarb.peek.uikit.core.components.cell.RowCellContract
+import com.illiarb.peek.uikit.core.components.cell.RowCellContract.EndContent
 import com.illiarb.peek.uikit.core.components.cell.RowCellContract.StartContent
-import com.illiarb.peek.uikit.core.components.cell.RowCellContract.TextModel
 import com.illiarb.peek.uikit.core.components.dnd.dragAndDropContainer
 import com.illiarb.peek.uikit.core.components.dnd.rememberDragAndDropState
 import com.illiarb.peek.uikit.core.components.dnd.reorderableItems
 import com.illiarb.peek.uikit.core.image.VectorIcon
+import com.illiarb.peek.uikit.core.model.TextModel
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_icon_drag_handle
 import com.illiarb.peek.uikit.resources.dou_logo
@@ -104,6 +105,7 @@ private fun ServiceItem(
   modifier: Modifier = Modifier,
 ) {
   RowCell(
+    style = RowCellContract.Style.Condensed,
     modifier = modifier,
     title = TextModel(
       when (source.kind) {
@@ -119,7 +121,7 @@ private fun ServiceItem(
         NewsSourceKind.Ft -> Res.drawable.ft_logo
       }
     ),
-    endAction = EndAction.Icon(
+    endContent = EndContent.Icon(
       modifier = dragHandleModifier,
       icon = VectorIcon(
         imageVector = Icons.Filled.DragHandle,

@@ -41,9 +41,9 @@ import com.illiarb.peek.features.tasks.domain.TimeOfDay.Morning
 import com.illiarb.peek.uikit.core.atom.HorizontalButtons
 import com.illiarb.peek.uikit.core.components.cell.ListHeader
 import com.illiarb.peek.uikit.core.components.cell.RowCell
-import com.illiarb.peek.uikit.core.components.cell.RowCellContract.EndAction
+import com.illiarb.peek.uikit.core.components.cell.RowCellContract.EndContent
 import com.illiarb.peek.uikit.core.components.cell.RowCellContract.StartContent
-import com.illiarb.peek.uikit.core.components.cell.RowCellContract.TextModel
+import com.illiarb.peek.uikit.core.model.TextModel
 import com.illiarb.peek.uikit.core.image.VectorIcon
 import com.illiarb.peek.uikit.core.model.ButtonModel
 import com.illiarb.peek.uikit.resources.Res
@@ -131,7 +131,7 @@ internal fun AddTaskBottomSheet(
           contentDescription = stringResource(Res.string.acsb_icon_task_habit),
         )
       ),
-      endAction = EndAction.Switch(isHabit),
+      endContent = EndContent.Switch(isHabit),
       modifier = Modifier
         .fillMaxWidth()
         .padding(top = 16.dp)

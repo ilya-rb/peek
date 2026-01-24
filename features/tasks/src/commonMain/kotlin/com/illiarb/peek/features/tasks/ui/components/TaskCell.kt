@@ -19,6 +19,7 @@ import com.illiarb.peek.uikit.core.components.cell.RowCellContract.StartContent
 import com.illiarb.peek.uikit.core.components.date.DateFormats
 import com.illiarb.peek.uikit.core.components.swipe.SwipeToDeleteContainer
 import com.illiarb.peek.uikit.core.image.VectorIcon
+import com.illiarb.peek.uikit.core.model.TextModel
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_icon_task_overdue
 import kotlinx.datetime.LocalDate
@@ -51,7 +52,7 @@ internal fun LazyItemScope.TaskCell(
     ) {
       RowCell(
         modifier = Modifier.fillMaxWidth().clickable { onTaskToggled(task) },
-        title = RowCellContract.TextModel(
+        title = TextModel(
           text = task.title,
           decoration = if (task.completed) {
             TextDecoration.LineThrough
@@ -60,7 +61,7 @@ internal fun LazyItemScope.TaskCell(
           }
         ),
         subtitle = if (showOverdue && selectedDate != task.createdForDate) {
-          RowCellContract.TextModel(
+          TextModel(
             DateFormats.formatDate(task.createdForDate, currentDate)
           )
         } else {
@@ -70,8 +71,8 @@ internal fun LazyItemScope.TaskCell(
           checked = task.completed,
           enabled = enabled,
         ),
-        endAction = if (showOverdue && task.createdForDate < selectedDate) {
-          RowCellContract.EndAction.Icon(
+        endContent = if (showOverdue && task.createdForDate < selectedDate) {
+          RowCellContract.EndContent.Icon(
             VectorIcon(
               Icons.Filled.AssignmentLate,
               contentDescription = stringResource(Res.string.acsb_icon_task_overdue),
