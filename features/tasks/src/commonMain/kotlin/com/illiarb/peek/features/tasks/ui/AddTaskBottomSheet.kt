@@ -207,7 +207,7 @@ private fun BottomSheetHeader(
     endIcon = VectorIcon(
       imageVector = Icons.Filled.Close,
       contentDescription = stringResource(Res.string.acsb_action_close),
-      modifier = Modifier
+      modifier = modifier
         .clip(CircleShape)
         .background(MaterialTheme.colorScheme.surfaceContainer)
         .padding(8.dp)
@@ -234,7 +234,7 @@ private fun ButtonsFooter(
       enabled = enabled,
       onClick = onSubmit,
     ),
-    modifier = Modifier
+    modifier = modifier
       .padding(horizontal = 16.dp)
       .padding(top = 24.dp, bottom = 16.dp),
   )

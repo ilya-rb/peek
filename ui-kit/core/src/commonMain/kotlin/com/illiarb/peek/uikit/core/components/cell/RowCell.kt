@@ -96,36 +96,7 @@ public fun RowCell(
     modifier = modifier.padding(horizontal = 16.dp, vertical = verticalSpacing),
   ) {
     if (startContent != null) {
-      val startContentModifier = Modifier.padding(end = 16.dp)
-
-      when (startContent) {
-        is StartContent.Icon -> {
-          Icon(
-            startContent.icon.imageVector,
-            startContent.icon.contentDescription,
-            startContentModifier,
-          )
-        }
-
-        is StartContent.Avatar -> {
-          SelectableCircleAvatar(
-            modifier = startContentModifier,
-            size = 40.dp,
-            image = startContent.image,
-            state = AvatarState.Default,
-            onClick = {},
-          )
-        }
-
-        is StartContent.Checkbox -> {
-          Checkbox(
-            modifier = startContentModifier,
-            checked = startContent.checked,
-            onCheckedChange = null,
-            enabled = true,
-          )
-        }
-      }
+      RowStartContent(startContent)
     }
 
     Column {
@@ -149,39 +120,78 @@ public fun RowCell(
     Spacer(Modifier.weight(1f))
 
     if (endContent != null) {
-      when (endContent) {
-        is EndContent.Content -> {
-          TextButton(
-            onClick = endContent.onClick,
-            content = { Text(text = endContent.text) },
-          )
-        }
+      RowEndContent(endContent)
+    }
+  }
+}
 
-        is EndContent.Icon -> {
-          Icon(
-            imageVector = endContent.icon.imageVector,
-            contentDescription = endContent.icon.contentDescription,
-            modifier = endContent.modifier,
-            tint = endContent.icon.tint ?: LocalContentColor.current,
-          )
-        }
+@Composable
+private fun RowStartContent(content: StartContent) {
+  val startContentModifier = Modifier.padding(end = 16.dp)
 
-        is EndContent.Switch -> {
-          Switch(
-            checked = endContent.checked,
-            onCheckedChange = null,
-            thumbContent = {
-              if (endContent.checked) {
-                Icon(
-                  modifier = Modifier.size(SwitchDefaults.IconSize),
-                  imageVector = Icons.Filled.Check,
-                  contentDescription = stringResource(Res.string.acsb_switch_checked),
-                )
-              }
-            }
-          )
+  when (content) {
+    is StartContent.Icon -> {
+      Icon(
+        content.icon.imageVector,
+        content.icon.contentDescription,
+        startContentModifier,
+      )
+    }
+
+    is StartContent.Avatar -> {
+      SelectableCircleAvatar(
+        modifier = startContentModifier,
+        size = 40.dp,
+        image = content.image,
+        state = AvatarState.Default,
+        onClick = {},
+      )
+    }
+
+    is StartContent.Checkbox -> {
+      Checkbox(
+        modifier = startContentModifier,
+        checked = content.checked,
+        onCheckedChange = null,
+        enabled = true,
+      )
+    }
+  }
+}
+
+@Composable
+private fun RowEndContent(content: EndContent) {
+  when (content) {
+    is EndContent.Content -> {
+      TextButton(
+        onClick = content.onClick,
+        content = { Text(text = content.text) },
+      )
+    }
+
+    is EndContent.Icon -> {
+      Icon(
+        imageVector = content.icon.imageVector,
+        contentDescription = content.icon.contentDescription,
+        modifier = content.modifier,
+        tint = content.icon.tint ?: LocalContentColor.current,
+      )
+    }
+
+    is EndContent.Switch -> {
+      Switch(
+        checked = content.checked,
+        onCheckedChange = null,
+        thumbContent = {
+          if (content.checked) {
+            Icon(
+              modifier = Modifier.size(SwitchDefaults.IconSize),
+              imageVector = Icons.Filled.Check,
+              contentDescription = stringResource(Res.string.acsb_switch_checked),
+            )
+          }
         }
-      }
+      )
     }
   }
 }
