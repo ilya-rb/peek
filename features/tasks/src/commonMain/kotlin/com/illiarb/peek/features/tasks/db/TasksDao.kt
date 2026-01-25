@@ -6,7 +6,7 @@ import com.illiarb.peek.core.coroutines.CoroutineDispatchers
 import com.illiarb.peek.core.coroutines.suspendRunCatching
 import com.illiarb.peek.core.data.ext.toEpochMilliseconds
 import com.illiarb.peek.features.tasks.AllCompletions
-import com.illiarb.peek.features.tasks.AllHabitsCreatedBefore
+import com.illiarb.peek.features.tasks.AllHabitsCreatedOnOrBefore
 import com.illiarb.peek.features.tasks.OverdueTasksForDate
 import com.illiarb.peek.features.tasks.TasksDatabase
 import com.illiarb.peek.features.tasks.TasksForDateWithCompletion
@@ -98,10 +98,10 @@ internal class TasksDao(
     }
   }
 
-  suspend fun getHabitsCreatedBefore(date: LocalDate): Result<List<AllHabitsCreatedBefore>> {
+  suspend fun getHabitsCreatedOnOrBefore(date: LocalDate): Result<List<AllHabitsCreatedOnOrBefore>> {
     return withContext(coroutineDispatchers.io) {
       suspendRunCatching {
-        db.tasksQueries.allHabitsCreatedBefore(date.toEpochMilliseconds()).executeAsList()
+        db.tasksQueries.allHabitsCreatedOnOrBefore(date.toEpochMilliseconds()).executeAsList()
       }
     }
   }

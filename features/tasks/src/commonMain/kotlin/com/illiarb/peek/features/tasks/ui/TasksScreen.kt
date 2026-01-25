@@ -1,8 +1,11 @@
 package com.illiarb.peek.features.tasks.ui
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -44,6 +47,9 @@ import com.illiarb.peek.uikit.resources.acsb_action_add_task
 import com.illiarb.peek.uikit.resources.acsb_icon_current_streak
 import com.illiarb.peek.uikit.resources.acsb_icon_tasks_empty
 import com.illiarb.peek.uikit.resources.common_action_cancel
+import com.illiarb.peek.uikit.resources.tasks_delete_confirm_action
+import com.illiarb.peek.uikit.resources.tasks_delete_confirm_description
+import com.illiarb.peek.uikit.resources.tasks_delete_confirm_title
 import com.illiarb.peek.uikit.resources.tasks_empty_title
 import com.illiarb.peek.uikit.resources.tasks_group_anytime
 import com.illiarb.peek.uikit.resources.tasks_uncheck_confirm_action
@@ -74,6 +80,13 @@ internal fun TasksScreen(
     ConfirmUncheckBottomSheet(
       onDismiss = { eventSink(Event.UncheckCancelled) },
       onConfirm = { eventSink(Event.UncheckConfirmed) },
+    )
+  }
+
+  if (state.taskToDelete != null) {
+    ConfirmDeleteBottomSheet(
+      onDismiss = { eventSink(Event.DeleteCancelled) },
+      onConfirm = { eventSink(Event.DeleteConfirmed) },
     )
   }
 
@@ -111,11 +124,19 @@ internal fun TasksScreen(
       )
     },
     floatingActionButton = {
-      FloatingActionButton(onClick = { eventSink(Event.AddTaskClicked) }) {
-        Icon(
-          imageVector = Icons.Filled.Add,
-          contentDescription = stringResource(Res.string.acsb_action_add_task),
-        )
+      val isToday = state.selectedDate == state.today
+
+      AnimatedVisibility(
+        visible = isToday,
+        enter = scaleIn(),
+        exit = scaleOut(),
+      ) {
+        FloatingActionButton(onClick = { eventSink(Event.AddTaskClicked) }) {
+          Icon(
+            imageVector = Icons.Filled.Add,
+            contentDescription = stringResource(Res.string.acsb_action_add_task),
+          )
+        }
       }
     },
   ) { innerPadding ->
@@ -276,6 +297,26 @@ private fun ConfirmUncheckBottomSheet(
     onDismiss = onDismiss,
     primaryButton = ButtonModel(
       text = stringResource(Res.string.tasks_uncheck_confirm_action),
+      onClick = onConfirm,
+    ),
+    secondaryButton = ButtonModel(
+      text = stringResource(Res.string.common_action_cancel),
+      onClick = onDismiss,
+    ),
+  )
+}
+
+@Composable
+private fun ConfirmDeleteBottomSheet(
+  onDismiss: () -> Unit,
+  onConfirm: () -> Unit,
+) {
+  ActionsBottomSheet(
+    title = stringResource(Res.string.tasks_delete_confirm_title),
+    description = stringResource(Res.string.tasks_delete_confirm_description),
+    onDismiss = onDismiss,
+    primaryButton = ButtonModel(
+      text = stringResource(Res.string.tasks_delete_confirm_action),
       onClick = onConfirm,
     ),
     secondaryButton = ButtonModel(
