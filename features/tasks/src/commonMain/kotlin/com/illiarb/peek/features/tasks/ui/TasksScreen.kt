@@ -272,7 +272,7 @@ private fun TasksList(
       ) { index, task ->
         TaskCell(
           today = today,
-          enabled = selectedDate >= today && task.createdForDate >= today,
+          enabled = selectedDate >= today,
           index = index,
           itemsCount = anytimeTasks.size,
           onTaskDeleted = onTaskDeleted,
