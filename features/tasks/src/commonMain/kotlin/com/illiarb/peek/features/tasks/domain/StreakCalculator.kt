@@ -20,9 +20,9 @@ internal class StreakCalculator {
     var streak = 0
 
     val completionsByDate = completions.groupBy { it.date }
-    val earliestHabitDate = habits.minOf { habit -> habit.createdAt }
+    val earliestHabitDate = habits.minOf { habit -> habit.createdForDate }
 
-    val habitsForToday = habits.filter { it.createdAt <= today }
+    val habitsForToday = habits.filter { it.createdForDate <= today }
     val todayCompleted = habitsCompletedFor(today, habitsForToday, completionsByDate)
 
     var currentDate = if (todayCompleted) {
@@ -32,7 +32,7 @@ internal class StreakCalculator {
     }
 
     while (currentDate >= earliestHabitDate) {
-      val habitsForDate = habits.filter { it.createdAt <= currentDate }
+      val habitsForDate = habits.filter { it.createdForDate <= currentDate }
       if (habitsForDate.isNotEmpty()) {
         val completed = habitsCompletedFor(currentDate, habitsForDate, completionsByDate)
         if (completed.not()) {

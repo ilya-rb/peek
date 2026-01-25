@@ -8,6 +8,6 @@ public data class HabitStatistics(
 
 internal data class HabitInfo(
   val id: String,
-  val createdAt: LocalDate,
+  val createdForDate: LocalDate,
 )
 

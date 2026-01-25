@@ -24,5 +24,8 @@
   <string name="tasks_uncheck_confirm_title">Uncheck task?</string>
   <string name="tasks_uncheck_confirm_description">This will mark the task as incomplete.</string>
   <string name="tasks_uncheck_confirm_action">Uncheck</string>
+  <string name="tasks_delete_confirm_title">Delete task?</string>
+  <string name="tasks_delete_confirm_description">This action cannot be undone.</string>
+  <string name="tasks_delete_confirm_action">Delete</string>
   <string name="tasks_section_completed">Completed</string>
 </resources>

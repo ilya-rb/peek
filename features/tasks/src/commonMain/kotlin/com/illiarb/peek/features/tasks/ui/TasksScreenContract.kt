@@ -33,6 +33,7 @@ internal interface TasksScreenContract {
     val showAddTaskSheet: Boolean,
     val statistics: Async<HabitStatistics>,
     val taskToUncheck: Task? = null,
+    val taskToDelete: Task? = null,
     val tasks: Async<ImmutableMap<TimeOfDay, List<Task>>>,
     val today: LocalDate,
     val eventSink: (Event) -> Unit,
@@ -45,6 +46,8 @@ internal interface TasksScreenContract {
     data class TaskToggled(val task: Task) : Event
     data object AddTaskClicked : Event
     data object AddTaskDismissed : Event
+    data object DeleteCancelled : Event
+    data object DeleteConfirmed : Event
     data object ErrorRetryClicked : Event
     data object NavigateBack : Event
     data object NextDayClicked : Event

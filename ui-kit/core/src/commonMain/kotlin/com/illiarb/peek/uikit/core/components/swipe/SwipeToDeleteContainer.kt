@@ -18,6 +18,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
@@ -26,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -41,6 +43,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.illiarb.peek.uikit.core.image.VectorIcon
 import com.illiarb.peek.uikit.core.preview.PreviewTheme
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import kotlin.math.abs
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -60,6 +64,7 @@ public fun SwipeToDeleteContainer(
   var hapticTriggered by remember { mutableStateOf(false) }
   var distanceToTriggerDismiss by remember { mutableFloatStateOf(0f) }
 
+  val coroutineScope = rememberCoroutineScope()
   val hapticFeedback = LocalHapticFeedback.current
   val dismissState = rememberSwipeToDismissBoxState(
     positionalThreshold = { distanceToTriggerDismiss }
@@ -92,7 +97,12 @@ public fun SwipeToDeleteContainer(
     },
     enableDismissFromStartToEnd = false,
     enableDismissFromEndToStart = enabled,
-    onDismiss = { onDelete() },
+    onDismiss = {
+      coroutineScope.launch {
+        dismissState.reset()
+        onDelete()
+      }
+    },
     backgroundContent = {
       DeleteBackground(
         offset = offsetPx,
