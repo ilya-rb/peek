@@ -50,12 +50,12 @@ LEFT JOIN task_completions
     AND task_completions.date = :date
 WHERE tasks.archived = 0
 AND (
-    tasks.is_habit = 1
+    (tasks.is_habit = 1 AND tasks.created_for_date <= :date)
     OR (tasks.is_habit = 0 AND tasks.created_for_date = :date)
-    OR task_completions.task_id IS NOT NULL  -- Include tasks completed on this date
+    OR task_completions.task_id IS NOT NULL
 )
 AND (
-    tasks.is_habit = 1
+    (tasks.is_habit = 1 AND tasks.created_for_date <= :date)
     OR NOT EXISTS (
         SELECT 1 FROM task_completions tc
         WHERE tc.task_id = tasks.id AND tc.date != :date
@@ -81,13 +81,13 @@ VALUES (
 deleteCompletion:
 DELETE FROM task_completions WHERE task_id = :taskId AND date = :date;
 
-allHabitsCreatedBefore:
-SELECT id, created_at
+allHabitsCreatedOnOrBefore:
+SELECT id, created_for_date
 FROM tasks
 WHERE is_habit = 1
   AND archived = 0
-  AND created_at <= :beforeTimestamp
-ORDER BY created_at;
+  AND created_for_date <= :date
+ORDER BY created_for_date;
 
 allCompletions:
 SELECT task_id, date

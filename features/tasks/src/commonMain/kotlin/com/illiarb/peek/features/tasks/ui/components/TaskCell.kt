@@ -53,7 +53,7 @@ internal fun LazyItemScope.TaskCell(
       itemsCount = itemsCount,
     ) {
       RowCell(
-        modifier = Modifier.fillMaxWidth().clickable { onTaskToggled(task) },
+        modifier = Modifier.fillMaxWidth().clickable(enabled = enabled) { onTaskToggled(task) },
         title = TextModel(
           text = task.title,
           decoration = if (task.completed) {

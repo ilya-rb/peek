@@ -46,10 +46,10 @@ internal class TasksRepository(
       .asAsync(withLoading = false)
   }
 
-  suspend fun getHabitsCreatedBefore(date: LocalDate): Result<List<HabitInfo>> {
-    return tasksDao.getHabitsCreatedBefore(date).map { entries ->
+  suspend fun getHabitsCreatedOnOrBefore(date: LocalDate): Result<List<HabitInfo>> {
+    return tasksDao.getHabitsCreatedOnOrBefore(date).map { entries ->
       entries.map {
-        HabitInfo(it.id, it.created_at.toLocalDate())
+        HabitInfo(it.id, it.created_for_date.toLocalDate())
       }
     }
   }

@@ -63,6 +63,9 @@ internal class TasksScreenPresenter(
     var taskToUncheck by rememberRetained {
       mutableStateOf<Task?>(null)
     }
+    var taskToDelete by rememberRetained {
+      mutableStateOf<Task?>(null)
+    }
     val tasks by produceRetainedState<Async<ImmutableMap<TimeOfDay, List<Task>>>>(
       initialValue = Async.Loading,
       key1 = reloadTrigger,
@@ -97,6 +100,7 @@ internal class TasksScreenPresenter(
       selectedDate = selectedDate,
       today = now.date,
       taskToUncheck = taskToUncheck,
+      taskToDelete = taskToDelete,
       eventSink = { event ->
         when (event) {
           is Event.NavigateBack -> navigator.pop()
@@ -162,26 +166,39 @@ internal class TasksScreenPresenter(
           }
 
           is Event.TaskDeleted -> {
-            coroutineScope.launch {
-              tasksService.deleteTask(event.task.id).fold(
-                onSuccess = {
-                  messageDispatcher.sendMessage(
-                    Message(
-                      content = getString(Res.string.tasks_task_removed),
-                      type = MessageType.SUCCESS,
+            taskToDelete = event.task
+          }
+
+          is Event.DeleteConfirmed -> {
+            val task = taskToDelete
+            taskToDelete = null
+
+            if (task != null) {
+              coroutineScope.launch {
+                tasksService.deleteTask(task.id).fold(
+                  onSuccess = {
+                    messageDispatcher.sendMessage(
+                      Message(
+                        content = getString(Res.string.tasks_task_removed),
+                        type = MessageType.SUCCESS,
+                      )
                     )
-                  )
-                },
-                onFailure = {
-                  messageDispatcher.sendMessage(
-                    Message(
-                      content = getString(Res.string.tasks_delete_error),
-                      type = MessageType.ERROR,
+                  },
+                  onFailure = {
+                    messageDispatcher.sendMessage(
+                      Message(
+                        content = getString(Res.string.tasks_delete_error),
+                        type = MessageType.ERROR,
+                      )
                     )
-                  )
-                }
-              )
+                  }
+                )
+              }
             }
+          }
+
+          is Event.DeleteCancelled -> {
+            taskToDelete = null
           }
 
           is Event.SectionToggled -> {

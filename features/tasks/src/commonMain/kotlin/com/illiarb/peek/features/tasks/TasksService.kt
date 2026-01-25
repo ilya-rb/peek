@@ -59,7 +59,7 @@ internal class DefaultTasksService(
   override fun getHabitsStatistics(): Flow<Async<HabitStatistics>> {
     return flow {
       val today = Clock.System.now().toLocalDate()
-      val habits = repository.getHabitsCreatedBefore(today).getOrThrow()
+      val habits = repository.getHabitsCreatedOnOrBefore(today).getOrThrow()
       val completions = repository.getAllTasksCompletions().getOrThrow()
       val streak = streakCalculator.calculateCurrentStreak(today, habits, completions)
 
