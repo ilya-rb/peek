@@ -6,9 +6,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BugReport
+import androidx.compose.material.icons.filled.Cached
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.DataArray
+import androidx.compose.material.icons.filled.DataObject
+import androidx.compose.material.icons.filled.DataThresholding
+import androidx.compose.material.icons.filled.DataUsage
 import androidx.compose.material.icons.filled.Dataset
+import androidx.compose.material.icons.filled.DatasetLinked
 import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -25,6 +34,7 @@ import com.illiarb.peek.uikit.core.image.VectorIcon
 import com.illiarb.peek.uikit.core.model.TextModel
 import com.illiarb.peek.uikit.resources.Res
 import com.illiarb.peek.uikit.resources.acsb_icon_appearance
+import com.illiarb.peek.uikit.resources.acsb_icon_chevron_right
 import com.illiarb.peek.uikit.resources.acsb_icon_debug
 import com.illiarb.peek.uikit.resources.settings_appearance_title
 import com.illiarb.peek.uikit.resources.settings_article_retention_dialog_title
@@ -104,7 +114,7 @@ private fun SettingsContent(
     modifier = Modifier.padding(top = 16.dp),
     text = stringResource(Res.string.settings_data_title),
     icon = VectorIcon(
-      imageVector = Icons.Filled.Dataset,
+      imageVector = Icons.Filled.Storage,
       contentDescription = stringResource(Res.string.settings_data_title),
     ),
   )
@@ -114,6 +124,13 @@ private fun SettingsContent(
       stringResource(
         Res.string.settings_article_retention_subtitle,
         state.articleRetentionDays
+      )
+    ),
+    endContent = EndContent.Icon(
+      VectorIcon(
+        imageVector = Icons.Filled.ChevronRight,
+        contentDescription = stringResource(Res.string.acsb_icon_chevron_right),
+        tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
       )
     ),
     modifier = Modifier.clickable {
