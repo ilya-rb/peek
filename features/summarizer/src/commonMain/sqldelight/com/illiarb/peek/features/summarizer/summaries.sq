@@ -1,6 +1,9 @@
 CREATE TABLE IF NOT EXISTS summaries (
     `url` TEXT PRIMARY KEY NOT NULL,
-    `summary` TEXT NOT NULL
+    `summary` TEXT NOT NULL,
+    `model` TEXT NOT NULL,
+    `price` REAL NOT NULL,
+    `currency` TEXT NOT NULL
 );
 
 summaryByUrl:
@@ -9,10 +12,16 @@ SELECT * FROM summaries WHERE url = :url;
 saveSummary:
 INSERT OR REPLACE INTO summaries (
     `url`,
-    `summary`
+    `summary`,
+    `model`,
+    `price`,
+    `currency`
 ) VALUES (
 :url,
-:summary
+:summary,
+:model,
+:price,
+:currency
 );
 
 deleteSummary:

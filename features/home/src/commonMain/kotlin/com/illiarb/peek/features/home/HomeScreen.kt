@@ -48,6 +48,7 @@ import com.illiarb.peek.uikit.core.atom.SelectableCircleAvatar
 import com.illiarb.peek.uikit.core.atom.bordered
 import com.illiarb.peek.uikit.core.components.cell.ErrorEmptyState
 import com.illiarb.peek.uikit.core.components.date.DateFormats
+import com.illiarb.peek.uikit.core.components.navigation.NavigationButton
 import com.illiarb.peek.uikit.core.components.navigation.UiKitTopAppBar
 import com.illiarb.peek.uikit.core.components.navigation.UiKitTopAppBarTitle
 import com.illiarb.peek.uikit.core.theme.UiKitColors
@@ -89,7 +90,7 @@ internal fun HomeScreen(state: HomeScreenContract.State, modifier: Modifier = Mo
     OverlayEffect(article) {
       val result = showScreenOverlay(
         SummaryScreen(article.url, SummaryScreen.Context.HOME),
-        onDismiss = { SummaryScreen.Result.Close },
+        onDismiss = { SummaryScreen.Result.Close as SummaryScreen.Result },
       )
       eventSink.invoke(Event.SummaryResult(result))
     }
@@ -116,7 +117,7 @@ internal fun HomeScreen(state: HomeScreenContract.State, modifier: Modifier = Mo
       topBar = {
         UiKitTopAppBar(
           scrollBehavior = topBarBehavior,
-          showNavigationButton = false,
+          navigationButton = NavigationButton.None,
           colors = TopAppBarDefaults.topAppBarColors(scrolledContainerColor = Color.Transparent),
           modifier = Modifier.hazeEffect(state = hazeState, style = hazeStyle),
           title = {

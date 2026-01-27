@@ -2,6 +2,8 @@ package com.illiarb.peek.features.summarizer.db
 
 import com.illiarb.peek.core.coroutines.CoroutineDispatchers
 import com.illiarb.peek.core.coroutines.suspendRunCatching
+import com.illiarb.peek.core.types.Currency
+import com.illiarb.peek.core.types.Money
 import com.illiarb.peek.core.types.Url
 import com.illiarb.peek.features.summarizer.Database
 import com.illiarb.peek.features.summarizer.Summaries
@@ -31,6 +33,9 @@ internal class ArticlesSummaryDao(
         db.summariesQueries.saveSummary(
           url = summary.url.url,
           summary = summary.content,
+          model = summary.model,
+          price = summary.price.amount,
+          currency = summary.price.currency.code,
         )
         Unit
       }
@@ -38,6 +43,11 @@ internal class ArticlesSummaryDao(
   }
 
   private fun Summaries.toDomain(): ArticleSummary {
-    return ArticleSummary(Url(url), summary)
+    return ArticleSummary(
+      url = Url(url),
+      content = summary,
+      model = model,
+      price = Money(price, Currency.ofCode(this.currency))
+    )
   }
 }
