@@ -23,13 +23,13 @@ public data class Money(
       val factor = 10.0.pow(decimalPlaces)
       val rounded = (amountPrecise * factor).roundToLong().toDouble() / factor
 
-      val intPart = rounded.toLong()
-      val fracPart = ((rounded - intPart) * factor).roundToLong()
+      val integerPart = rounded.toLong()
+      val fractionalPart = ((rounded - integerPart) * factor).roundToLong()
 
       return if (decimalPlaces == 0) {
-        "$intPart ${currency.code}"
+        "$integerPart ${currency.code}"
       } else {
-        "$intPart.${fracPart.toString().padStart(decimalPlaces, '0')} ${currency.code}"
+        "$integerPart.${fractionalPart.toString().padStart(decimalPlaces, '0')} ${currency.code}"
       }
     }
 
