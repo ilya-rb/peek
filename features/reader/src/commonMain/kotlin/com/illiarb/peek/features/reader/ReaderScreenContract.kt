@@ -22,6 +22,7 @@ internal interface ReaderScreenContract {
   @Stable
   data class State(
     val article: Async<Article>,
+    val parsedContent: Async<HtmlContent?>,
     val showTopBarPopup: Boolean,
     val showSummary: Boolean,
     val showRemoveBookmarkConfirmation: Boolean,
@@ -65,13 +66,15 @@ public interface ReaderScreenComponent {
     private val peekApiService: PeekApiService,
   ) : Presenter.Factory {
 
+    private val articleContentParser = ArticleContentParser()
+
     override fun create(
       screen: Screen,
       navigator: Navigator,
       context: CircuitContext
     ): Presenter<*>? {
       return if (screen is ReaderScreen) {
-        ReaderScreenPresenter(navigator, screen, peekApiService)
+        ReaderScreenPresenter(navigator, screen, peekApiService, articleContentParser)
       } else {
         null
       }

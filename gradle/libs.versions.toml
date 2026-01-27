@@ -31,7 +31,9 @@ kotlinx-datetime = "0.7.1"
 kotlinx-serialization = "1.10.0"
 ktor = "3.4.0"
 metro = "0.10.0"
+ksoup = "0.2.5"
 napier = "2.7.1"
+readability4j = "1.0.8"
 rssparser = "6.1.2"
 shimmer = "1.3.3"
 stability-analyzer = "0.6.6"
@@ -93,6 +95,8 @@ gradlePlugin-composeCompiler = { module = "org.jetbrains.kotlin:compose-compiler
 gradlePlugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 gradlePlugin-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 
+ksoup = { module = "com.fleeksoft.ksoup:ksoup", version.ref = "ksoup" }
+
 haze = { module = "dev.chrisbanes.haze:haze", version.ref = "haze" }
 haze-materials = { module = "dev.chrisbanes.haze:haze-materials", version.ref = "haze" }
 
@@ -117,6 +121,7 @@ sqldelight-primitive = { module = "app.cash.sqldelight:primitive-adapters", vers
 
 # Misc
 napier = { module = "io.github.aakira:napier", version.ref = "napier" }
+readability4j = { module = "net.dankito.readability4j:readability4j", version.ref = "readability4j" }
 rssparser = { module = "com.prof18.rssparser:rssparser", version.ref = "rssparser" }
 shimmer = { module = "com.valentinilk.shimmer:compose-shimmer", version.ref = "shimmer" }
 stately-collections = { module = "co.touchlab:stately-concurrent-collections", version.ref = "stately" }

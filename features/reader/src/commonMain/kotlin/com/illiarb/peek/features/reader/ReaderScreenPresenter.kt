@@ -22,6 +22,7 @@ internal class ReaderScreenPresenter(
   private val navigator: Navigator,
   private val screen: ReaderScreen,
   private val peekApiService: PeekApiService,
+  private val articleContentParser: ArticleContentParser,
 ) : Presenter<ReaderScreenContract.State> {
 
   @Composable
@@ -30,6 +31,17 @@ internal class ReaderScreenPresenter(
     val article by produceRetainedState<Async<Article>>(initialValue = Async.Loading) {
       peekApiService.collectArticleByUrl(screen.url).collect {
         value = it
+      }
+    }
+
+    val parsedContent by produceRetainedState<Async<HtmlContent?>>(
+      initialValue = Async.Loading,
+      key1 = article,
+    ) {
+      val content = article.contentOrNull()
+      if (content != null) {
+        val result = articleContentParser.parse(content.url.url)
+        value = Async.Content(result, contentRefreshing = false)
       }
     }
     var showTopBarPopup by rememberRetained { mutableStateOf(false) }
@@ -46,6 +58,7 @@ internal class ReaderScreenPresenter(
 
     return ReaderScreenContract.State(
       article = article,
+      parsedContent = parsedContent,
       showTopBarPopup = showTopBarPopup,
       showSummary = showSummary,
       showRemoveBookmarkConfirmation = showRemoveBookmarkConfirmation,

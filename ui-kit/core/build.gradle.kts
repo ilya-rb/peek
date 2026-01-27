@@ -18,6 +18,7 @@ kotlin {
       implementation(libs.coil.network)
       implementation(libs.kotlinx.datetime)
       implementation(libs.kotlinx.collections)
+      implementation(libs.ksoup)
       implementation(libs.shimmer)
 
       implementation(projects.core.appInfo)

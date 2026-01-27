@@ -22,12 +22,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.unit.dp
 import com.illiarb.peek.api.domain.Article
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.navigation.map.ReaderScreen
 import com.illiarb.peek.features.navigation.map.SummaryScreen
 import com.illiarb.peek.features.navigation.map.showScreenOverlay
 import com.illiarb.peek.features.reader.ReaderScreenContract.Event
+import com.illiarb.peek.uikit.core.atom.HtmlRenderer
 import com.illiarb.peek.uikit.core.atom.WebView
 import com.illiarb.peek.uikit.core.components.bottomsheet.ActionsBottomSheet
 import com.illiarb.peek.uikit.core.components.cell.ErrorEmptyState
@@ -121,6 +123,7 @@ internal fun ReaderScreen(
   ) { innerPadding ->
     ReaderContent(
       article = state.article,
+      parsedContent = state.parsedContent,
       contentScrollState = contentScrollState,
       modifier = Modifier.fillMaxSize().padding(innerPadding),
       onErrorClicked = { eventSink.invoke(Event.ErrorRetryClicked) },
@@ -178,6 +181,7 @@ private fun ReaderTitle(
 @Composable
 private fun ReaderContent(
   article: Async<Article>,
+  parsedContent: Async<HtmlContent?>,
   contentScrollState: ScrollState,
   onErrorClicked: () -> Unit,
   modifier: Modifier,
@@ -186,10 +190,32 @@ private fun ReaderContent(
     is Async.Loading -> ReaderLoading(modifier)
     is Async.Error -> ErrorEmptyState(modifier = modifier, onButtonClick = onErrorClicked)
     is Async.Content -> {
-      WebView(
-        url = article.content.url.url,
-        modifier = modifier.verticalScroll(contentScrollState),
-      )
+      when (parsedContent) {
+        is Async.Loading -> ReaderLoading(modifier)
+        is Async.Content -> {
+          val content = parsedContent.content
+          if (content != null) {
+            HtmlRenderer(
+              html = content.content,
+              modifier = modifier
+                .verticalScroll(contentScrollState)
+                .padding(horizontal = 16.dp),
+            )
+          } else {
+            WebView(
+              url = article.content.url.url,
+              modifier = modifier.verticalScroll(contentScrollState),
+            )
+          }
+        }
+
+        is Async.Error -> {
+          WebView(
+            url = article.content.url.url,
+            modifier = modifier.verticalScroll(contentScrollState),
+          )
+        }
+      }
     }
   }
 }

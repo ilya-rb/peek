@@ -9,6 +9,8 @@ kotlin {
   sourceSets {
     commonMain.dependencies {
       implementation(libs.circuit.core)
+      implementation(libs.ktor.core)
+      implementation(libs.kotlin.coroutines.core)
 
       implementation(projects.core.arch)
       implementation(projects.core.coroutines)
@@ -19,6 +21,11 @@ kotlin {
       implementation(projects.peekApi)
       implementation(projects.uiKit.core)
       implementation(projects.uiKit.resources)
+    }
+
+    androidMain.dependencies {
+      implementation(libs.readability4j)
+      implementation(libs.ktor.client.okhttp)
     }
   }
 }
