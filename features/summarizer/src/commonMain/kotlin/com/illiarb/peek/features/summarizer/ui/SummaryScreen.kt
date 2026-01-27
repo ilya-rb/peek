@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Air
 import androidx.compose.material.icons.filled.Assistant
 import androidx.compose.material.icons.filled.OpenInBrowser
 import androidx.compose.material3.CircularProgressIndicator
@@ -21,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.illiarb.peek.core.data.Async
 import com.illiarb.peek.features.navigation.map.SummaryScreen
 import com.illiarb.peek.features.summarizer.ui.SummaryScreenContract.Event
@@ -91,7 +93,7 @@ private fun SummaryActions(
 
     state.articleWithSummary is Async.Content -> {
       IconButton(
-        modifier = modifier,
+        modifier = modifier.padding(end = 8.dp),
         onClick = {
           eventSink.invoke(Event.OpenInReaderClick(state.articleWithSummary.content.article))
         },
@@ -126,11 +128,25 @@ private fun SummaryContent(
           .navigationBarsPadding()
       ) {
         Text(
-          modifier = Modifier.padding(top = 16.dp),
-          text = "${summary.model} · ${summary.price.amountFormatted}",
-          style = MaterialTheme.typography.bodyMedium,
-          color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+          text = article.content.article.title,
+          style = MaterialTheme.typography.titleMedium,
         )
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+          modifier = Modifier.padding(top = 8.dp),
+        ) {
+          Icon(
+            imageVector = Icons.Filled.Assistant,
+            contentDescription = stringResource(Res.string.acsb_icon_assistant),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+          )
+          Text(
+            modifier = Modifier.padding(start = 8.dp),
+            text = "${summary.model} · ${summary.price.amountFormatted}",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+          )
+        }
         StreamingText(
           modifier = Modifier.padding(top = 24.dp),
           text = summary.content,
