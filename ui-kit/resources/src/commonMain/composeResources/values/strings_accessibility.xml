@@ -27,6 +27,7 @@
   <string name="acsb_icon_midday">Midday</string>
   <string name="acsb_icon_morning">Morning</string>
   <string name="acsb_icon_next_day">Next day</string>
+  <string name="acsb_icon_chevron_right">Navigate</string>
   <string name="acsb_icon_previous_day">Previous day</string>
   <string name="acsb_icon_reader_reading_time">Estimated reading time</string>
   <string name="acsb_icon_search">Search</string>
