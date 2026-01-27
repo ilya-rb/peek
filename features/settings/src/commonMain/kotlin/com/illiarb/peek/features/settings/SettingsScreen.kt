@@ -6,13 +6,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BugReport
+import androidx.compose.material.icons.filled.Cached
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.DataArray
+import androidx.compose.material.icons.filled.DataObject
+import androidx.compose.material.icons.filled.DataThresholding
+import androidx.compose.material.icons.filled.DataUsage
 import androidx.compose.material.icons.filled.Dataset
+import androidx.compose.material.icons.filled.DatasetLinked
 import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -21,7 +27,6 @@ import com.illiarb.peek.features.settings.SettingsScreenContract.Event
 import com.illiarb.peek.uikit.core.components.cell.ListHeader
 import com.illiarb.peek.uikit.core.components.cell.ListHeaderStyle
 import com.illiarb.peek.uikit.core.components.cell.RowCell
-import com.illiarb.peek.uikit.core.components.cell.RowCellContract
 import com.illiarb.peek.uikit.core.components.cell.RowCellContract.EndContent
 import com.illiarb.peek.uikit.core.components.navigation.UiKitTopAppBar
 import com.illiarb.peek.uikit.core.components.navigation.UiKitTopAppBarTitle
@@ -109,7 +114,7 @@ private fun SettingsContent(
     modifier = Modifier.padding(top = 16.dp),
     text = stringResource(Res.string.settings_data_title),
     icon = VectorIcon(
-      imageVector = Icons.Filled.Dataset,
+      imageVector = Icons.Filled.Storage,
       contentDescription = stringResource(Res.string.settings_data_title),
     ),
   )
