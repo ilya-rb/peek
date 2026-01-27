@@ -126,7 +126,7 @@ private fun SummaryContent(
       ) {
         Text(
           modifier = Modifier.padding(top = 16.dp),
-          text = "${summary.model} · ${summary.price.amount} ${summary.price.currency.code}",
+          text = "${summary.model} · ${summary.price.format()}",
           style = MaterialTheme.typography.bodyMedium,
           color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
         )
