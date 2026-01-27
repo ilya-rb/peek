@@ -17,7 +17,7 @@ public data class Money(
         return "0 ${currency.code}"
       }
 
-      val amountPrecise = amount.toDouble() / PRECISION_FACTOR
+      val amountPrecise = amount.toDouble().div(10.0.pow(MAX_PRECISION))
       val magnitude = floor(log10(abs(amountPrecise))).toInt()
       val decimalPlaces = (SIGNIFICANT_DIGITS - 1 - magnitude).coerceAtLeast(0)
       val factor = 10.0.pow(decimalPlaces)
@@ -34,11 +34,11 @@ public data class Money(
     }
 
   public companion object {
-    private const val SIGNIFICANT_DIGITS = 4
-    private const val PRECISION_FACTOR = 100_000_000L
+    private const val SIGNIFICANT_DIGITS = 2
+    private const val MAX_PRECISION = 8
 
     public fun fromDouble(amount: Double, currency: Currency): Money {
-      return Money((amount * PRECISION_FACTOR).roundToLong(), currency)
+      return Money((amount * 10.0.pow(MAX_PRECISION)).roundToLong(), currency)
     }
   }
 }

@@ -13,22 +13,22 @@ class MoneyFormatTest {
 
   @Test
   fun `it should format small value with leading zeros`() {
-    assertEquals("0.0001680 USD", Money.fromDouble(0.000168, USD).amountFormatted)
+    assertEquals("0.00017 USD", Money.fromDouble(0.000168, USD).amountFormatted)
   }
 
   @Test
-  fun `it should format very small value preserving 4 significant digits`() {
-    assertEquals("0.00001234 USD", Money.fromDouble(0.00001234, USD).amountFormatted)
+  fun `it should format very small value preserving 2 significant digits`() {
+    assertEquals("0.000012 USD", Money.fromDouble(0.00001234, USD).amountFormatted)
   }
 
   @Test
   fun `it should format value with integer and fractional parts`() {
-    assertEquals("1.235 USD", Money.fromDouble(1.2345678, USD).amountFormatted)
+    assertEquals("1.2 USD", Money.fromDouble(1.2345678, USD).amountFormatted)
   }
 
   @Test
-  fun `it should format large value with 1 decimal place`() {
-    assertEquals("123.5 USD", Money.fromDouble(123.456, USD).amountFormatted)
+  fun `it should format large value with no decimal places`() {
+    assertEquals("123 USD", Money.fromDouble(123.456, USD).amountFormatted)
   }
 
   @Test
@@ -38,11 +38,11 @@ class MoneyFormatTest {
 
   @Test
   fun `it should round up correctly`() {
-    assertEquals("0.001679 USD", Money.fromDouble(0.0016789, USD).amountFormatted)
+    assertEquals("0.0017 USD", Money.fromDouble(0.0016789, USD).amountFormatted)
   }
 
   @Test
   fun `it should format exact value without trailing noise`() {
-    assertEquals("0.5000 USD", Money.fromDouble(0.5, USD).amountFormatted)
+    assertEquals("0.50 USD", Money.fromDouble(0.5, USD).amountFormatted)
   }
 }
