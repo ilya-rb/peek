@@ -85,12 +85,13 @@ private fun SummaryActions(
     state.articleWithSummary is Async.Loading -> {
       CircularProgressIndicator(
         strokeWidth = 2.dp,
-        modifier = Modifier.padding(end = 16.dp).size(24.dp)
+        modifier = modifier.padding(end = 16.dp).size(24.dp)
       )
     }
 
     state.articleWithSummary is Async.Content -> {
       IconButton(
+        modifier = modifier,
         onClick = {
           eventSink.invoke(Event.OpenInReaderClick(state.articleWithSummary.content.article))
         },
@@ -126,7 +127,7 @@ private fun SummaryContent(
       ) {
         Text(
           modifier = Modifier.padding(top = 16.dp),
-          text = "${summary.model} · ${summary.price.format()}",
+          text = "${summary.model} · ${summary.price.amountFormatted}",
           style = MaterialTheme.typography.bodyMedium,
           color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
         )

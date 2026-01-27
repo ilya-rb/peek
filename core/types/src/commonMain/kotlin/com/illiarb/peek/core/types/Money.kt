@@ -7,31 +7,38 @@ import kotlin.math.pow
 import kotlin.math.roundToLong
 
 public data class Money(
-  val amount: Double,
+  val amount: Long,
   val currency: Currency,
 ) {
 
-  public fun format(): String {
-    if (amount == 0.0) {
-      return "0 ${currency.code}"
+  public val amountFormatted: String
+    get() {
+      if (amount == 0L) {
+        return "0 ${currency.code}"
+      }
+
+      val amountPrecise = amount.toDouble() / PRECISION_FACTOR
+      val magnitude = floor(log10(abs(amountPrecise))).toInt()
+      val decimalPlaces = (SIGNIFICANT_DIGITS - 1 - magnitude).coerceAtLeast(0)
+      val factor = 10.0.pow(decimalPlaces)
+      val rounded = (amountPrecise * factor).roundToLong().toDouble() / factor
+
+      val intPart = rounded.toLong()
+      val fracPart = ((rounded - intPart) * factor).roundToLong()
+
+      return if (decimalPlaces == 0) {
+        "$intPart ${currency.code}"
+      } else {
+        "$intPart.${fracPart.toString().padStart(decimalPlaces, '0')} ${currency.code}"
+      }
     }
 
-    val magnitude = floor(log10(abs(amount))).toInt()
-    val decimalPlaces = (SIGNIFICANT_DIGITS - 1 - magnitude).coerceAtLeast(0)
-    val factor = 10.0.pow(decimalPlaces)
-    val rounded = (amount * factor).roundToLong().toDouble() / factor
+  public companion object {
+    private const val SIGNIFICANT_DIGITS = 4
+    private const val PRECISION_FACTOR = 100_000_000L
 
-    val intPart = rounded.toLong()
-    val fracPart = ((rounded - intPart) * factor).roundToLong()
-
-    return if (decimalPlaces == 0) {
-      "$intPart ${currency.code}"
-    } else {
-      "$intPart.${fracPart.toString().padStart(decimalPlaces, '0')} ${currency.code}"
+    public fun fromDouble(amount: Double, currency: Currency): Money {
+      return Money((amount * PRECISION_FACTOR).roundToLong(), currency)
     }
-  }
-
-  private companion object {
-    const val SIGNIFICANT_DIGITS = 4
   }
 }

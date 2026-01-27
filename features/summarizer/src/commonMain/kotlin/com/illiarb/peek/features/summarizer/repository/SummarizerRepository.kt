@@ -38,13 +38,17 @@ internal class SummarizerRepository(
 
       if (response.status.isSuccess()) {
         val completionResponse = response.body<CompletionResponse>()
-
-        ArticleSummary(
-          url = url,
-          content = completionResponse.choices.first().message.content.trim(),
-          price = calculateCost(completionResponse.usage),
-          model = OpenAiAPIConfig.MODEL,
-        )
+        val content = completionResponse.choices.firstOrNull()?.message?.content.orEmpty().trim()
+        if (content.isEmpty()) {
+          error("No response from the API")
+        } else {
+          ArticleSummary(
+            url = url,
+            content = content,
+            price = calculateCost(completionResponse.usage),
+            model = OpenAiAPIConfig.MODEL,
+          )
+        }
       } else {
         error(response.body<RequestError>().message)
       }
@@ -64,14 +68,17 @@ internal class SummarizerRepository(
   }
 
   private fun createRequestFor(url: Url): CompletionRequest {
-    val prompt = """
+    val instructions = """
       Summarize this article.
       Output format: Use only plain text (no markdown or html) in the output.
-      Article url: ${url.url}""".trimIndent()
+    """.trimIndent()
 
     return CompletionRequest(
       model = OpenAiAPIConfig.MODEL,
-      messages = listOf(Message(content = prompt, role = "user"))
+      messages = listOf(
+        Message(content = instructions, role = "system"),
+        Message(content = "Article URL: ${url.url}", role = "user")
+      )
     )
   }
 
@@ -84,7 +91,7 @@ internal class SummarizerRepository(
     val cachedCost = cachedTokens * CACHED_INPUT_PRICE_PER_TOKEN
     val outputCost = outputTokens * OUTPUT_PRICE_PER_TOKEN
 
-    return Money(inputCost + cachedCost + outputCost, USD)
+    return Money.fromDouble(inputCost + cachedCost + outputCost, USD)
   }
 
   private companion object {

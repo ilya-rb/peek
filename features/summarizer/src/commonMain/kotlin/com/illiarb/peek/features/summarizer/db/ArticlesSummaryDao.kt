@@ -47,7 +47,7 @@ internal class ArticlesSummaryDao(
       url = Url(url),
       content = summary,
       model = model,
-      price = Money(price, Currency.ofCode(this.currency))
+      price = Money(amount = price, currency = Currency(currency))
     )
   }
 }
